@@ -2,7 +2,8 @@ export default {
     post:async ()=>{
         return new Promise((resolve,reject)=>{
             setTimeout(()=>{
-                reject({username:"mamush"})
+                resolve({username:"mamush"})
+                // reject({message:"Unauthorized"})
             },1000)
         });
      }

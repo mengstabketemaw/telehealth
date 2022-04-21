@@ -4,20 +4,20 @@ import { useState } from "react";
 import client from "../api/client";
 
 const ForgetPasswordDialog = ({ open, handleClose }) => {
-    const [data, setData] = useState({ status: "none",openback:false, error: "none" })
+    const [data, setData] = useState({ status: "none",openback:false, error: "" })
     const [email,setEmail] = useState("");
 
     const handleSend = () =>{
-        console.log(data)
+        if(!email)
+            return;
         setData({...data,status:"loading",openback:true})
         client.post("",email)
         .then(response=>{
-            setData(data=>({...data,status:"success"}))
-    
+            setData(data=>({...data,status:"success",openback:false}))
         })
         .catch((error)=>{
-            console.log(data)
-            setData(data=>({...data,status:"error",error:error}))
+            console.log(error)
+            setData(data=>({...data,status:"error",error:error.message,openback:false}))
         })
         
     }
@@ -25,11 +25,7 @@ const ForgetPasswordDialog = ({ open, handleClose }) => {
 
     return (<>
     <Backdrop  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 200 }} open={data.openback}>
-        {
-        data.status==="loading"?<CircularProgress/>:
-        data.status==="rejected"?<Alert severity="error">Could't Performe the request {data.error}</Alert>:
-        <Alert severity="success" >Email has been sent to you email accoun, follow the instruction for further guidance!</Alert>
-        }
+        <CircularProgress/>
     </Backdrop>
 
     <Dialog
@@ -46,9 +42,12 @@ const ForgetPasswordDialog = ({ open, handleClose }) => {
                 margin="dense"
                 label="Email address"
                 type={"email"}
+                required
                 fullWidth
                 variant="standard"
             />
+            {data.status==="success"&&<Alert severity="success">Email has been sent to you account follow the instruction for furture guidance!</Alert>}
+            {data.status==="error"&&<Alert severity="error">Cannot Performe Operation : {data.error.toString()}!</Alert>}
             <DialogActions>
                 <Button onClick={handleSend}>Send Link</Button>
                 <Button onClick={() => handleClose(false)}>Cancel</Button>
