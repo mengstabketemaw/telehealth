@@ -4,6 +4,7 @@ import Location from "../components/Location"
 import {AdapterLuxon} from "@mui/x-date-pickers/AdapterLuxon"
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { PhotoCamera } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -19,10 +20,9 @@ let initialUserInfo = {
 
 
 function CreateAccount() {
-    const [user, setUser] = useState("patient");
     const [modalOpen,setModalOpen] = useState(false);
-    const [userLocation,setUserLocation] = useState({lat:0,lng:0});
     const [userInfo, setUserInfo] = useState(initialUserInfo);
+    const nav = useNavigate();
 
     const renderBasedOnUser = () =>{
         if(userInfo.basic.user==="patient"){
@@ -81,6 +81,10 @@ function CreateAccount() {
             return newState;
         });
     };
+
+    const handleRegister = ()=>{
+        
+    }
 
     return (<>
     <Grid padding={4} container direction={"row"} justifyContent={"flex-start"} alignItems={"center"} spacing={3}>
@@ -223,8 +227,12 @@ function CreateAccount() {
                     <FormControlLabel sx={{margin:0,padding:0.1}} control={<Checkbox/>} label="I agreee to "></FormControlLabel>
                     <Button>Term and Condition</Button>
                 </Stack>
-                <Button variant="contained">Register</Button>
-                <Button component="span">Already have an account</Button>
+                <Button variant="contained"
+                    onClick={handleRegister}
+                >Register</Button>
+                <Button component="span"
+                    onClick={e=>{nav("/login")}}
+                >Already have an account</Button>
             </Stack>
         </Grid>
     </Grid>
