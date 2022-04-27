@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from "react-redux"
 import ForgetPasswordDialog from "../components/ForgetPasswordDialog";
 import { loginUser } from "../features/user/userSlice"
-
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [value, setValue] = useState({ username: "", password: "", rememberme:false, show: false });
@@ -13,6 +13,8 @@ const Login = () => {
     const userData = useSelector(store => store.user)
     const dispach = useDispatch();
     const [errorPermission,setErrorPermission] = useState(true)
+    const nav = useNavigate();
+
 
     const handleVisibility = () => {
         setValue(state => {
@@ -70,7 +72,9 @@ const Login = () => {
                                             setErrorPermission(true);
                                             dispach(loginUser(value))
                                         }}>Login</LoadingButton>
-                                <Button>Don't have Accoutn? Get Started</Button>
+                                <Button 
+                                    onClick={e=>nav("/create-account")}
+                                >Don't have Accoutn? Get Started</Button>
                             </Stack>
                         </Grid>
                     </Grid>
