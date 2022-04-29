@@ -70,7 +70,8 @@ const Login = () => {
                                         loading={userData.status === "loading"}
                                         onClick={()=>{
                                             setErrorPermission(true);
-                                            dispach(loginUser(value))
+                                            // dispach(loginUser(value))
+                                            nav("/patient")
                                         }}>Login</LoadingButton>
                                 <Button 
                                     onClick={e=>nav("/create-account")}
