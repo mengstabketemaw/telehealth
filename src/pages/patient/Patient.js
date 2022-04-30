@@ -1,9 +1,9 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { Toolbar } from '@mui/material';
 import Topbar from '../../components/Topbar';
-import NavigationDrawer from './NavigationDrawer';
+import NavigationDrawer from '../../components/NavigationDrawer';
+import { Outlet } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -24,7 +24,7 @@ function Patient() {
         sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
       >
         <Toolbar />
-        
+        <Outlet/>
       </Box>
     </Box>
   );
