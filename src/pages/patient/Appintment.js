@@ -37,7 +37,7 @@ const column=[
                    // onClick={handleEdit(id)}
                 />,
                 <GridActionsCellItem
-                    icon={<Delete colot={pink}/>}
+                    icon={<Delete color={pink}/>}
                     //onClick={handleClick(id)}
                 />
             ]

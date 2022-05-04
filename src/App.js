@@ -11,6 +11,7 @@ import MedicalRecord from "./pages/patient/MedicalRecord";
 import ApplyForHelp from "./pages/patient/ApplyForHelp";
 import Profile from "./pages/patient/Profile";
 import Blog from "./pages/patient/Blog";
+import DoctorList from "./pages/patient/DoctorsList";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="applyforhelp" element={<ApplyForHelp/>}/>
           <Route path="profile" element={<Profile/>}/>
           <Route path="blog" element={<Blog/>}/>
+          <Route path="doctorlist/:value" element={<DoctorList/>}/>
       </Route>
     </Routes>
     );
