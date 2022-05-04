@@ -1,10 +1,10 @@
 import { Delete, Edit } from "@mui/icons-material";
-import { Button, LinearProgress, Stack, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { pink } from "@mui/material/colors";
 import { DataGrid, useGridApiRef,GridCellEditStopReasons, useGridApiContext, GridActionsCell, GridActionsCellItem} from "@mui/x-data-grid"
 import { useCallback, useState } from "react";
 import CustomNoDataOverlay from "../../components/gridComponents/CustomNoDataOverlay";
-import CreateNewAppointment from "./appointment/CreateNewAppointment";
+import CreateNewAppointment from "../../components/appointment/CreateNewAppointment";
 
 
 const column=[
