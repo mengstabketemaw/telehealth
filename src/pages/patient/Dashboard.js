@@ -9,9 +9,9 @@ const Dashboard = ()=>{
         setValue(newValue);
     }
    
-   const createBox = (icon,name,no)=>{
-   return (<>
-    <Box 
+   const createBox = (icon,name,no,i)=>{
+   return (<Box 
+      key={i}
       sx={{
         display:'flex',
         width:'200px',
@@ -34,8 +34,7 @@ const Dashboard = ()=>{
             <Typography>{name}</Typography>
             <Typography color="primary">{no}</Typography>
         </Stack>
-    </Box>
-    </>)
+    </Box>)
     }
     
     const allIconProps = {
@@ -51,7 +50,7 @@ const Dashboard = ()=>{
             {icon:<Groups {...allIconProps}/>,name:'Therapy Group',no:1},
             {icon:<Medication {...allIconProps}/>,name:'Eprescription',no:12},
             ].map((e,i)=>{
-                return createBox(e.icon,e.name,e.no)
+                return createBox(e.icon,e.name,e.no,i)
             })
         }
     </Box>    
