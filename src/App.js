@@ -11,6 +11,7 @@ import MedicalRecord from "./pages/patient/MedicalRecord";
 import ApplyForHelp from "./pages/patient/ApplyForHelp";
 import Profile from "./pages/patient/Profile";
 import Blog from "./pages/patient/Blog";
+import DoctorList from "./pages/patient/DoctorsList";
 
 function App() {
   return (
@@ -20,7 +21,12 @@ function App() {
       <Route path="create-account" element={<CreateAccount/>}/>
       <Route path="patient" element={<Patient/>}>
           <Route index element={<Dashboard/>}/>
-          <Route path="dashboard" element={<Dashboard/>}/>
+          <Route path="dashboard" element={<Dashboard/>}>
+            <Route path="appointment" element={<Appointment/>}/>
+            <Route path="therapygroup" element={<TherapyGroup/>}/>
+            <Route path="homedoctor" element={<HomeDoctor/>}/>
+            <Route path="medicalrecord" element={<MedicalRecord/>}/>
+          </Route>
           <Route path="appointment" element={<Appointment/>}/>
           <Route path="therapygroup" element={<TherapyGroup/>}/>
           <Route path="homedoctor" element={<HomeDoctor/>}/>
@@ -29,6 +35,7 @@ function App() {
           <Route path="applyforhelp" element={<ApplyForHelp/>}/>
           <Route path="profile" element={<Profile/>}/>
           <Route path="blog" element={<Blog/>}/>
+          <Route path="doctorlist/:value" element={<DoctorList/>}/>
       </Route>
     </Routes>
     );
