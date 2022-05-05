@@ -93,7 +93,7 @@ const MedicalRecord = ()=>{
                     label={"Describtion"}   
                 />
                 <TextField
-                    value={record.file}
+                    files={[record.file]}
                     onChange={e=>setRecord({...record,file:e.target.files[0]})}
                     focused
                     type={"file"}
