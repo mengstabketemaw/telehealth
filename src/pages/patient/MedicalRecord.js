@@ -2,13 +2,15 @@ import { Add } from "@mui/icons-material";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
+import client from "../../api/client";
+import MedicalRecordProfile from "../../components/medicalrecord/MedicalRecordProfile";
 import { useSnackbar } from "./Patient";
-
 
 const MedicalRecord = ()=>{
     const [data,setData] = useState({row:[],loading:true})
     const {setSnackbar} = useSnackbar();
     const [open,setOpen] = useState(false);
+    const [viewDetaile,setViewDetaile] = useState({open:false});
     const [record,setRecord] = useState({desc:"",file:""});
 
     useEffect(()=>{
@@ -18,10 +20,11 @@ const MedicalRecord = ()=>{
             row:[{id:1,date:'12/12/2014',type:"PDF",describtion:"this is describtion",addedby:"You"}],
             loading:false
         })
-        setSnackbar({open:true,children:"This message from medical record",severity:"success"})
 
     },[])
-    const handleShowItem = () =>{}
+    const handleShowItem = (row) =>{
+        setViewDetaile({...row,open:true,handleClose:()=>setViewDetaile({...viewDetaile,open:false})})
+    }
 
     const column = [
     {
@@ -61,7 +64,14 @@ const MedicalRecord = ()=>{
     ]
 
     const handleSave = ()=>{
-
+        setOpen(false);
+        //here lay the logic to call the end point to save the data
+        setData({...data,loading:true})
+        client.post()
+        .then(()=>{
+            setData({row:[...data.row,{id:2,date:'12/12/2012',type:record.file.type,describtion:record.desc,addedby:"You"}],loading:false})
+            setSnackbar({open:true,children:"This message from medical record",severity:"success"})
+        })
     }
 
     return (<>
@@ -109,6 +119,7 @@ const MedicalRecord = ()=>{
             <Button variant="contained" onClick={handleSave}>Save</Button>
         </DialogActions>
     </Dialog>
+    <MedicalRecordProfile {...viewDetaile}/>
     </>
  )
 }
