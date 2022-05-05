@@ -1,9 +1,11 @@
 import { Backpack, Groups, Home, MedicalServices, Medication } from "@mui/icons-material";
 import { Box, Stack, Typography } from "@mui/material";
 import { useState } from "react"
+import { Outlet, useNavigate } from "react-router-dom";
 
 const Dashboard = ()=>{
    const [value,setValue] = useState();
+   const nav = useNavigate();
 
    const handleChange = (event,newValue)=>{
         setValue(newValue);
@@ -11,6 +13,7 @@ const Dashboard = ()=>{
    
    const createBox = (icon,name,no,i)=>{
    return (<Box 
+      onClick={e=>nav(name.toLowerCase().replace(" ",""))} 
       key={i}
       sx={{
         display:'flex',
@@ -48,12 +51,13 @@ const Dashboard = ()=>{
             [{icon:<MedicalServices {...allIconProps}/>,name:'Appointment',no:3},
             {icon:<Home {...allIconProps}/>,name:'Home Doctor',no:5},
             {icon:<Groups {...allIconProps}/>,name:'Therapy Group',no:1},
-            {icon:<Medication {...allIconProps}/>,name:'Eprescription',no:12},
+            {icon:<Medication {...allIconProps}/>,name:'Medical Record',no:12},
             ].map((e,i)=>{
                 return createBox(e.icon,e.name,e.no,i)
             })
         }
     </Box>    
+    <Outlet/>
     </>
     )
 }

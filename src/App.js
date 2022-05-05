@@ -21,7 +21,12 @@ function App() {
       <Route path="create-account" element={<CreateAccount/>}/>
       <Route path="patient" element={<Patient/>}>
           <Route index element={<Dashboard/>}/>
-          <Route path="dashboard" element={<Dashboard/>}/>
+          <Route path="dashboard" element={<Dashboard/>}>
+            <Route path="appointment" element={<Appointment/>}/>
+            <Route path="therapygroup" element={<TherapyGroup/>}/>
+            <Route path="homedoctor" element={<HomeDoctor/>}/>
+            <Route path="medicalrecord" element={<MedicalRecord/>}/>
+          </Route>
           <Route path="appointment" element={<Appointment/>}/>
           <Route path="therapygroup" element={<TherapyGroup/>}/>
           <Route path="homedoctor" element={<HomeDoctor/>}/>
