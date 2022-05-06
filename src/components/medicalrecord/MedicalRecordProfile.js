@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import { Grid } from '@mui/material';
-import { FileViewer } from 'react-file-viewer';
+// import { FileViewer } from 'react-file-viewer';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -44,6 +44,7 @@ export default function MedicalRecordProfile({open,handleClose,...row}) {
             </Button>
           </Toolbar>
         </AppBar>
+        
         <Grid container padding={5} spacing={3}>
             <Grid xs={1} item>
                 <Typography>date</Typography>
@@ -64,10 +65,7 @@ export default function MedicalRecordProfile({open,handleClose,...row}) {
                 <Typography>You</Typography>
             </Grid>
             <Grid xs={12} item>
-                <FileViewer
-                    fileType={"image/png"}
-                    filePath={"file:///C:/Users/Public/Pictures/Sample Pictures/mengstab.png"}
-                />
+               
             </Grid>
             
         </Grid>
