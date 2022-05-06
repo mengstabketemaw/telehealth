@@ -17,7 +17,7 @@ const MedicalRecord = ()=>{
 
         //get the medical record here 
         setData({
-            row:[{id:1,date:'12/12/2014',type:"PDF",describtion:"this is describtion",addedby:"You"}],
+            row:[{id:1,date:'12/12/2014',file:{type:"e-prescribtion",url:"https://www.orimi.com/pdf-test.pdf"},describtion:"This is video that i have recived for my medical condition",addedby:"You"}],
             loading:false
         })
 
@@ -34,8 +34,9 @@ const MedicalRecord = ()=>{
         type:"date"
     },
     {
-        field:"type",
+        field:"file",
         headerName:"Type",
+        renderCell:({value})=>value.type,
         flex:1,
     },
     {
@@ -66,11 +67,13 @@ const MedicalRecord = ()=>{
     const handleSave = ()=>{
         setOpen(false);
         //here lay the logic to call the end point to save the data
+        //after saving the file you have to get the url for that file let just call it 
+        let url = "utl"
         setData({...data,loading:true})
         client.post()
         .then(()=>{
-            setData({row:[...data.row,{id:2,date:'12/12/2012',type:record.file.type,describtion:record.desc,addedby:"You"}],loading:false})
-            setSnackbar({open:true,children:"This message from medical record",severity:"success"})
+            setData({row:[...data.row,{id:2,date:'12/12/2012',file:{type:record.file.type,url},describtion:record.desc,addedby:"You"}],loading:false})
+            setSnackbar({open:true,children:"File is Successfully Saved",severity:"success"})
         })
     }
 
@@ -119,8 +122,10 @@ const MedicalRecord = ()=>{
             <Button variant="contained" onClick={handleSave}>Save</Button>
         </DialogActions>
     </Dialog>
-    <MedicalRecordProfile {...viewDetaile}/>
-    </>
+    {viewDetaile.open&&
+        <MedicalRecordProfile {...viewDetaile}/>
+    }  
+  </>
  )
 }
 export default MedicalRecord;
