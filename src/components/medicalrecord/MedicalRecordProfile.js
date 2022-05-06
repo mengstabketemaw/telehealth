@@ -73,7 +73,7 @@ export default function MedicalRecordProfile({open,handleClose,...row}) {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: 'relative' }}>
+        <AppBar sx={{ position: 'fixed' }}>
           <Toolbar>
             <IconButton
               edge="start"
