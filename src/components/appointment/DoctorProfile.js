@@ -18,7 +18,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function DoctorProfile({open,handleClose,name,img,specialization,homedoctor,consultation,id}) {
+export default function DoctorProfile({open,handleClose,name,img,specialization,homedoctor,consultation,id,...row}) {
   const [dateValue,setDateValue] = React.useState();
   //find the location, available slot for appointment and other purposes.
   React.useEffect(()=>{})
@@ -51,7 +51,7 @@ export default function DoctorProfile({open,handleClose,name,img,specialization,
         </AppBar>
         <Stack alignItems={"center"} spacing={1}>
           <hr/>
-          <Avatar src={img} sx={{width:'200px',height:'200px'}}/>
+          <Avatar src={img||row.avatar} sx={{width:'200px',height:'200px'}}/>
           <Divider/>
           <Typography variant='h6'>{name}</Typography>
           <Typography variant='p' color="GrayText">{specialization}</Typography>

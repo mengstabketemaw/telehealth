@@ -1,14 +1,20 @@
 import { Delete, Edit } from "@mui/icons-material";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Typography,Dialog,DialogTitle,DialogActions,DialogContent,DialogContentText,Button } from "@mui/material";
 import { DataGrid, GridActionsCellItem} from "@mui/x-data-grid"
 import { useEffect, useState } from "react";
 import CustomNoDataOverlay from "../../components/gridComponents/CustomNoDataOverlay";
 import CreateNewAppointment from "../../components/appointment/CreateNewAppointment";
 import { randomeUser } from "../../api/client";
-
+import DoctorProfile from "../../components/appointment/DoctorProfile";
+import Client from "../../api/client"
+import {useSnackbar} from "./Patient"
 
 const Appointment = ()=>{
     const [data,setData] = useState({rows:[],loading:true});
+    const [profile,setProfile] = useState({open:false})
+    const [deleteAppointment, setDeleteAppointment] = useState({open:false});
+    const {setSnackbar} = useSnackbar();
+
     useEffect(()=>{
         randomeUser.get()
         .then(response=>response.data.results)
@@ -27,8 +33,22 @@ const Appointment = ()=>{
         })
     },[])
 
-    const handleEdit = () =>{}
-    const handleClick = () =>{}
+    const handleEdit = (row) =>{
+        const consultation = row.type.includes("tation");
+        const homedoctor = row.type.includes("ome");
+        setProfile({open:true,handleClose:()=>setProfile({open:false}),...row,consultation,homedoctor})
+    }
+    const handleDelete = () =>{
+        setDeleteAppointment({open:false})
+        setData({...data,loading:true})
+        Client.post()
+        .then(()=>{
+        //data must be fetched from the server
+        setData({...data,loading:false})
+        setSnackbar({open:true,children:"Appointment has been canceled",severity:"success"})
+        })
+    }
+   
 
     const column=[
         {
@@ -65,17 +85,17 @@ const Appointment = ()=>{
             type:"actions",
             width:100,
             cellClassName:"actions",
-            getActions:({id})=>{
+            getActions:({row})=>{
                 return [
                     <GridActionsCellItem
                         icon={<Edit color="secondary"/>}
                         label={"Edit"}
-                        onClick={handleEdit(id)}
+                        onClick={()=>handleEdit(row)}
                     />,
                     <GridActionsCellItem
                         icon={<Delete/>}
                         label={"Delete"}
-                        onClick={handleClick(id)}
+                        onClick={()=>setDeleteAppointment({open:true,row})}
                     />
                 ]
             }
@@ -103,6 +123,19 @@ const Appointment = ()=>{
         loading={data.loading}
     />
     </div>
+    <DoctorProfile {...profile}/>
+    {deleteAppointment.open&&
+        <Dialog open onClose={()=>setDeleteAppointment({open:false})}>
+            <DialogTitle>Cancel Appointment</DialogTitle>
+            <DialogContent>
+                <DialogContentText>Are you sure you want to cance your schedule with <strong>Dr. {deleteAppointment?.row?.name}</strong></DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button color="error" onClick={handleDelete}>Yes</Button>
+                <Button color="success" onClick={()=>setDeleteAppointment({open:false})}>no</Button>    
+            </DialogActions>
+        </Dialog>
+    }
     </>)
 }
 export default Appointment;
