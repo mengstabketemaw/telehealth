@@ -6,12 +6,13 @@ import Dashboard from "./pages/patient/Dashboard";
 import HomeDoctor from "./pages/patient/HomeDoctor";
 import Appointment from "./pages/patient/Appintment";
 import TherapyGroup from "./pages/patient/TherapyGroup";
-import Vdt from "./pages/patient/HomeDoctor";
+import Vdt from "./pages/patient/Vdt";
 import MedicalRecord from "./pages/patient/MedicalRecord";
 import ApplyForHelp from "./pages/patient/ApplyForHelp";
 import Profile from "./pages/patient/Profile";
 import Blog from "./pages/patient/Blog";
 import DoctorList from "./pages/patient/DoctorsList";
+import Room from "./pages/patient/Room";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="profile" element={<Profile/>}/>
           <Route path="blog" element={<Blog/>}/>
           <Route path="doctorlist/:value" element={<DoctorList/>}/>
+          <Route path="room" element={<Room/>}/>
       </Route>
     </Routes>
     );

@@ -107,6 +107,7 @@ const Appointment = ()=>{
     
 
     return (<>
+    <br/>
     <Typography color="primary" variant="h4" sx={{mb:'20px'}}>Appointments</Typography>
     <div style = {{height:'70vh',width:'100%'}}>
     <DataGrid
