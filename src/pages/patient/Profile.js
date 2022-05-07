@@ -1,5 +1,5 @@
-import { Photo, PhotoCamera } from "@mui/icons-material";
-import { Avatar, Box, Button, Container, Dialog, DialogContent, DialogTitle, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { PhotoCamera } from "@mui/icons-material";
+import { Avatar, Box, Button, Container, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDisplayImage } from "../../hooks/useDisplayImage";
 

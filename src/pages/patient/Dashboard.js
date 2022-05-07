@@ -1,15 +1,11 @@
 import { Groups, MedicalServices, Medication, VideoCall } from "@mui/icons-material";
 import { Box, Stack, Typography } from "@mui/material";
-import { useState } from "react"
 import { Outlet, useNavigate } from "react-router-dom";
 
 const Dashboard = ()=>{
-   const [value,setValue] = useState();
    const nav = useNavigate();
 
-   const handleChange = (event,newValue)=>{
-        setValue(newValue);
-    }
+   
    
    const createBox = (icon,name,no,i)=>{
    return (<Box 

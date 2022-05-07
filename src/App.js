@@ -12,6 +12,7 @@ import Profile from "./pages/patient/Profile";
 import Blog from "./pages/patient/Blog";
 import DoctorList from "./pages/patient/DoctorsList";
 import Room from "./pages/patient/Room";
+import Doctor from "./pages/doctor/Doctor";
 
 function App() {
   return (
@@ -36,6 +37,8 @@ function App() {
           <Route path="blog" element={<Blog/>}/>
           <Route path="doctorlist/:value" element={<DoctorList/>}/>
           <Route path="room" element={<Room/>}/>
+      </Route>
+      <Route path="doctor" element={<Doctor/>}>
       </Route>
     </Routes>
     );

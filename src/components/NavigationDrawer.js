@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useLocation,NavLink} from "react-router-dom"
 import { Box, Divider, Drawer, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
-import { AccountBox, Article, Dashboard, Folder, Groups, Help, Home, Schedule, VideoCall } from '@mui/icons-material';
+import { AccountBox, Article, Dashboard, Folder, Groups, Help, Schedule, VideoCall } from '@mui/icons-material';
 
 const drawerWidth = 240;
 

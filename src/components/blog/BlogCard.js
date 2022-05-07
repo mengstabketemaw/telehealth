@@ -19,7 +19,7 @@ const BlogCard = ({text,date,title,img}) =>{
                     <Button>Read more...</Button>
                 </Stack>
             </Stack>
-            <img src={img} sx={{width:"100%",height:"100%"}}/>
+            <img src={img} alt={"alt prop is mandatory"} sx={{width:"100%",height:"100%"}}/>
         </Stack>
     </>)
 }
