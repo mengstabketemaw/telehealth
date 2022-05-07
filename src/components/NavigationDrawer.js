@@ -51,7 +51,7 @@ function DrawerTools(){
       </Toolbar>
       <Divider />
     {
-        ["Dashboard","Appointment","Therapy Group","Home Doctor","V.D.T","Medical Record"].map((name,index)=>{
+        ["Dashboard","Appointment","Therapy Group","V.D.T","Medical Record"].map((name,index)=>{
 
             let urlname = name.toLocaleLowerCase().replace(" ","").replaceAll(".","");
             let color = pathname.includes(urlname)?"primary":"";
@@ -64,7 +64,6 @@ function DrawerTools(){
                           name==="Dashboard"?<Dashboard color = {color}/>:
                           name==="Appointment"?<Schedule color = {color}/>:
                           name==="Therapy Group"?<Groups color = {color}/>:
-                          name==="Home Doctor"?<Home color = {color}/>:
                           name==="V.D.T"?<VideoCall color = {color}/>:
                           <Folder color = {color}/>
                       }

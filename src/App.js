@@ -3,7 +3,6 @@ import {Routes,Route,Navigate} from "react-router"
 import CreateAccount from "./pages/CreateAccount";
 import Patient from "./pages/patient/Patient";
 import Dashboard from "./pages/patient/Dashboard";
-import HomeDoctor from "./pages/patient/HomeDoctor";
 import Appointment from "./pages/patient/Appintment";
 import TherapyGroup from "./pages/patient/TherapyGroup";
 import Vdt from "./pages/patient/Vdt";
@@ -25,12 +24,11 @@ function App() {
           <Route path="dashboard" element={<Dashboard/>}>
             <Route path="appointment" element={<Appointment/>}/>
             <Route path="therapygroup" element={<TherapyGroup/>}/>
-            <Route path="homedoctor" element={<HomeDoctor/>}/>
+            <Route path="vdt" element={<Vdt/>}/>
             <Route path="medicalrecord" element={<MedicalRecord/>}/>
           </Route>
           <Route path="appointment" element={<Appointment/>}/>
           <Route path="therapygroup" element={<TherapyGroup/>}/>
-          <Route path="homedoctor" element={<HomeDoctor/>}/>
           <Route path="vdt" element={<Vdt/>}/>
           <Route path="medicalrecord" element={<MedicalRecord/>}/>
           <Route path="applyforhelp" element={<ApplyForHelp/>}/>

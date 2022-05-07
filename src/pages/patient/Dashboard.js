@@ -1,4 +1,4 @@
-import { Backpack, Groups, Home, MedicalServices, Medication } from "@mui/icons-material";
+import { Groups, MedicalServices, Medication, VideoCall } from "@mui/icons-material";
 import { Box, Stack, Typography } from "@mui/material";
 import { useState } from "react"
 import { Outlet, useNavigate } from "react-router-dom";
@@ -49,7 +49,7 @@ const Dashboard = ()=>{
     <Box sx={{ justifyContent:'space-between',display:'flex',direction:'row',width:'100%',}}>
         {
             [{icon:<MedicalServices {...allIconProps}/>,name:'Appointment',no:3},
-            {icon:<Home {...allIconProps}/>,name:'Home Doctor',no:5},
+            {icon:<VideoCall {...allIconProps}/>,name:'Vdt',no:1},
             {icon:<Groups {...allIconProps}/>,name:'Therapy Group',no:1},
             {icon:<Medication {...allIconProps}/>,name:'Medical Record',no:12},
             ].map((e,i)=>{
