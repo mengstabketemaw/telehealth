@@ -13,6 +13,11 @@ import Blog from "./pages/patient/Blog";
 import DoctorList from "./pages/patient/DoctorsList";
 import Room from "./pages/patient/Room";
 import Doctor from "./pages/doctor/Doctor";
+import Activity from "./pages/doctor/Activity";
+import Office from "./pages/doctor/Office";
+import HomeDoctor from "./pages/doctor/HomeDoctor";
+import DocProfile from "./pages/doctor/DocProfile";
+import DocBlog from "./pages/doctor/DocBlog";
 
 function App() {
   return (
@@ -39,6 +44,11 @@ function App() {
           <Route path="room" element={<Room/>}/>
       </Route>
       <Route path="doctor" element={<Doctor/>}>
+        <Route path="activity" element={<Activity/>}/>
+        <Route path="office" element={<Office/>}/>
+        <Route path="homedoctor" element={<HomeDoctor/>}/>
+        <Route path="profile" element={<DocProfile/>}/>
+        <Route path="blog" element={<DocBlog/>}/>
       </Route>
     </Routes>
     );
