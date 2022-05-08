@@ -1,6 +1,15 @@
+import { Typography } from "@mui/material";
 const Activity = () => {
+    const column = [
+        {
+            field:"type"
+        }
+    ];
     return (<>
-        <h1>This is Activity</h1>
+    <br/>
+    <Typography variant="h4" color="primary">Todays Activity</Typography>
+    <br/>
+
     </>)
 }
 export default Activity;

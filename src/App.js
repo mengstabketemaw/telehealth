@@ -25,6 +25,8 @@ import HelpApplications from "./pages/admin/HelpApplications";
 import AdminProfile from "./pages/admin/AdminProfile";
 import Setting from "./pages/admin/Setting";
 import Feedback from "./pages/admin/Feedback";
+import Schedule from "./pages/doctor/Schedule";
+import DocTherapyGroup from "./pages/doctor/DocTherapyGroup";
 
 function App() {
   return (
@@ -56,6 +58,8 @@ function App() {
         <Route path="homedoctor" element={<HomeDoctor/>}/>
         <Route path="profile" element={<DocProfile/>}/>
         <Route path="blog" element={<DocBlog/>}/>
+        <Route path="schedule" element={<Schedule/>}/>
+        <Route path="therapygroup" element={<DocTherapyGroup/>}/>
       </Route>
       <Route path="admin" element={<Admin/>}>
         <Route path="dashboard" element={<AdminDashboard/>}/>
