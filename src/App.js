@@ -1,5 +1,5 @@
-import Login from "./pages/Login";
 import {Routes,Route,Navigate} from "react-router"
+import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import Patient from "./pages/patient/Patient";
 import Dashboard from "./pages/patient/Dashboard";
@@ -18,6 +18,13 @@ import Office from "./pages/doctor/Office";
 import HomeDoctor from "./pages/doctor/HomeDoctor";
 import DocProfile from "./pages/doctor/DocProfile";
 import DocBlog from "./pages/doctor/DocBlog";
+import Admin from "./pages/admin/Admin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import Doctors from "./pages/admin/Doctors";
+import HelpApplications from "./pages/admin/HelpApplications";
+import AdminProfile from "./pages/admin/AdminProfile";
+import Setting from "./pages/admin/Setting";
+import Feedback from "./pages/admin/Feedback";
 
 function App() {
   return (
@@ -49,6 +56,14 @@ function App() {
         <Route path="homedoctor" element={<HomeDoctor/>}/>
         <Route path="profile" element={<DocProfile/>}/>
         <Route path="blog" element={<DocBlog/>}/>
+      </Route>
+      <Route path="admin" element={<Admin/>}>
+        <Route path="dashboard" element={<AdminDashboard/>}/>
+        <Route path="doctors" element={<Doctors/>}/>
+        <Route path="helpapplications" element={<HelpApplications/>}/>
+        <Route path="profile" element={<AdminProfile/>}/>
+        <Route path="setting" element={<Setting/>}/>
+        <Route path="feedback" element={<Feedback/>}/>
       </Route>
     </Routes>
     );
