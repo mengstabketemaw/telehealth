@@ -21,6 +21,7 @@ export default function PatientProfile(props) {
     const [medicalRecord,setMedicalRecord] = React.useState({loading:true,row:[]})
     const [prescribe,setPrescribe] = React.useState({open:false});
     const [report,setReport] = React.useState({open:false});
+    const [detailedView,setDetailedView] = React.useState({open:false})
     
     React.useEffect(()=>{
         client.post()
@@ -59,6 +60,9 @@ export default function PatientProfile(props) {
                     <GridActionsCellItem
                         label={"Show In Detaile"}
                         showInMenu
+                        onClick={()=>{
+                            setDetailedView({open:true,...row})
+                        }}
                     />
                 ]
             }
@@ -69,10 +73,14 @@ export default function PatientProfile(props) {
         console.log(prescribe);
     }
 
+    const handleAddReport = ()=>{
+        console.log(report)
+    }
+
     const handleChangePrescribtion = (type) => (event) =>{
         setPrescribe(state=>({
             ...state,
-            [type]:event.target.evalue
+            [type]:event.target.value
         }))
     }
 
@@ -127,7 +135,7 @@ export default function PatientProfile(props) {
             </div>
             <Stack direction="row" justifyContent="flex-end" spacing={3} width={"90%"} padding={5}>
                 <Button variant="contained" onClick={()=>setPrescribe({open:true})}>Prescribe medicne</Button>
-                <Button variant="outlined">Add report</Button>
+                <Button variant="outlined" onClick={()=>setReport({open:true})}>Add report</Button>
             </Stack>
             <Dialog
                 open={prescribe.open}
@@ -138,7 +146,7 @@ export default function PatientProfile(props) {
                         <Grid item xs={6}>
                             <TextField
                                 label={"Drug Name"}
-                                value={prescribe?.name}
+                                value={prescribe?.name||""}
                                 onChange={handleChangePrescribtion("name")}
                                 required
                             />
@@ -147,22 +155,22 @@ export default function PatientProfile(props) {
                             <TextField
                                 required
                                 label={"Strength"}
-                                value={prescribe?.strength}
-                                onChange={handlePrescribeMedicine("strength")}
+                                value={prescribe?.strength||""}
+                                onChange={handleChangePrescribtion("strength")}
                             />
                         </Grid>
                         <Grid item xs={6}>
                             <TextField
                                 required
                                 label={"Sig"}
-                                value={prescribe?.sig}
+                                value={prescribe?.sig||""}
                                 onChange={handleChangePrescribtion("sig")}
                             />
                         </Grid>
                         <Grid item xs={6}>
                             <TextField
                                 label={"Qty"}
-                                value={prescribe?.qty}
+                                value={prescribe?.qty||""}
                                 onChange={handleChangePrescribtion("qty")}
                             />
                         </Grid>
@@ -172,7 +180,7 @@ export default function PatientProfile(props) {
                                 multiline
                                 rows={3}
                                 label={"Memo"}
-                                value={prescribe?.memo}
+                                value={prescribe?.memo||""}
                                 onChange={handleChangePrescribtion("memo")}
                             />
                         </Grid>
@@ -182,6 +190,44 @@ export default function PatientProfile(props) {
                 <DialogActions>
                     <Button onClick={handlePrescribeMedicine}>OK</Button>
                     <Button onClick={()=>setPrescribe({open:false})}>Cancel</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={report.open}
+                onClose={()=>setReport({open:false})}
+            >
+                <DialogTitle>Add Diagnosis Report</DialogTitle>
+                <DialogContent dividers>
+                    <Box sx={{width:"70vh"}}>
+                        <TextField
+                            label="Report"
+                            required
+                            multiline
+                            rows={4}
+                            fullWidth
+                            value={report?.value||""}
+                            onChange={(e)=>setReport({...report,value:e.target.value})}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleAddReport}>Ok</Button>
+                    <Button onClick={()=>setReport({open:false})}>Cancel</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={detailedView.open}
+                onClose={()=>setDetailedView({open:false})}
+            >
+                <DialogTitle>Medical Record</DialogTitle>
+                <DialogContent dividers>
+                    <Box sx={{width:"80vw",flexGrow:1}}>
+                        {/* rendering must be performed based on the input type img,video,pdf,e-prescribtion. each one should be handled. what a pain? */}
+                        <Typography variant='h1' color="primary">This is the medical record 10Q</Typography>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={()=>setDetailedView({open:false})}>OK</Button>
                 </DialogActions>
             </Dialog>
         </Stack>
