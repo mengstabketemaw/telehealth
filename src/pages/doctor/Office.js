@@ -6,7 +6,7 @@ import PatientProfileCard from "../../components/doctor/PatientProfileCard";
 
 const Office = () => {
     const [status,setStatus] = useState({active:false});
-    const [profile,setProfile] = useState({open:false});
+    const [profile,setProfile] = useState({open:true,data:{}});
 
     const handleStartSession = ()=>{
         setStatus({active:!status.active})
@@ -50,7 +50,7 @@ const Office = () => {
             {!status.active?"START SESSION":"STOP SESSION"}
         </Button>
     </Stack>
-    <PatientProfile open={profile.open}/>
+    <PatientProfile open={profile.open} handleClose={()=>setProfile({open:false})}/>
     </>)
 }
 export default Office;
