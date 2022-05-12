@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import Divider from '@mui/material/Divider';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import { Avatar, Box, CircularProgress } from '@mui/material';
+import { Avatar, Box, CircularProgress, Dialog, DialogTitle,DialogContent,DialogActions, TextField, Grid } from '@mui/material';
 import client from '../../api/client';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 
@@ -20,6 +19,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function PatientProfile(props) {
     const [profile,setProfile] = React.useState({loading:true});
     const [medicalRecord,setMedicalRecord] = React.useState({loading:true,row:[]})
+    const [prescribe,setPrescribe] = React.useState({open:false});
+    const [report,setReport] = React.useState({open:false});
     
     React.useEffect(()=>{
         client.post()
@@ -56,7 +57,7 @@ export default function PatientProfile(props) {
             getActions:({row})=>{
                 return [
                     <GridActionsCellItem
-                        label={"Show"}
+                        label={"Show In Detaile"}
                         showInMenu
                     />
                 ]
@@ -64,6 +65,16 @@ export default function PatientProfile(props) {
         }
     ]
 
+    const handlePrescribeMedicine = () =>{
+        console.log(prescribe);
+    }
+
+    const handleChangePrescribtion = (type) => (event) =>{
+        setPrescribe(state=>({
+            ...state,
+            [type]:event.target.evalue
+        }))
+    }
 
 
    return (
@@ -115,9 +126,64 @@ export default function PatientProfile(props) {
                 />
             </div>
             <Stack direction="row" justifyContent="flex-end" spacing={3} width={"90%"} padding={5}>
-                <Button variant="contained">Prescribe medicne</Button>
+                <Button variant="contained" onClick={()=>setPrescribe({open:true})}>Prescribe medicne</Button>
                 <Button variant="outlined">Add report</Button>
             </Stack>
+            <Dialog
+                open={prescribe.open}
+            >
+                <DialogTitle>Prescribe Medicine</DialogTitle>
+                <DialogContent dividers>
+                    <Grid container spacing={3}>
+                        <Grid item xs={6}>
+                            <TextField
+                                label={"Drug Name"}
+                                value={prescribe?.name}
+                                onChange={handleChangePrescribtion("name")}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                required
+                                label={"Strength"}
+                                value={prescribe?.strength}
+                                onChange={handlePrescribeMedicine("strength")}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                required
+                                label={"Sig"}
+                                value={prescribe?.sig}
+                                onChange={handleChangePrescribtion("sig")}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label={"Qty"}
+                                value={prescribe?.qty}
+                                onChange={handleChangePrescribtion("qty")}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={3}
+                                label={"Memo"}
+                                value={prescribe?.memo}
+                                onChange={handleChangePrescribtion("memo")}
+                            />
+                        </Grid>
+                    </Grid>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handlePrescribeMedicine}>OK</Button>
+                    <Button onClick={()=>setPrescribe({open:false})}>Cancel</Button>
+                </DialogActions>
+            </Dialog>
         </Stack>
       </Dialog>
   );
