@@ -12,7 +12,7 @@ const PatientProfileCard = (props)=>{
         <FiberManualRecord sx={{fontSize:"small"}}color={"error"}/>
     </Stack>
     <Stack direction="row" spacing={3} paddingRight={3}>
-        <Button>View</Button>
+        <Button onClick={props.onView}>View</Button>
         {/* <Button>REMOVE</Button> */}
         <Box sx={{flexGrow:1}}></Box>
         <Typography>2:30</Typography>

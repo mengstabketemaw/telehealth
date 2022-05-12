@@ -6,7 +6,7 @@ import PatientProfileCard from "../../components/doctor/PatientProfileCard";
 
 const Office = () => {
     const [status,setStatus] = useState({active:false});
-    const [profile,setProfile] = useState({open:true,data:{}});
+    const [profile,setProfile] = useState({open:false,data:{}});
 
     const handleStartSession = ()=>{
         setStatus({active:!status.active})
@@ -24,9 +24,9 @@ const Office = () => {
         </Box>
         <Box sx={{width:"39%", height:"100%",flexGrow:"1",overflow:"scroll"}}>
             <Stack justifyContent="center" direction="row">
-                <Typography variant="h6" color="InfoText">QUEUE</Typography>
+                <Typography variant="h5" color="secondary">QUEUE</Typography>
             </Stack>
-            <PatientProfileCard name="mamush" src="image"/>
+            <PatientProfileCard onView={()=>setProfile({open:true})} name="mamush" src="image"/>
             <PatientProfileCard name="mamush" src="image"/>
             <PatientProfileCard name="mamush" src="image"/>
             <PatientProfileCard name="mamush" src="image"/>
