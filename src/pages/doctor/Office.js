@@ -1,6 +1,6 @@
 import { OnlinePrediction } from "@mui/icons-material";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import { Profiler, useState } from "react";
+import { useState } from "react";
 import PatientProfile from "../../components/doctor/PatientProfile";
 import PatientProfileCard from "../../components/doctor/PatientProfileCard";
 
