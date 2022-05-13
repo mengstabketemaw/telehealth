@@ -24,7 +24,7 @@ const Office = () => {
         </Box>
         <Box sx={{width:"39%", height:"100%",flexGrow:"1",overflow:"scroll"}}>
             <Stack justifyContent="center" direction="row">
-                <Typography variant="h5" color="secondary">QUEUE</Typography>
+                <Typography variant="h5" color="secondary">Patients</Typography>
             </Stack>
             <PatientProfileCard onView={()=>setProfile({open:true})} name="mamush" src="image"/>
             <PatientProfileCard name="mamush" src="image"/>

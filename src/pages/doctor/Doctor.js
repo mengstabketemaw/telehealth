@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 import {useLocation,NavLink} from "react-router-dom"
 import Topbar from "../../components/Topbar"
 import { Box, Divider, Drawer, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
-import { AccountBox, Article, Group, Home, Note, Schedule, VideoCall } from '@mui/icons-material';
+import { AccountBox, Article, Home, Note, Schedule, VideoCall } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -89,7 +89,7 @@ function DrawerTools(){
     </Toolbar>
     <Divider />
   {
-      ["Activity","Office","Home Doctor","Schedule","Therapy Group"].map((name,index)=>{
+      ["Activity","Office","Home Doctor","Schedule"].map((name,index)=>{
 
           let urlname = name.toLocaleLowerCase().replace(" ","").replaceAll(".","");
           let color = pathname.includes(urlname)?"primary":"";
@@ -102,7 +102,6 @@ function DrawerTools(){
                         name==="Activity"?<Note color = {color}/>:
                         name==="Office"?<VideoCall color = {color}/>:
                         name==="Schedule"?<Schedule color = {color}/>:
-                        name==="Therapy Group"?<Group color = {color}/>:
                         <Home color = {color}/>
                     }
                 </ListItemIcon>

@@ -1,6 +1,13 @@
+import { Typography } from "@mui/material";
+
 const Schedule = () => {
     return (<>
-    <h1>This is Schedule</h1>
+    <br/>
+    <Typography color="primary" variant="h4">Set your Schedule</Typography>
+    <br/>
+    
+
+
     </>)
 }
 export default Schedule;
