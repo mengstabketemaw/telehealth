@@ -1,6 +1,12 @@
+import { Typography } from "@mui/material";
+import BlogCard from "../../components/blog/BlogCard";
+
 const DocBlog = () => {
     return (<>
-    <h1>This is DocBlog</h1>
+    <br/>
+    <Typography variant="h4" color="primary">Blog</Typography>
+    <br/>
+    <BlogCard/>
     </>)
 }
 export default DocBlog;

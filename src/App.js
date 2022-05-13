@@ -16,7 +16,6 @@ import Doctor from "./pages/doctor/Doctor";
 import Activity from "./pages/doctor/Activity";
 import Office from "./pages/doctor/Office";
 import HomeDoctor from "./pages/doctor/HomeDoctor";
-import DocProfile from "./pages/doctor/DocProfile";
 import DocBlog from "./pages/doctor/DocBlog";
 import Admin from "./pages/admin/Admin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -55,7 +54,7 @@ function App() {
         <Route path="activity" element={<Activity/>}/>
         <Route path="office" element={<Office/>}/>
         <Route path="homedoctor" element={<HomeDoctor/>}/>
-        <Route path="profile" element={<DocProfile/>}/>
+        <Route path="profile" element={<Profile/>}/>
         <Route path="blog" element={<DocBlog/>}/>
         <Route path="schedule" element={<Schedule/>}/>
       </Route>
