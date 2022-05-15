@@ -69,8 +69,12 @@ function App() {
           <Route path="feedback" element={<Feedback/>}/>
         </Route>
       </Route>
+      <Route path="*" element={<><h1>{noItem}</h1></>}/>
     </Routes>
     );
 }
+const noItem = `
+Sorry the item you are looking is not here, why don't you first find it in your head! then we can try agine ;)
+`;
 
 export default App;
