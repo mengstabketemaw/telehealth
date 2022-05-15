@@ -71,7 +71,7 @@ const Login = () => {
                                         loading={userData.status === "loading"}
                                         onClick={()=>{
                                             setErrorPermission(true);
-                                            dispach(loginUser({url:"/login",value,setToken,nav}))
+                                            dispach(loginUser({url:"/token",value,setToken,nav}))
                                         }}>Login</LoadingButton>
                                 <Button 
                                     onClick={e=>nav("/create-account")}

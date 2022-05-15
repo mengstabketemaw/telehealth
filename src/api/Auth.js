@@ -2,6 +2,11 @@ import config from "./Config";
 import axios from "axios"
 axios.defaults.headers.common['mode'] = "cors";
 
+const createmode = axios.create({
+  headers:{
+    mode:"cors"
+  }
+})
 class Auth {
   token;
   setToken;
@@ -12,9 +17,11 @@ class Auth {
   }
 
   //we can use ths methode for both signup and signin 
+
+
   async user(url,credentials) {
     console.log(url,credentials)
-    return axios.post(config.AUTH_URL+url,credentials)
+    return createmode.post(config.AUTH_URL+url,credentials)
     .then(({data})=>{
       this.storeTokens(data);
       return data;

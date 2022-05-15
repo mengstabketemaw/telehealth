@@ -5,7 +5,7 @@ import Auth from "../../api/Auth";
 export const loginUser = createAsyncThunk("user/loginUser",async ({url,value,setToken,nav})=>{
     const auth = new Auth(null,setToken);
     const response = await auth.user(url,value);
-    nav("user/"+response.role);
+    nav("/user/"+response.role.toLowerCase());
     return {id:response.id,role:response.role,username:response.username};
 })
 
