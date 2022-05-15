@@ -25,6 +25,7 @@ import AdminProfile from "./pages/admin/AdminProfile";
 import Setting from "./pages/admin/Setting";
 import Feedback from "./pages/admin/Feedback";
 import Schedule from "./pages/doctor/Schedule";
+import PrivateElement from "./components/route/PrivateElement";
 
 function App() {
   return (
@@ -32,39 +33,41 @@ function App() {
       <Route path="/" element={<Navigate to="login" replace/>}/>    
       <Route path="login" element={<Login/>}/>
       <Route path="create-account" element={<CreateAccount/>}/>
-      <Route path="patient" element={<Patient/>}>
-          <Route index element={<Dashboard/>}/>
-          <Route path="dashboard" element={<Dashboard/>}>
+      <Route path="user" element={<PrivateElement/>}>
+        <Route path="patient" element={<Patient/>}>
+            <Route index element={<Dashboard/>}/>
+            <Route path="dashboard" element={<Dashboard/>}>
+              <Route path="appointment" element={<Appointment/>}/>
+              <Route path="therapygroup" element={<TherapyGroup/>}/>
+              <Route path="vdt" element={<Vdt/>}/>
+              <Route path="medicalrecord" element={<MedicalRecord/>}/>
+            </Route>
             <Route path="appointment" element={<Appointment/>}/>
             <Route path="therapygroup" element={<TherapyGroup/>}/>
             <Route path="vdt" element={<Vdt/>}/>
             <Route path="medicalrecord" element={<MedicalRecord/>}/>
-          </Route>
-          <Route path="appointment" element={<Appointment/>}/>
-          <Route path="therapygroup" element={<TherapyGroup/>}/>
-          <Route path="vdt" element={<Vdt/>}/>
-          <Route path="medicalrecord" element={<MedicalRecord/>}/>
-          <Route path="applyforhelp" element={<ApplyForHelp/>}/>
+            <Route path="applyforhelp" element={<ApplyForHelp/>}/>
+            <Route path="profile" element={<Profile/>}/>
+            <Route path="blog" element={<Blog/>}/>
+            <Route path="doctorlist/:value" element={<DoctorList/>}/>
+            <Route path="room" element={<Room/>}/>
+        </Route>
+        <Route path="doctor" element={<Doctor/>}>
+          <Route path="activity" element={<Activity/>}/>
+          <Route path="office" element={<Office/>}/>
+          <Route path="homedoctor" element={<HomeDoctor/>}/>
           <Route path="profile" element={<Profile/>}/>
-          <Route path="blog" element={<Blog/>}/>
-          <Route path="doctorlist/:value" element={<DoctorList/>}/>
-          <Route path="room" element={<Room/>}/>
-      </Route>
-      <Route path="doctor" element={<Doctor/>}>
-        <Route path="activity" element={<Activity/>}/>
-        <Route path="office" element={<Office/>}/>
-        <Route path="homedoctor" element={<HomeDoctor/>}/>
-        <Route path="profile" element={<Profile/>}/>
-        <Route path="blog" element={<DocBlog/>}/>
-        <Route path="schedule" element={<Schedule/>}/>
-      </Route>
-      <Route path="admin" element={<Admin/>}>
-        <Route path="dashboard" element={<AdminDashboard/>}/>
-        <Route path="doctors" element={<Doctors/>}/>
-        <Route path="helpapplications" element={<HelpApplications/>}/>
-        <Route path="profile" element={<AdminProfile/>}/>
-        <Route path="setting" element={<Setting/>}/>
-        <Route path="feedback" element={<Feedback/>}/>
+          <Route path="blog" element={<DocBlog/>}/>
+          <Route path="schedule" element={<Schedule/>}/>
+        </Route>
+        <Route path="admin" element={<Admin/>}>
+          <Route path="dashboard" element={<AdminDashboard/>}/>
+          <Route path="doctors" element={<Doctors/>}/>
+          <Route path="helpapplications" element={<HelpApplications/>}/>
+          <Route path="profile" element={<AdminProfile/>}/>
+          <Route path="setting" element={<Setting/>}/>
+          <Route path="feedback" element={<Feedback/>}/>
+        </Route>
       </Route>
     </Routes>
     );

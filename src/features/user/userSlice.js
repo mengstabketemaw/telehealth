@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import client from "../../api/client";
+import Auth from "../../api/Auth";
 
-export const loginUser = createAsyncThunk("user/loginUser",async (credential)=>{
-    const response = await client.post("/login",credential);
-    console.log(response)
-    return response;
+export const loginUser = createAsyncThunk("user/loginUser",async ({url,value,setToken,nav})=>{
+    const auth = new Auth(null,setToken);
+    const response = await auth.user(url,value);
+    nav("user/"+response.role);
+    return {id:response.id,role:response.role,username:response.username};
 })
 
 

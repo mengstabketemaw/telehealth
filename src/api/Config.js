@@ -1,4 +1,4 @@
-class config{
+class Config{
     SCHEME = process.env.SCHEME ? process.env.SCHEME : "http";
     HOST = process.env.HOST ? process.env.HOST : "localhost";
     PORT = process.env.PORT ? process.env.PORT : "8080";
@@ -44,16 +44,23 @@ class config{
         return 0;
       }
       
-      handleError(error) {
-        this.clearTokens();
-        const err = new Map([
-          [TypeError, "Can't connect to server."],
-          [SyntaxError, "There was a problem parsing the response."],
-          [Error, error.message],
-        ]).get(error.constructor);
-        console.log(err);
-        return err;
-      }
+      handleError (error) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      };
 }
-    
-    export default Config;
+export default new Config();

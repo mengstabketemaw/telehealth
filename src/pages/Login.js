@@ -6,12 +6,14 @@ import { useSelector, useDispatch } from "react-redux"
 import ForgetPasswordDialog from "../components/ForgetPasswordDialog";
 import { loginUser } from "../features/user/userSlice"
 import { useNavigate } from "react-router-dom";
+import useToken from "../hooks/useToken";
 
 const Login = () => {
     const [value, setValue] = useState({ username: "", password: "", rememberme:false, show: false });
     const [openForgetPassword,setOpenForgetPassword] = useState(false);
     const userData = useSelector(store => store.user)
     const dispach = useDispatch();
+    const {token,setToken} = useToken();
     const [errorPermission,setErrorPermission] = useState(true)
     const nav = useNavigate();
 
@@ -25,7 +27,6 @@ const Login = () => {
     const handleChange = (props) => e => {
         setErrorPermission(false);
         setValue({ ...value, [props]: e.target.value })
-        console.log(value);
     }
 
     return <>
@@ -70,8 +71,7 @@ const Login = () => {
                                         loading={userData.status === "loading"}
                                         onClick={()=>{
                                             setErrorPermission(true);
-                                            // dispach(loginUser(value))
-                                            nav("/patient")
+                                            dispach(loginUser({url:"/login",value,setToken,nav}))
                                         }}>Login</LoadingButton>
                                 <Button 
                                     onClick={e=>nav("/create-account")}

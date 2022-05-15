@@ -1,4 +1,6 @@
-import Config from "./Config";
+import config from "./Config";
+import axios from "axios"
+axios.defaults.headers.common['mode'] = "cors";
 
 class Auth {
   token;
@@ -7,98 +9,42 @@ class Auth {
   constructor(argToken, argSetToken) {
     this.token = argToken;
     this.setToken = argSetToken;
-    this.config = new Config();
   }
 
-  async loginUser(credentials) {
-    return fetch(this.config.LOGIN_URL, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        ...this.config.defaultHeaders(),
-      },
-      body: JSON.stringify(credentials),
+  //we can use ths methode for both signup and signin 
+  async user(url,credentials) {
+    console.log(url,credentials)
+    return axios.post(config.AUTH_URL+url,credentials)
+    .then(({data})=>{
+      this.storeTokens(data);
+      return data;
     })
-      .then((response) => Promise.all([response, response.json()]))
-      .then(([response, json]) => {
-        if (!response.ok) {
-          return { success: false, error: json };
-        }
-        this.storeTokens(json);
-        return { success: true, data: json };
-      })
-      .catch((e) => {
-        return this.handleError(e);
-      });
+    .catch(config.handleError);
   }
 
   async refreshToken() {
-    return fetch(this.config.LOGIN_URL + "/refresh", {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        ...this.config.defaultHeaders(),
-      },
-      body: JSON.stringify({ refreshToken: this.token.refreshToken }),
+   return axios.post(config.AUTH_URL+"/token/refresh",JSON.stringify({refreshToken:this.token.refreshToken}))
+      .then(({data})=>{
+      this.storeTokens(data);
+      return data;
     })
-      .then((response) => Promise.all([response, response.json()]))
-      .then(([response, json]) => {
-        if (!response.ok) {
-          this.clearTokens();
-          return { success: false, error: json };
-        }
-        this.storeTokens(json);
-        return { success: true, data: json };
-      })
-      .catch((e) => {
-        return this.handleError(e);
-      });
   }
 
-  async logoutUser(refreshToken) {
-    return fetch(this.config.LOGIN_URL, {
-      method: "DELETE",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(refreshToken),
+  async logoutUser() {
+    return axios.post(config.AUTH_URL+"/token/refresh",JSON.stringify({refreshToken:this.token.refreshToken}))
+      .then(({data})=>{
+      this.clearTokens(this.token.refreshToken);
+      return data;
     })
-      .then(this.handleResponseError.bind(this))
-      .catch((e) => {
-        this.handleError(e);
-      });
-  }
-
-  handleResponseError(response) {
-    this.clearTokens();
-    if (!response.ok) {
-      const error = response.json();
-      console.log(error);
-      throw Error(error);
-    }
-    return response;
-  }
-
-  handleError(error) {
-    this.clearTokens();
-    const err = new Map([
-      [TypeError, "Can't connect to server."],
-      [SyntaxError, "There was a problem parsing the response."],
-      [Error, error.message],
-    ]).get(error.constructor);
-    console.log(err);
-    return err;
   }
 
   storeTokens(json) {
     this.setToken(json);
-    this.config.storeAccessToken(json.accessToken);
+    config.storeAccessToken(json.accessToken);
   }
 
   clearTokens() {
-    this.config.storeAccessToken("");
+    config.storeAccessToken("");
     this.setToken(null);
   }
 }
