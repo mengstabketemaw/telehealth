@@ -83,7 +83,33 @@ function CreateAccount() {
     };
 
     const handleRegister = ()=>{
-        
+        //here we handle the registration.
+        //populating the information into the usermodel
+        const userModel = new FormData();
+        userModel.append("firstname",userInfo.name.first);
+        userModel.append("middlename",userInfo.name.middle);
+        userModel.append("lastname",userInfo.name.last);
+        userModel.append("avatar",userInfo.basic.profilePic);
+        userModel.append("role",userInfo.basic.user);
+        userModel.append("birthData",userInfo.basic.birthDate);
+        userModel.append("sex",userInfo.basic.gender);
+        userModel.append("phoneNumber",userInfo.number.phone);
+        userModel.append("homePhoneNumber",userInfo.number.phone);
+        userModel.append("password" ,userInfo.creadential.password);
+        userModel.append("email",userInfo.creadential.email);
+        userModel.append("martialStatus",userInfo.patient.martialStatus);
+        userModel.append("docRoles",userInfo.doctor.role);
+        userModel.append("latitude",userInfo.location.lat);
+        userModel.append("longitude",userInfo.location.lng);
+        userModel.append("specializationDocument",userInfo.doctor.file);
+        //defined what happen for successfull registration and unsuccessfull
+        const handleSuccess = ()=>{
+            nav("/login");
+        }
+        const handleError=()=>{
+            
+        }
+        console.log(userModel);
     }
 
     return (<>
