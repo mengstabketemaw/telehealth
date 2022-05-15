@@ -1,19 +1,19 @@
-import { Button, Grid,Box,FormControl,InputLabel, MenuItem, Modal, Select, Stack, TextField, Typography, Input, IconButton, FormControlLabel, Checkbox } from "@mui/material";
+import { Button, Grid,Box,FormControl,InputLabel, MenuItem, Modal, Select, Stack, TextField, Typography, Input, IconButton, FormControlLabel, Checkbox, Snackbar, Alert } from "@mui/material";
 import { useState } from "react";
 import Location from "../components/Location"
 import {AdapterLuxon} from "@mui/x-date-pickers/AdapterLuxon"
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { PhotoCamera } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-
-
+import {useAuth} from "../hooks/AuthProvider"
+import { LoadingButton } from "@mui/lab";
 
 let initialUserInfo = {
     location:{lat:0,lng:0},
     name:{first:"",middle:"",last:""},
     number:{home:"",phone:""},
     creadential:{email:"",password:""},
-    basic:{birthDate:null,gender:"",user:"patient",profilePic:''},
+    basic:{birthDate:null,gender:"",user:"PATIENT",profilePic:''},
     doctor:{role:[],file:""},
     patient:{martialStatus:""}
 };
@@ -22,10 +22,12 @@ let initialUserInfo = {
 function CreateAccount() {
     const [modalOpen,setModalOpen] = useState(false);
     const [userInfo, setUserInfo] = useState(initialUserInfo);
+    const [warn,setWarn] = useState({open:false,message:"",loading:false});
+    const {auth} = useAuth();
     const nav = useNavigate();
 
     const renderBasedOnUser = () =>{
-        if(userInfo.basic.user==="patient"){
+        if(userInfo.basic.user==="PATIENT"){
             return<Grid item xs={8}>
             <FormControl sx={{ m: 1, minWidth: "100%" }}>
                 <InputLabel>Martial Status</InputLabel>
@@ -83,32 +85,39 @@ function CreateAccount() {
     };
 
     const handleRegister = ()=>{
-        //here we handle the registration.
+        //handling the registration.
         //populating the information into the usermodel
+        setWarn({...warn,loading:true})
         const userModel = new FormData();
         userModel.append("firstname",userInfo.name.first);
         userModel.append("middlename",userInfo.name.middle);
         userModel.append("lastname",userInfo.name.last);
         userModel.append("avatar",userInfo.basic.profilePic);
         userModel.append("role",userInfo.basic.user);
-        userModel.append("birthData",userInfo.basic.birthDate);
+        userModel.append("birthDate",userInfo.basic.birthDate);
         userModel.append("sex",userInfo.basic.gender);
         userModel.append("phoneNumber",userInfo.number.phone);
         userModel.append("homePhoneNumber",userInfo.number.phone);
         userModel.append("password" ,userInfo.creadential.password);
         userModel.append("email",userInfo.creadential.email);
-        userModel.append("martialStatus",userInfo.patient.martialStatus);
-        userModel.append("docRoles",userInfo.doctor.role);
         userModel.append("latitude",userInfo.location.lat);
         userModel.append("longitude",userInfo.location.lng);
-        userModel.append("specializationDocument",userInfo.doctor.file);
-        //defined what happen for successfull registration and unsuccessfull
+        
+        if(userInfo.basic.user==="DOCTOR"){
+            userModel.append("docRoles",userInfo.doctor.role);
+            userModel.append("specializationDocument",userInfo.doctor.file);
+        }
+        else
+            userModel.append("martialStatus",userInfo.patient.martialStatus);
         const handleSuccess = ()=>{
             nav("/login");
         }
-        const handleError=()=>{
-            
+        const handleError=(data)=>{
+            setWarn({open:true,message:data,loading:false})
         }
+        //
+        auth.user("/signup",userModel,handleSuccess,handleError);
+        
         console.log(userModel);
     }
 
@@ -123,8 +132,8 @@ function CreateAccount() {
                     variant="standard"
                     renderValue={(value) => (<Typography variant="p" color="primary">As a {value}</Typography>)}
                 >
-                    <MenuItem value="patient">patient</MenuItem>
-                    <MenuItem value="doctor">doctor</MenuItem>
+                    <MenuItem value="PATIENT">patient</MenuItem>
+                    <MenuItem value="DOCTOR">doctor</MenuItem>
                 </Select>
             </Stack>
         </Grid>
@@ -248,14 +257,18 @@ function CreateAccount() {
                             onChange={e=>setUserInfo({...userInfo,basic:{...userInfo.basic,profilePic:e.target.files[0]}})}
                         />
                     </label>
+                    <Typography color="InfoText">{userInfo.basic.profilePic?.name}</Typography>
                 </Stack>
                 <Stack direction={"row"}>
                     <FormControlLabel sx={{margin:0,padding:0.1}} control={<Checkbox/>} label="I agreee to "></FormControlLabel>
                     <Button>Term and Condition</Button>
                 </Stack>
-                <Button variant="contained"
+                <LoadingButton 
+                    loading={warn.loading}
+                    variant="contained"
                     onClick={handleRegister}
-                >Register</Button>
+                >Register</LoadingButton>
+                {warn.open?<Alert severity="error">{warn.message}</Alert>:<></>}                
                 <Button component="span"
                     onClick={e=>{nav("/login")}}
                 >Already have an account</Button>
