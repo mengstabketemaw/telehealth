@@ -1,6 +1,6 @@
 import React from "react"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
-import {useSelector} from "react-redux";
+import useToken from "../../hooks/useToken"
 
 /**
  * A wrapper around the element which checks if the user is authenticated
@@ -9,9 +9,9 @@ import {useSelector} from "react-redux";
  */
 const PrivateElement = ({ children }) => {
   let location = useLocation()
-  const authenticatedUser = useSelector(store=>store.user);
+  const {token,setToken} = useToken();
+  const {role} = token;
   console.log(children);
-  const {role} = authenticatedUser.data;
   if(Boolean(role)){
     if(location.pathname.includes(role.toLowerCase()))
         return <Outlet/>
