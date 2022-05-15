@@ -19,14 +19,14 @@ class Auth {
   //we can use ths methode for both signup and signin 
 
 
-  async user(url,credentials) {
-    console.log(url,credentials)
+  async user(url,credentials,successCallBack,errorCallBack) {
     return createmode.post(config.AUTH_URL+url,credentials)
     .then(({data})=>{
       this.storeTokens(data);
+      successCallBack(data);
       return data;
     })
-    .catch(config.handleError);
+    .catch(config.handleError(errorCallBack));
   }
 
   async refreshToken() {

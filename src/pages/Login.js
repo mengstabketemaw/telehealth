@@ -2,17 +2,15 @@ import { AccountCircle, Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, Checkbox, Container, FormControlLabel, Grid, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from "react-redux"
 import ForgetPasswordDialog from "../components/ForgetPasswordDialog";
-import { loginUser } from "../features/user/userSlice"
 import { useNavigate } from "react-router-dom";
 import useToken from "../hooks/useToken";
+import Auth from "../api/Auth";
 
 const Login = () => {
     const [value, setValue] = useState({ username: "", password: "", rememberme:false, show: false });
     const [openForgetPassword,setOpenForgetPassword] = useState(false);
-    const userData = useSelector(store => store.user)
-    const dispach = useDispatch();
+    const [userData,setUserData] = useState({status:"",error:""});
     const {token,setToken} = useToken();
     const [errorPermission,setErrorPermission] = useState(true)
     const nav = useNavigate();
@@ -27,6 +25,19 @@ const Login = () => {
     const handleChange = (props) => e => {
         setErrorPermission(false);
         setValue({ ...value, [props]: e.target.value })
+    }
+
+    const handleLogin = ()=>{
+        setErrorPermission(true);
+        //
+        setUserData({status:"loading"})
+        const auth = new Auth(token,setToken);
+        const handleSuccess = (data)=>{
+            setUserData({loading:"success"});
+            nav("/user/"+data.role.toLowerCase());
+        }
+        const handleError = (response)=>{setUserData({status:"error",data:response})}
+        auth.user("/token",value,handleSuccess,handleError);
     }
 
     return <>
@@ -44,7 +55,7 @@ const Login = () => {
                             <Stack spacing={3} sx={{ padding: 5, width: "400px" }}>
                                 <TextField label="user name"
                                     error={errorPermission && userData.status==="error"}
-                                    helperText={errorPermission && userData.status==="error"?"username or password is incorrect":""}
+                                    helperText={errorPermission && userData.status==="error"?userData?.data:""}
                                     required
                                     onChange={handleChange("username")}
                                     InputProps={{
@@ -54,7 +65,6 @@ const Login = () => {
                                 <TextField type={value.show ? "text" : "password"} label="password" variant="outlined"
                                     required
                                     error={errorPermission && userData.status==="error"}
-                                    helperText={errorPermission && userData.status==="error"?"username or password is incorrect":""}
                                     onChange={handleChange("password")}
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end"><IconButton onClick={handleVisibility}>
@@ -69,10 +79,7 @@ const Login = () => {
                                 <LoadingButton variant="contained"
                                         disabled={![value.username, value.password].every(Boolean)} 
                                         loading={userData.status === "loading"}
-                                        onClick={()=>{
-                                            setErrorPermission(true);
-                                            dispach(loginUser({url:"/token",value,setToken,nav}))
-                                        }}>Login</LoadingButton>
+                                        onClick={handleLogin}>Login</LoadingButton>
                                 <Button 
                                     onClick={e=>nav("/create-account")}
                                 >Don't have Accoutn? Get Started</Button>

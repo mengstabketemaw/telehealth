@@ -44,23 +44,32 @@ class Config{
         return 0;
       }
       
-      handleError (error) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log('Error', error.message);
-        }
-        console.log(error.config);
-      };
+      handleError(errorCallBack){
+        return (error) => {
+          let message = "Could't connect to the server";
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            if(error.response.status){
+              message = error.response.data?.message||"The server replayed with error code";
+            }
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+            message = error.request||"Oops... There is no response from the server";
+            
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error', error.message);
+            message = error.message || "Could't connect to the server";
+          }
+          errorCallBack(message);
+        };
+      }
 }
 export default new Config();

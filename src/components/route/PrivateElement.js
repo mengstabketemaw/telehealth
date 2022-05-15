@@ -11,7 +11,6 @@ const PrivateElement = ({ children }) => {
   let location = useLocation()
   const {token,setToken} = useToken();
   const {role} = token;
-  console.log(children);
   if(Boolean(role)){
     if(location.pathname.includes(role.toLowerCase()))
         return <Outlet/>
