@@ -4,16 +4,15 @@ import { Button, Checkbox, Container, FormControlLabel, Grid, IconButton, InputA
 import React, { useState } from 'react';
 import ForgetPasswordDialog from "../components/ForgetPasswordDialog";
 import { useNavigate } from "react-router-dom";
-import useToken from "../hooks/useToken";
-import Auth from "../api/Auth";
+import { useAuth } from "../hooks/AuthProvider";
 
 const Login = () => {
     const [value, setValue] = useState({ username: "", password: "", rememberme:false, show: false });
     const [openForgetPassword,setOpenForgetPassword] = useState(false);
     const [userData,setUserData] = useState({status:"",error:""});
-    const {token,setToken} = useToken();
     const [errorPermission,setErrorPermission] = useState(true)
     const nav = useNavigate();
+    const {auth} = useAuth();
 
 
     const handleVisibility = () => {
@@ -31,7 +30,6 @@ const Login = () => {
         setErrorPermission(true);
         //
         setUserData({status:"loading"})
-        const auth = new Auth(token,setToken);
         const handleSuccess = (data)=>{
             setUserData({loading:"success"});
             nav("/user/"+data.role.toLowerCase());

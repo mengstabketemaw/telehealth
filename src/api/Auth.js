@@ -15,24 +15,25 @@ class Auth {
     .then(({data})=>{
       this.storeTokens(data);
       successCallBack(data);
-      return data;
     })
     .catch(config.handleError(errorCallBack));
   }
 
   async refreshToken() {
-   return axios.post(config.AUTH_URL+"/token/refresh",JSON.stringify({refreshToken:this.token.refreshToken}))
+   return axios.post(config.AUTH_URL+"/token/refresh",{refreshToken:this.token.refreshToken})
       .then(({data})=>{
       this.storeTokens(data);
       return data;
     })
   }
 
-  async logoutUser() {
-    return axios.post(config.AUTH_URL+"/token/refresh",JSON.stringify({refreshToken:this.token.refreshToken}))
+  async logoutUser(callback) {
+    return axios.post(config.AUTH_URL+"/signout",{refreshToken:this.token.refreshToken})
       .then(({data})=>{
+        //successfull opperation
+      }).finally(()=>{
+        callback();
       this.clearTokens(this.token.refreshToken);
-      return data;
     })
   }
 

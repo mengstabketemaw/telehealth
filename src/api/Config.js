@@ -5,6 +5,7 @@ class Config{
 
     USER_URL = `${this.SCHEME}://${this.HOST}:${this.PORT}/api/user`
     AUTH_URL = `${this.SCHEME}://${this.HOST}:${this.PORT}/api/oauth`
+    
     ACCESS_TOKEN = "accessToken";
     EXPIRATION = "expiration";
 

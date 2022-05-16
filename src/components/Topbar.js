@@ -7,6 +7,10 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import { Avatar,Tooltip,Box, Menu, MenuItem, Divider } from '@mui/material';
+import useToken from "../hooks/useToken"
+import Config from '../api/Config';
+import { useNavigate } from 'react-router-dom';
+import {useAuth} from "../hooks/AuthProvider"
 
 const drawerWidth = 240;
 
@@ -51,6 +55,10 @@ const Search = styled('div')(({ theme }) => ({
   }));
 
 const Topbar = ({handleDrawerToggle}) =>{
+  const {token,setToken} = useToken();
+  const nav = useNavigate();
+  const {auth} = useAuth();
+  
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleMenu = (event) => {
@@ -58,8 +66,14 @@ const Topbar = ({handleDrawerToggle}) =>{
     };
     
     const handleClose = () => {
+        nav("profile")
         setAnchorEl(null);
     };
+
+    const handleLogout = () => {
+      setAnchorEl(null);
+      auth.logoutUser(()=>{nav("/")});
+    }
     return (<>
      <AppBar
         position="fixed"
@@ -92,7 +106,7 @@ const Topbar = ({handleDrawerToggle}) =>{
           <Box sx={{ flexGrow: 1 }} />
           <Tooltip title={"Open Setting"}>
               <IconButton onClick={handleMenu}>
-                  <Avatar/>
+                  <Avatar src={`${Config.USER_URL}/avatar/${token.username}`}/>
               </IconButton>
           </Tooltip>
           <Menu
@@ -109,16 +123,17 @@ const Topbar = ({handleDrawerToggle}) =>{
                 horizontal: 'right',
               }}
               open={Boolean(anchorEl)}
-              onClose={handleClose}
+              onClose={()=>setAnchorEl(null)}
             >
+              <MenuItem disabled>{token.username}</MenuItem>
+              <MenuItem disabled>{token.role}S Account</MenuItem>
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
               <Divider/>
-              <MenuItem >Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
         </Toolbar>
       </AppBar>
-    
+      
     
     
     </>)

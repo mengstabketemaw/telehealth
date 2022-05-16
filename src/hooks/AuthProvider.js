@@ -5,8 +5,7 @@ const AuthContext = React.createContext();
 export const useAuth = ()=>React.useContext(AuthContext);
 const AuthProvider = ({children}) => {
     const {token,setToken} = useToken();
-    const [auth,_] = React.useState(new Auth(token,setToken));
- 
+    const [auth] = React.useState(new Auth(token,setToken));
     return (<>
         <AuthContext.Provider value = {{auth}}>
             {children}
