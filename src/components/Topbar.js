@@ -55,7 +55,7 @@ const Search = styled('div')(({ theme }) => ({
   }));
 
 const Topbar = ({handleDrawerToggle}) =>{
-  const {token,setToken} = useToken();
+  const {token} = useToken();
   const nav = useNavigate();
   const {auth} = useAuth();
   

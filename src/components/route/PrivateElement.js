@@ -9,7 +9,7 @@ import useToken from "../../hooks/useToken"
  */
 const PrivateElement = ({ children }) => {
   let location = useLocation()
-  const {token,setToken} = useToken();
+  const {token} = useToken();
   const role = token?.role;
   if(Boolean(role)){
     if(location.pathname.includes(role.toLowerCase()))
