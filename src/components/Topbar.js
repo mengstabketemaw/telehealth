@@ -10,7 +10,7 @@ import { Avatar,Tooltip,Box, Menu, MenuItem, Divider } from '@mui/material';
 import useToken from "../hooks/useToken"
 import Config from '../api/Config';
 import { useNavigate } from 'react-router-dom';
-import {useAuth} from "../hooks/AuthProvider"
+import Auth from '../api/Auth';
 
 const drawerWidth = 240;
 
@@ -55,20 +55,18 @@ const Search = styled('div')(({ theme }) => ({
   }));
 
 const Topbar = ({handleDrawerToggle}) =>{
-  const {token} = useToken();
+  const {token,setToken} = useToken();
   const nav = useNavigate();
-  const {auth} = useAuth();
-  
-    const [anchorEl, setAnchorEl] = React.useState(null);
-
-    const handleMenu = (event) => {
+  const [auth] = React.useState(new Auth(token,setToken));
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
-    };
+  };
     
-    const handleClose = () => {
+  const handleClose = () => {
         nav("profile")
         setAnchorEl(null);
-    };
+  };
 
     const handleLogout = () => {
       setAnchorEl(null);

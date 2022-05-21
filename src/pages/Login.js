@@ -49,7 +49,7 @@ const Login = () => {
                         <Grid item xs>
                             <Typography variant="h3" color="primary">Login</Typography>
                         </Grid>
-                        <Grid item xs>
+                        <Grid item xs  onKeyDown={e=>{e.key==="Enter"&&[value.username, value.password].every(Boolean)&&handleLogin()}}>
                             <Stack spacing={3} sx={{ padding: 5, width: "400px" }}>
                                 <TextField label="user name"
                                     error={errorPermission && userData.status==="error"}
@@ -74,7 +74,8 @@ const Login = () => {
                                     <FormControlLabel control={<Checkbox onChange={(e)=>setValue({...value,rememberme:e.target.checked})}/>} label="Remember me" />
                                     <Button onClick={()=>setOpenForgetPassword(true)}>Forget Password?</Button>
                                 </Stack>
-                                <LoadingButton variant="contained"
+                                <LoadingButton 
+                                        variant="contained"
                                         disabled={![value.username, value.password].every(Boolean)} 
                                         loading={userData.status === "loading"}
                                         onClick={handleLogin}>Login</LoadingButton>
