@@ -1,29 +1,59 @@
 import { PhotoCamera } from "@mui/icons-material";
 import { Avatar, Box, Button, Container, IconButton, Stack, TextField } from "@mui/material";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useDisplayImage } from "../../hooks/useDisplayImage";
-
-
+import Config from "../../api/Config";
+import useToken from "../../hooks/useToken";
+import {useSnackbar} from "../../pages/patient/Patient"
 
 const UserProfile = () => {
     const [profile,setProfile] = useState({});
     const {result,uploader} = useDisplayImage();
+    const {token} = useToken();
+    const {setSnackbar} = useSnackbar();
+
+    useEffect(()=>{
+        (async function(){
+            try {
+                const {data} = await axios.get(Config.USER_URL+"/id/"+token.userId);
+                console.log("recieved data: ",data)
+                setProfile({...data.user,custom:data.martialStatus||data.docRoles?.join()});   
+                } catch (error) {
+                setSnackbar({open:true,children:"There was error loading Profile from the server: "+error?.message,severity:"error"});            
+                }
+        })();
+    },[token.userId]);
+    
+    const handleChange = (state)=>(event)=>{
+        setProfile(ins=>({...ins,[state]:event.target.value}))
+    }
+
+    const handleChangeProfilePicture = async (e)=>{
+        try {
+            let req = new FormData();
+            req.append("file",e.target.files[0]);
+            await axios.put(Config.USER_URL+"/avatar/"+token.userId,{data:req,headers:{Authorization:` Bearer ${token.accessToken}`}});
+            uploader(e);  
+            setProfile({...profile,image:e.target.value})
+            setSnackbar({open:true,children:"Avatar changed successfully",severity:"success"}); 
+        } catch (error) {
+            setSnackbar({open:true,children:"Something is wrong can't change avatar: "+error.message,severity:"error"})
+        }
+    }
 
     return (<>
     <Box sx={{width:"100%"}}>
         <Container sx={{width:"fit-content"}}>
             <Stack alignItems={"center"} spacing={0}>
-                <Avatar sx={{width:"150px",height:"150px"}}
-                    src={result}
+                <Avatar sx={{width:"150px",height:"150px"} }
+                    src={result||`${Config.USER_URL}/avatar/${token.username}`}
                 >A</Avatar>
                 <label>
                     <input 
                         style={{display:"none"}} id="icon-button-file" type="file" accept="image/*"
-                        files={[profile?.image||""]}  
-                        onChange={e=>{
-                            uploader(e);
-                            setProfile({...profile,image:URL.createObjectURL(e.target.files[0])})
-                        }}
+                        value={profile.image||""}  
+                        onChange={handleChangeProfilePicture}
                         />
                     <IconButton component="span" color="primary">
                         <PhotoCamera/>
@@ -31,43 +61,80 @@ const UserProfile = () => {
                 </label>
             </Stack>
         </Container>
-        <Box sx={{marginBottom:"50px",display:"flex",alignItems:"flex-start", spacing:"10",flexWrap:"wrap",justifyContent:"space-evenly"}}>
+        <Box sx={{'& .MuiTextField-root': { m: 2},marginBottom:"50px",display:"flex",alignItems:"flex-start", spacing:"10",flexWrap:"wrap",justifyContent:"space-evenly"}}>
         <TextField
+            sx={{margin:"12"}}
+            value={profile.firstname||""}
+            onChange={handleChange("firstname")}
             label={"First name"}
         />
         <TextField
+            value={profile.middlename||""}
+            onChange={handleChange("middlename")}
             label={"Middle name"}
         />
         <TextField
+            value={profile.lastname||""}
+            onChange={handleChange("lastname")}
             label={"Last name"}
         />
         <TextField
-            label={"Last name"}
+            value={profile.birthDate||""}
+            InputProps={{
+                readOnly: true,
+              }}
+            onChange={handleChange("birthDate")}
+            label={"Birth Date"}
         />
         <TextField
-            label={"Last name"}
+            InputProps={{
+                readOnly: true,
+                }}
+            value={profile.sex||""}
+            onChange={handleChange("sex")}
+            label={"Sex"}
         />
         <TextField
-            label={"Last name"}
+            value={profile.phoneNumber||""}
+            onChange={handleChange("phoneNumber")}
+            label={"Phone Number"}
         />
         
         <TextField
-            label={"First name"}
+            value={profile.homePhoneNumber||""}
+            onChange={handleChange("homePhoneNumber")}
+            label={"Home Phone Number"}
         />
         <TextField
-            label={"Middle name"}
+            value={profile.email||""}
+            onChange={handleChange("email")}
+            label={"Email"}
         />
         <TextField
-            label={"Last name"}
+            value={profile.password||""}
+            onChange={handleChange("password")}
+            label={"Password"}
         />
         <TextField
-            label={"Last name"}
+            InputProps={{
+                readOnly: true,
+            }}
+            value={profile.latitude||""}
+            onChange={handleChange("latitude")}
+            label={"Latitude"}
         />
         <TextField
-            label={"Last name"}
+            InputProps={{
+                readOnly: true,
+            }}
+            value={profile.longitude||""}
+            onChange={handleChange("longitude")}
+            label={"Longitude"}
         />
         <TextField
-            label={"Last name"}
+            value={profile.custom||""}
+            onChange={handleChange("custom")}
+            label={"Role"}
         />
         </Box>
         <Button variant="contained">Save</Button>
