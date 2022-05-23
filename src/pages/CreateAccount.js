@@ -280,7 +280,8 @@ function CreateAccount() {
       onClose={()=>setModalOpen(false)}
      >
         <Box sx = {{position:"absolute",top:"20%",width:"100%"}}>
-            <Location setUserLocation={setUserInfo} setModalOpen={setModalOpen}/>
+            {/* to make the location component reusable we don't pass the state but a function to chage the state */}
+            <Location setUserLocation={(lat,lng)=>setUserInfo(state=>({...state,location:{lat,lng}}))} setModalOpen={setModalOpen}/>
         </Box>
     </Modal>
     </>);

@@ -65,7 +65,7 @@ const Location = ({setUserLocation,setModalOpen}) =>{
                     <Button variant="contained" color="primary"
                       onClick={()=>{
                         setModalOpen(false);
-                        setUserLocation(state=>({...state,location:{lat:clicks[0].lat(),lng:clicks[0].lng()}}))
+                        setUserLocation(clicks[0].lat(),clicks[0].lng());
                       }
                     }>Choose Location</Button>
                 </Stack>
