@@ -2,23 +2,20 @@ import { PhotoCamera } from "@mui/icons-material";
 import { Avatar, Box, Button, Container, IconButton, Stack, TextField } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDisplayImage } from "../../hooks/useDisplayImage";
 import Config from "../../api/Config";
 import useToken from "../../hooks/useToken";
 import {useSnackbar} from "../../pages/patient/Patient"
 
 const UserProfile = () => {
-    const [profile,setProfile] = useState({});
-    const {result,uploader} = useDisplayImage();
     const {token} = useToken();
     const {setSnackbar} = useSnackbar();
+    const [profile,setProfile] = useState({});
 
     useEffect(()=>{
         (async function(){
             try {
                 const {data} = await axios.get(Config.USER_URL+"/id/"+token.userId);
-                console.log("recieved data: ",data)
-                setProfile({...data.user,custom:data.martialStatus||data.docRoles?.join()});   
+                setProfile({...data.user,custom:data.martialStatus||data.docRoles?.join(),imageSrc:`${Config.USER_URL}/avatar/${token.username}`});   
                 } catch (error) {
                 setSnackbar({open:true,children:"There was error loading Profile from the server: "+error?.message,severity:"error"});            
                 }
@@ -33,10 +30,10 @@ const UserProfile = () => {
         try {
             let req = new FormData();
             req.append("file",e.target.files[0]);
-            await axios.put(Config.USER_URL+"/avatar/"+token.userId,{data:req,headers:{Authorization:` Bearer ${token.accessToken}`}});
-            uploader(e);  
+            await axios.put(Config.USER_URL+"/avatar/"+token.userId,req)
             setProfile({...profile,image:e.target.value})
             setSnackbar({open:true,children:"Avatar changed successfully",severity:"success"}); 
+            window.location.reload(); // To show the user chage we have to reload the page;
         } catch (error) {
             setSnackbar({open:true,children:"Something is wrong can't change avatar: "+error.message,severity:"error"})
         }
@@ -47,7 +44,7 @@ const UserProfile = () => {
         <Container sx={{width:"fit-content"}}>
             <Stack alignItems={"center"} spacing={0}>
                 <Avatar sx={{width:"150px",height:"150px"} }
-                    src={result||`${Config.USER_URL}/avatar/${token.username}`}
+                    src={profile.imageSrc}
                 >A</Avatar>
                 <label>
                     <input 

@@ -13,8 +13,8 @@ export function useDisplayImage() {
       reader.addEventListener("load", (e) => {
         setResult(e.target.result);
       });
-
-      reader.readAsDataURL(imageFile);
+      console.log(imageFile)
+     imageFile instanceof Blob && reader.readAsDataURL(imageFile);
     }
 
     return { result, uploader };
