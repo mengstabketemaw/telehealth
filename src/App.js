@@ -21,7 +21,6 @@ import Admin from "./pages/admin/Admin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Doctors from "./pages/admin/Doctors";
 import HelpApplications from "./pages/admin/HelpApplications";
-import AdminProfile from "./pages/admin/AdminProfile";
 import Setting from "./pages/admin/Setting";
 import Feedback from "./pages/admin/Feedback";
 import Schedule from "./pages/doctor/Schedule";
@@ -64,7 +63,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard/>}/>
           <Route path="doctors" element={<Doctors/>}/>
           <Route path="helpapplications" element={<HelpApplications/>}/>
-          <Route path="profile" element={<AdminProfile/>}/>
+          <Route path="profile" element={<Profile/>}/>
           <Route path="setting" element={<Setting/>}/>
           <Route path="feedback" element={<Feedback/>}/>
         </Route>
@@ -74,7 +73,7 @@ function App() {
     );
 }
 const noItem = `
-Sorry the item you are looking is not here, why don't you first find it in your head! then we can try agine ;)
+Sorry the item you are looking is not here, why don't you first find it in your HEAD! then we can try agine ;)
 `;
 
 export default App;
