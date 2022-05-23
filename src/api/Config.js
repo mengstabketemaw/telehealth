@@ -21,6 +21,13 @@ class Config{
           Authorization: localStorage.getItem(this.ACCESS_TOKEN),
         };
       }
+      getAuthHeaders(){
+        return {
+          headers:{
+            Authorization: localStorage.getItem(this.ACCESS_TOKEN),
+          }
+        }
+      }
 
       tokenExpired() {
         const expDate = Number(localStorage.getItem(this.EXPIRATION));

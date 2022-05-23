@@ -32,12 +32,23 @@ const UserProfile = () => {
         try {
             let req = new FormData();
             req.append("file", e.target.files[0]);
-            await axios.put(Config.USER_URL + "/avatar/" + token.userId, req)
+            await axios.put(Config.USER_URL + "/avatar", req,Config.getAuthHeaders());
             setProfile({ ...profile, image: e.target.value })
             setSnackbar({ open: true, children: "Avatar changed successfully", severity: "success" });
-            window.location.reload(); // To show the user chage we have to reload the page;
+            window.location.reload(); // To show the user chage we have to reload the page
         } catch (error) {
             setSnackbar({ open: true, children: "Something is wrong can't change avatar: " + error.message, severity: "error" })
+        }
+    }
+
+    const handleSave = async ()=>{
+        //updating the user information, sending the data to the server
+        try {
+            console.log(profile)
+            await axios.put(Config.USER_URL+"/",profile,Config.getAuthHeaders());
+            setSnackbar({open:true,children:"Information updated Successfully",severity:"success"});
+        } catch (error) {
+            setSnackbar({open:true, children:"Could't update profile: "+error.message,severity:"error"});
         }
     }
 
@@ -148,7 +159,7 @@ const UserProfile = () => {
                     <Location setUserLocation={(lat, lng) => setProfile(state => ({ ...state, latitude: lat, longitude: lng }))} setModalOpen={setModalOpen} />
                 </Box>
             </Modal>
-            <Button variant="contained">Save</Button>
+            <Button variant="contained" onClick={handleSave}>Save</Button>
         </Box>
     </>)
 }
