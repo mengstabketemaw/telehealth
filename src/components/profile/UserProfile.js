@@ -1,16 +1,15 @@
 import { PhotoCamera } from "@mui/icons-material";
-import { Avatar, Box, Button, Modal, Container, IconButton, Stack, TextField } from "@mui/material";
+import { Avatar, Box, Button, Modal, Container, IconButton, Stack, TextField, Snackbar, snackbarClasses, Alert } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Config from "../../api/Config";
 import useToken from "../../hooks/useToken";
-import { useSnackbar } from "../../pages/patient/Patient"
 import Location from "../Location";
 
 const UserProfile = () => {
     const [profile, setProfile] = useState({});
     const { token } = useToken();
-    const { setSnackbar } = useSnackbar();
+    const [snackbar,setSnackbar] = useState({open:false})
     const [modalOpen, setModalOpen] = useState(false);
 
     useEffect(() => {
@@ -160,6 +159,13 @@ const UserProfile = () => {
                 </Box>
             </Modal>
             <Button variant="contained" onClick={handleSave}>Save</Button>
+        <Snackbar
+            open={snackbar.open}
+            onClose={e=>setSnackbar({...snackbar,open:false})}
+            autoHideDuration={6000}
+        >
+            <Alert {...snackbar} onClose={e=>setSnackbar({...snackbar,open:false})}/>
+        </Snackbar>
         </Box>
     </>)
 }
