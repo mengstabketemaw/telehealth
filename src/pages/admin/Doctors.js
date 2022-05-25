@@ -14,10 +14,9 @@ const Doctors = () => {
     useEffect(()=>{
         axios.get(Config.ADMIN_URL+"/doctors",Config.getAuthHeaders())
         .then(({data})=>{
-            console.log(data)
             const mappedData = data.map(element=>{
                 return {
-                    id:element.id,
+                    id:element.user.id,
                     docRoles:element.docRoles.join(),
                     avatar: element.user.email,
                     name:element.user.firstname+" "+element.user.middlename,
@@ -26,7 +25,6 @@ const Doctors = () => {
                     disabled:element.user.disabled,
                 }
             })
-            console.log(mappedData);
             setData({loading:false,row:mappedData});
         })
         .catch(error=>{
@@ -35,6 +33,24 @@ const Doctors = () => {
         })
     },[]);
     
+    const handleAccountStatus = (row) => {
+        setData({...data,loading:true});
+            axios.put(Config.ADMIN_URL+`/user/${row.id}?disabled=${!row.disabled}`,null,Config.getAuthHeaders())
+            .then(()=>{
+                const newDate = data.row.map(e=>{
+                    if(e.id===row.id)
+                    return {...e,disabled:!row.disabled};
+                    return e;
+                });
+                setData({loading:false,row:newDate})
+                setSnackbar({open:true,children:`Account has been ${row.disabled?"enabled":"disabled"} successfully`});
+            })
+            .catch(error=>{
+                setData({...data,loading:false})
+                setSnackbar({open:true,children:"error changing use account: "+error.message,severity:"error"})
+            })
+    }
+
     const column = [
         {
             field:"avatar",
@@ -84,9 +100,10 @@ const Doctors = () => {
                         showInMenu
                         />,
                     <GridActionsCellItem
-                        label={row.disabled?"Enable":"Disable"}
+                        label={row.disabled?"Enable Account":"Disable Account"}
                         showInMenu
                         icon={row.disabled?<Done color="success"/>:<DisabledByDefault/>}
+                        onClick={()=>handleAccountStatus(row)}
                     />
                 ]
             }
