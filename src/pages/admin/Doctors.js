@@ -55,6 +55,7 @@ const Doctors = () => {
     //from https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
     //good answer by kj-sudarshan
     const handleDownloadApi = async (id) => {
+        setSnackbar({open:true,children:"File is being download please wait, we will notify you when it is ready!",severity:"info"})
         try {
             // It doesn't matter whether this api responds with the Content-Disposition header or not
             const response = await axios.get(
@@ -64,6 +65,7 @@ const Doctors = () => {
                 ...Config.getAuthHeaders()
               }
             );
+            console.log(response);
             const url = window.URL.createObjectURL(new Blob([response.data])); // you can mention a type if you wish
             const link = document.createElement("a");
             link.href = url;

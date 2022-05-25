@@ -14,7 +14,7 @@ let initialUserInfo = {
     number:{home:"",phone:""},
     creadential:{email:"",password:""},
     basic:{birthDate:null,gender:"",user:"PATIENT",profilePic:''},
-    doctor:{role:[],file:""},
+    doctor:{role:[],file:"",specialization:""},
     patient:{martialStatus:""}
 };
 
@@ -42,7 +42,26 @@ function CreateAccount() {
             </FormControl>
         </Grid>
         }
-        return<> <Grid item xs={4}>
+        return<> 
+            <Grid item xs={3}>
+            <TextField
+                fullWidth
+                label="Specialization"
+                onChange={handleChange("doctor","specialization")}
+            />
+            </Grid>
+
+            <Grid item xs={2}>
+            <TextField
+                fullWidth
+                focused
+                files={[userInfo.doctor.file]}
+                label="Qualification/Specialization"
+                onChange={e=>setUserInfo({...userInfo,doctor:{...userInfo.doctor,file:e.target.files[0]}})}
+                type="file"
+            />
+            </Grid>
+            <Grid item xs={3}>
             <FormControl  sx={{ m: 1, minWidth: "100%" }}>
                 <InputLabel>Role</InputLabel>
                 <Select
@@ -62,16 +81,7 @@ function CreateAccount() {
                 </Select>
             </FormControl> 
             </Grid>
-            <Grid item xs={4}>
-            <TextField
-                fullWidth
-                focused
-                files={[userInfo.doctor.file]}
-                label="Qualification/Specialization"
-                onChange={e=>setUserInfo({...userInfo,doctor:{...userInfo.doctor,file:e.target.files[0]}})}
-                type="file"
-            />
-            </Grid>
+            
         </>
     }
     
@@ -105,6 +115,7 @@ function CreateAccount() {
         
         if(userInfo.basic.user==="DOCTOR"){
             userModel.append("docRoles",userInfo.doctor.role);
+            userModel.append("specialization",userInfo.doctor.specialization);
             userModel.append("specializationDocument",userInfo.doctor.file);
         }
         else
@@ -225,7 +236,7 @@ function CreateAccount() {
             </LocalizationProvider>
         </Grid>
         <Grid item xs={2}>
-            <FormControl sx={{m:1,minWidth:130}}>
+            <FormControl sx={{m:1,minWidth:220}}>
                 <InputLabel>Gender</InputLabel>
                 <Select
                 label="Gender"
