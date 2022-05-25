@@ -1,43 +1,47 @@
 import { DisabledByDefault, Done } from "@mui/icons-material";
 import { Avatar, Chip, Link, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
+import Config from "../../api/Config";
 import CustomNoDataOverlay from "../../components/gridComponents/CustomNoDataOverlay";
+import {useSnackbar} from "./Admin"
 
 const Doctors = () => {
-    const [data,setData] = useState({loading:false,row:[]})
+    const {setSnackbar} = useSnackbar();
+    const [data,setData] = useState({loading:true,row:[]})
+
     useEffect(()=>{
-        const row = [
-            {
-                id:1,
-                avatar:"this avatar",
-                name:"Mamush tefera",
-                specialization:"Surgned",
-                document:"doc",
-                homedoctor:false,
-                disabled:false,
-            },
-            {
-                id:2,
-                avatar:"this avatar",
-                name:"Mamush tefera",
-                specialization:"Surgned",
-                document:"doc",
-                homedoctor:true,
-                disabled:true,
-            }
-        ]
-        setData({loading:false,row});
+        axios.get(Config.ADMIN_URL+"/doctors",Config.getAuthHeaders())
+        .then(({data})=>{
+            console.log(data)
+            const mappedData = data.map(element=>{
+                return {
+                    id:element.id,
+                    docRoles:element.docRoles.join(),
+                    avatar: element.user.email,
+                    name:element.user.firstname+" "+element.user.middlename,
+                    specialization:element.specialization,
+                    homedoctor:element.homedoctor||false,
+                    disabled:element.user.disabled,
+                }
+            })
+            console.log(mappedData);
+            setData({loading:false,row:mappedData});
+        })
+        .catch(error=>{
+            setSnackbar({open:true,children:"could't load data from the server: "+error.message,severity:"error"});
+            setData({row:[],loading:false});
+        })
     },[]);
+    
     const column = [
         {
             field:"avatar",
             headerName:"Avatar",
             width:100,
-            renderCell:(params)=>{
-                //just to be sure of params, if i get the id of the user, i think this the best place to configure the avatar thing
-                console.log(params);
-                return <Avatar />
+            renderCell:({value})=>{
+                return <Avatar sx={{width:'70px',height:'70px'}} src={`${Config.USER_URL}/avatar/${value}`}/>
             }
         },
         {
@@ -46,18 +50,14 @@ const Doctors = () => {
             headerName:"Name",
         },
         {
-            field:"Specialization",
+            field:"specialization",
             flex:1,
             headerName:"specialization",
         },
         {
-            field:"document",
+            field:"docRoles",
             flex:0.5,
-            headerName:"Document",
-            renderCell:()=>{
-                //render the link to the doctor account here
-                <Link>document name</Link>
-            }
+            headerName:"Roles",
         },
         {
             field:"homedoctor",
@@ -92,6 +92,7 @@ const Doctors = () => {
             }
         }
     ]
+
     return (<>
     <br/>
     <Typography variant="h4" color="primary">Doctors</Typography>

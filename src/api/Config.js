@@ -2,10 +2,11 @@ class Config{
     SCHEME = process.env.SCHEME ? process.env.SCHEME : "http";
     HOST = process.env.HOST ? process.env.HOST : "localhost";
     PORT = process.env.PORT ? process.env.PORT : "8080";
+    BASE = `${this.SCHEME}://${this.HOST}:${this.PORT}`;
+    USER_URL = `${this.BASE}/api/user`;
+    AUTH_URL = `${this.BASE}/api/oauth`;
+    ADMIN_URL = `${this.BASE}/api/admin`;
 
-    USER_URL = `${this.SCHEME}://${this.HOST}:${this.PORT}/api/user`
-    AUTH_URL = `${this.SCHEME}://${this.HOST}:${this.PORT}/api/oauth`
-    
     ACCESS_TOKEN = "accessToken";
     EXPIRATION = "expiration";
 

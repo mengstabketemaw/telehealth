@@ -288,3 +288,5 @@ function CreateAccount() {
 }
 
 export default CreateAccount;
+
+//TODO: add specialization field for doctors,
