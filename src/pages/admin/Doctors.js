@@ -1,5 +1,5 @@
 import { DisabledByDefault, Done } from "@mui/icons-material";
-import { Avatar, Chip, Link, Typography } from "@mui/material";
+import { Avatar, Button, Chip, Link, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
@@ -23,6 +23,7 @@ const Doctors = () => {
                     specialization:element.specialization,
                     homedoctor:element.homedoctor||false,
                     disabled:element.user.disabled,
+                    doctorId:element.id,
                 }
             })
             setData({loading:false,row:mappedData});
@@ -51,6 +52,31 @@ const Doctors = () => {
             })
     }
 
+    //from https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
+    //good answer by kj-sudarshan
+    const handleDownloadApi = async (id) => {
+        try {
+            // It doesn't matter whether this api responds with the Content-Disposition header or not
+            const response = await axios.get(
+              `${Config.ADMIN_URL}/doctor/${id}`,
+              {
+                responseType: "blob", // this is important!
+                ...Config.getAuthHeaders()
+              }
+            );
+            const url = window.URL.createObjectURL(new Blob([response.data])); // you can mention a type if you wish
+            const link = document.createElement("a");
+            link.href = url;
+            console.log(response);
+            link.setAttribute("download","file.zip"); //this is the name with which the file will be downloaded
+            link.click();
+            // no need to append link as child to body.
+            setTimeout(() => window.URL.revokeObjectURL(url), 0); // this is important too, otherwise we will be unnecessarily spiking memory!
+          } catch (e) {
+            setSnackbar({open:true,children:"couldn't download the file: "+e.message,severity:"error"});
+          } 
+    }
+
     const column = [
         {
             field:"avatar",
@@ -69,6 +95,9 @@ const Doctors = () => {
             field:"specialization",
             flex:1,
             headerName:"specialization",
+            renderCell:({row})=>{
+                return <Button onClick={()=>handleDownloadApi(row.doctorId)}>{row.specialization}</Button>
+            }
         },
         {
             field:"docRoles",
