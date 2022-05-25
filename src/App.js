@@ -48,7 +48,7 @@ function App() {
             <Route path="applyforhelp" element={<ApplyForHelp/>}/>
             <Route path="profile" element={<Profile/>}/>
             <Route path="blog" element={<Blog/>}/>
-            <Route path="doctorlist/:value" element={<DoctorList/>}/>
+            <Route path="doctorlist" element={<DoctorList/>}/>
             <Route path="room" element={<Room/>}/>
         </Route>
         <Route path="doctor" element={<Doctor/>}>

@@ -7,7 +7,7 @@ const CreateNewAppointment = (props) =>{
     const apiRef = useGridApiContext();
     const nav = useNavigate();
     const handleClick = ()=>{
-        nav("/patient/doctorlist/appointment")
+        nav("/user/patient/doctorlist")
     }
 
     return <>
