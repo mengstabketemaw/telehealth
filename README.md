@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Telehealth-capstone-project-ui
 
 This project is not a stand alone application you need the [Auth Server](https://github.com/mengstabketemaw/telehealth-authorization-server) to make it work 100%
 
