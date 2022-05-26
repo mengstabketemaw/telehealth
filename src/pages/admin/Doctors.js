@@ -1,8 +1,8 @@
 import { DisabledByDefault, Done } from "@mui/icons-material";
-import { Avatar, Button, Chip, Link, Typography } from "@mui/material";
+import { Avatar, Button, Chip, Tooltip, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Config from "../../api/Config";
 import CustomNoDataOverlay from "../../components/gridComponents/CustomNoDataOverlay";
 import {useSnackbar} from "./Admin"
@@ -105,6 +105,11 @@ const Doctors = () => {
             field:"docRoles",
             flex:0.5,
             headerName:"Roles",
+            renderCell:({value})=>{
+                return <Tooltip title={value.split(",").map(name=>(<p>{name}</p>))}>
+                    <p>{value}</p>
+                </Tooltip>
+            }
         },
         {
             field:"homedoctor",
