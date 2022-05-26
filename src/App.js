@@ -25,6 +25,7 @@ import Setting from "./pages/admin/Setting";
 import Feedback from "./pages/admin/Feedback";
 import Schedule from "./pages/doctor/Schedule";
 import PrivateElement from "./components/route/PrivateElement";
+import DocIndex from "./pages/doctor/DocIndex";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
             <Route path="room" element={<Room/>}/>
         </Route>
         <Route path="doctor" element={<Doctor/>}>
+          <Route index element={<DocIndex/>}/>
           <Route path="activity" element={<Activity/>}/>
           <Route path="office" element={<Office/>}/>
           <Route path="homedoctor" element={<HomeDoctor/>}/>
