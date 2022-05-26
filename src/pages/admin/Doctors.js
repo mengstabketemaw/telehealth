@@ -65,12 +65,12 @@ const Doctors = () => {
                 ...Config.getAuthHeaders()
               }
             );
-            console.log(response);
+            const filename = response.headers?.file_name||"unknown";
             const url = window.URL.createObjectURL(new Blob([response.data])); // you can mention a type if you wish
             const link = document.createElement("a");
             link.href = url;
             console.log(response);
-            link.setAttribute("download","file.zip"); //this is the name with which the file will be downloaded
+            link.setAttribute("download",filename); //this is the name with which the file will be downloaded
             link.click();
             // no need to append link as child to body.
             setTimeout(() => window.URL.revokeObjectURL(url), 0); // this is important too, otherwise we will be unnecessarily spiking memory!
