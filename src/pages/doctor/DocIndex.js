@@ -1,52 +1,23 @@
-import { Box } from '@mui/system';
-import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents} from 'react-leaflet'
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import iconMarker from 'leaflet/dist/images/marker-icon.png'
-import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
-import iconShadow from 'leaflet/dist/images/marker-shadow.png'
-import { useState } from 'react';
+import { useState } from "react";
+import {ShowLocations} from "../../components/maps/MapUtils"
 
-const icon = L.icon({ 
-    iconRetinaUrl:iconRetina, 
-    iconUrl: iconMarker, 
-    shadowUrl: iconShadow 
-});
-
+const users = [
+  {name:"mamush",position:[9,38]},
+  {name:"mereed",position:[9.12,38.44]},
+  {name:"mamaru",position:[9.4,38.2]},
+  {name:"matiwos",position:[9.32,38.90]},
+]
 
 const DocIndex = () => {
-
-function LocationMarker() {
-  const [position, setPosition] = useState(null)
-  const map = useMapEvents({
-    click() {
-      map.locate()
-    },
-    locationfound(e) {
-      setPosition(e.latlng)
-      map.flyTo(e.latlng, map.getZoom())
-    },
-  })
-
-  return position === null ? null : (
-    <Marker position={position} icon={icon}>
-      <Popup>You are here</Popup>
-    </Marker>
-  )
+const [position,setPosition] = useState();
+const setLocation = (lat,lng) =>{
+  setPosition({lat,lng});
 }
-
-
-    return <>
-        <h1>React leaf let rutorial</h1>
-        <Box style={{height:"300px",width:"500px",border:"2px solid black"}}>
-        <MapContainer style={{height:"100%"}} center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-           <LocationMarker/>
-        </MapContainer>
-        </Box>
-    </>
+return <>
+  
+  <p>Hello Doctor how r u{position?.lat}-{position?.lng}</p>
+  <ShowLocations users={users}/>
+</>
+    
 }
 export default DocIndex;
