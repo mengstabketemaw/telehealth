@@ -10,9 +10,11 @@ const createRoutineMachineLayer = ({ me, patient }) => {
             L.latLng(patient[0], patient[1])
         ],
         lineOptions: {
+            addWaypoints: false,
             styles: [{ color: "#6FA1EC", weight: 4 }]
         },
         show: true,
+
         createMarker() { return null }
     });
 

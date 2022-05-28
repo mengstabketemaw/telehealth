@@ -13,7 +13,7 @@ const WhereIsThisPatient = ({ userInfo }) => {
         })
     }, []);
     return <Box style={{ height: "70vh", width: "100%", margin: "10px", border: "2px solid black" }}>
-        <MapContainer style={{ height: "100%" }} center={[8, 38]} zoom={20} scrollWheelZoom={true}>
+        {me && <MapContainer style={{ height: "100%" }} center={me} zoom={20}>
             <MapTiles />
             <Marker
                 position={[userInfo.lat, userInfo.lng]}
@@ -24,15 +24,15 @@ const WhereIsThisPatient = ({ userInfo }) => {
                 </Popup>
             </Marker>
             <Marker
-                position={me || [8, 38]}
+                position={me}
                 icon={point}
             >
                 <Popup>
                     Your are here!
                 </Popup>
             </Marker>
-            {me && <RoutingMachine me={me} patient={[userInfo.lat, userInfo.lng]} />}
-        </MapContainer>
+            <RoutingMachine me={me} patient={[userInfo.lat, userInfo.lng]} />
+        </MapContainer>}
     </Box>
 }
 
