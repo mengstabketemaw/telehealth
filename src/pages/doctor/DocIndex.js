@@ -2,6 +2,7 @@ import { useState } from "react";
 import Location from "../../components/maps/MapUtils"
 import NearByDoctors from "../../components/maps/NearByDoctors";
 import SearchWrapper from "../../components/maps/SearchWrapper";
+import WhereIsThisPatient from "../../components/maps/WhereIsThisPatient";
 
 const users = [
   { name: "mamush", position: [9, 38] },
@@ -19,9 +20,10 @@ const DocIndex = () => {
 
     <p>Hello Doctor how r u{position?.lat}-{position?.lng}</p>
     {/* <Location setLocation={setLocation} /> */}
-    <SearchWrapper>
+    {/* <SearchWrapper>
       <NearByDoctors />
-    </SearchWrapper>
+    </SearchWrapper> */}
+    <WhereIsThisPatient userInfo={{ username: "matiwos@gmail.com", lat: 8.888, lng: 38.888, name: "Matiwos Shimels" }} />
   </>
 
 }
