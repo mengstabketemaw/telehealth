@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Location from "../../components/maps/MapUtils"
+import NearByDoctors from "../../components/maps/NearByDoctors";
+import SearchWrapper from "../../components/maps/SearchWrapper";
 
 const users = [
   { name: "mamush", position: [9, 38] },
@@ -16,7 +18,10 @@ const DocIndex = () => {
   return <>
 
     <p>Hello Doctor how r u{position?.lat}-{position?.lng}</p>
-    <Location setLocation={setLocation} />
+    {/* <Location setLocation={setLocation} /> */}
+    <SearchWrapper>
+      <NearByDoctors />
+    </SearchWrapper>
   </>
 
 }
