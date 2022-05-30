@@ -1,36 +1,18 @@
 import axios from "axios";
 import Config from "./Config";
 
-export const createRoom = async () => {
-    const { data } = axios.get(Config.VIDEOSERVER + "/video-api/create-room");
-    console.warn("Room has been create with the following property: ", data);
-    return data;
-};
+class VIDEOAPI {
+    VIDEO_API_BASE = `${Config.VIDEOSERVER}/video-api`;
+    CREATE_ROOM = `${this.VIDEO_API_BASE}/create-room`;
+    VALIDATE_ROOM = `${this.VIDEO_API_BASE}/validate-room/`;
+    DELETE_ROOM = `${this.VIDEO_API_BASE}/delete-room/`;
+    GET_ROOM = `${this.VIDEO_API_BASE}/get-room/`;
 
-export const validateRoom = async (meetingId) => {
-    try {
-        await axios.get(`${Config.VIDEOSERVER}/video-api/validate-room/${meetingId}`);
-        return true;
-    } catch (error) {
-        return false;
-    }
-
-};
-
-export const deleteRoom = async (username) => {
-    try {
-        axios.get(Config.VIDEOSERVER + "/video-api/delete-room/" + username)
-    } catch (error) {
-        console.log(error);
-    }
+    async videoClient(url, success, failure) {
+        axios.get(url)
+            .then(({ data }) => success(data))
+            .catch(({ message }) => failure(message));
+    };
 }
 
-export const getRoom = async (username) => {
-    try {
-        const { data } = axios.get(Config.VIDEOSERVER + "/video-api/get-room/" + username)
-        return data;
-    } catch (error) {
-        console.log(error)
-        return null;
-    }
-}
+export default new VIDEOAPI();
