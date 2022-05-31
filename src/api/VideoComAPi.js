@@ -8,11 +8,18 @@ class VIDEOAPI {
     DELETE_ROOM = `${this.VIDEO_API_BASE}/delete-room/`;
     GET_ROOM = `${this.VIDEO_API_BASE}/get-room/`;
 
-    async videoClient(url, success, failure) {
+    videoClient(url, success, failure) {
         axios.get(url)
             .then(({ data }) => success(data))
             .catch(({ message }) => failure(message));
     };
+
+    createRoom(data, success, failure) {
+        axios.post(this.CREATE_ROOM, data)
+            .then(({ data }) => success(data))
+            .catch(({ message }) => failure(message));
+    }
+
 }
 
 export default new VIDEOAPI();
