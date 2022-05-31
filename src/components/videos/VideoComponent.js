@@ -34,7 +34,7 @@ export default function VideoComponent({ participantId }) {
     }, [micStream, micOn])
 
     return (
-        <div key={props.participantId}>
+        <div key={participantId}>
             {micOn && micRef && <audio ref={micRef} autoPlay />}
             {webcamOn && (
                 <ReactPlayer
