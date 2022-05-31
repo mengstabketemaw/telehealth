@@ -17,7 +17,7 @@ const Room = () => {
             setSnackbar({ open: true, children: "Could't find any room: " + message, severity: "error" });
             setRoom({ status: "error", data: {} });
         }
-        VideoClient.videoClient(VideoClient.GET_ROOM + username, success, error);
+        VideoClient.get(VideoClient.GET_ROOM + username, success, error);
     }, [username])
 
     return <>

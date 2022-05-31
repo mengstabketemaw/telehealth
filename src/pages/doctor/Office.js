@@ -22,7 +22,7 @@ const Office = () => {
             setSnackbar({ open: true, children: "Could't start the session: " + message, severity: "error" });
             setRoom({ status: "error", data: {} });
         }
-        VideoClient.createRoom({ username: token.username, type: "vdt" }, success, failure);
+        VideoClient.post({ username: token.username, type: "vdt" }, VideoClient.CREATE_ROOM, success, failure);
     }
     return (<>
         <br />
