@@ -2,45 +2,63 @@ import { Delete, VideoCall } from "@mui/icons-material";
 import { Button, Dialog, DialogActions, Tooltip, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
+import VideoClient from "../../api/VideoComAPi"
 import TherapyGroupList from "../../components/therapygroup/TherapyGroupList";
 import { useSnackbar } from "./Patient";
 import Countdown from "react-countdown"
+import useToken from "../../hooks/useToken"
 
 const TherapyGroup = () => {
     const [data, setData] = useState({ rows: [], loading: true });
+    const { token } = useToken();
     const [openDialog, setOpenDialog] = useState(false);
     const [deleteDialog, setDeleteDialog] = useState({ open: false, row: {} });
     const { setSnackbar } = useSnackbar();
 
     useEffect(() => {
-        //logic to get all the 
-        setData({
-            rows: [{ id: 1, therapist: "@mamush", description: "This is Therapy group", startingDate: "2022-6-31 06:45:12", number: "12/32" }],
-            loading: false
-        })
+        const success = (data) => {
+            const row = data.map(e => {
+                return { ...e, number: e.patients.length + "/" + e.maxPatientNumber }
+            })
+            setData({ rows: row, loading: false });
+        };
+        const error = (message) => setSnackbar({ open: true, children: "Couldn't fetch data from the communication server: " + message, severity: "error" });
+        VideoClient.get(VideoClient.PATIENT_THERAPY_GROUPS + token.username, success, error);
     }, []);
 
     const handleDelete = () => {
-        //here layi the logic to delete the booked appointment use the delete dialog row
-        setDeleteDialog({ open: false, row: {} })
-        setSnackbar({ open: true, children: "Delete operation was unsuccessful" + deleteDialog.row, severity: "error" })
+
+        const success = () => {
+            const newRow = data.rows.filter(({ id }) => id !== deleteDialog.row.id);
+            setData({ rows: newRow, loading: false });
+            setDeleteDialog({ open: false, row: {} });
+        }
+        const error = (message) => {
+            setSnackbar({ open: true, children: "Couldn't cancel reservation for the therapy group: " + message, severity: "error" });
+            setData({ ...data, loading: false });
+            setDeleteDialog({ open: false, row: {} })
+        }
+        setData({ ...data, loading: true });
+        VideoClient.delete(VideoClient.THERAPY_GROUPS + "/" + deleteDialog.row.id + "/" + token.username, success, error);
     }
-    const handleJoin = () => { }
+    const handleJoin = () => {
+
+    }
     const column = [
         {
             field: "therapist",
-            headersName: "Therapist",
+            headerName: "Therapist",
             flex: 1
         },
         {
             field: "description",
-            headersName: "Description",
-            renderCell: ({ value }) => (<Tooltip title={value}><p>{value}</p></Tooltip>),
+            headerName: "Description",
+            renderCell: ({ value }) => (<Tooltip title={value}><p>Desc...</p></Tooltip>),
             flex: 1
         },
         {
             field: "startingDate",
-            headersName: "Starting Date",
+            headerName: "Starting Date",
             renderCell: (props) => {
                 return (
                     <Countdown date={new Date(props.value).getTime()}>
@@ -53,7 +71,7 @@ const TherapyGroup = () => {
 
         {
             field: "number",
-            headersName: "Totla Audiances",
+            headerName: "Totla Audiances",
         },
         {
             field: "actions",
@@ -88,6 +106,7 @@ const TherapyGroup = () => {
             openDialog &&
             <Dialog
                 fullWidth
+                maxWidth={"100%"}
                 open
             >
                 <DialogTitle>Book new Therapy</DialogTitle>
@@ -102,7 +121,7 @@ const TherapyGroup = () => {
         {
             deleteDialog.open &&
             <Dialog
-                handleClose={() => setDeleteDialog(false)}
+                onClose={() => setDeleteDialog(false)}
                 open
             >
                 <DialogTitle>Cancel Reservation for the Therapygroup</DialogTitle>

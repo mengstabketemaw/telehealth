@@ -25,6 +25,12 @@ class VIDEOAPI {
             .catch(({ message }) => failure(message));
     }
 
+    delete(url, success, failure) {
+        axios.delete(url)
+            .then(({ data }) => success(data))
+            .catch(({ message }) => failure(message));
+    }
+
 }
 
 export default new VIDEOAPI();
