@@ -7,15 +7,20 @@ class VIDEOAPI {
     VALIDATE_ROOM = `${this.VIDEO_API_BASE}/validate-room/`;
     DELETE_ROOM = `${this.VIDEO_API_BASE}/delete-room/`;
     GET_ROOM = `${this.VIDEO_API_BASE}/get-room/`;
+    CREATE_THERAPY_GROUP = `${this.VIDEO_API_BASE}/create-therapy-group`;
+    THERAPY_GROUPS = `${this.VIDEO_API_BASE}/therapy-groups`;
+    DOCTOR_THERAPY_GROUPS = `${this.THERAPY_GROUPS}/doctor/`;
+    PATIENT_THERAPY_GROUPS = `${this.THERAPY_GROUPS}/patient/`;
+    JOIN_THERAPY_GROUP = `${this.VIDEO_API_BASE}/join-therapy-group/`;
 
-    videoClient(url, success, failure) {
+    get(url, success, failure) {
         axios.get(url)
             .then(({ data }) => success(data))
             .catch(({ message }) => failure(message));
     };
 
-    createRoom(data, success, failure) {
-        axios.post(this.CREATE_ROOM, data)
+    post(url, data, success, failure) {
+        axios.post(url, data)
             .then(({ data }) => success(data))
             .catch(({ message }) => failure(message));
     }
