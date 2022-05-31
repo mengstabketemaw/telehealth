@@ -52,7 +52,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="blog" element={<Blog />} />
           <Route path="doctorlist" element={<DoctorList />} />
-          <Route path="room" element={<Room />} />
+          <Route path="room/:username" element={<Room />} />
         </Route>
         <Route path="doctor" element={<Doctor />}>
           <Route index element={<DocIndex />} />
