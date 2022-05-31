@@ -27,6 +27,7 @@ import Schedule from "./pages/doctor/Schedule";
 import PrivateElement from "./components/route/PrivateElement";
 import DocIndex from "./pages/doctor/DocIndex";
 import useToken from "./hooks/useToken";
+import DocTherapyGroup from "./pages/doctor/DocTherapyGroup";
 function App() {
   const { token } = useToken();
   const loggedIn = Boolean(token?.username);
@@ -61,6 +62,7 @@ function App() {
           <Route path="homedoctor" element={<HomeDoctor />} />
           <Route path="profile" element={<Profile />} />
           <Route path="blog" element={<DocBlog />} />
+          <Route path="therapygroup" element={<DocTherapyGroup />} />
           <Route path="schedule" element={<Schedule />} />
         </Route>
         <Route path="admin" element={<Admin />}>
