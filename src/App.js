@@ -1,4 +1,4 @@
-import {Routes,Route,Navigate} from "react-router"
+import { Routes, Route, Navigate } from "react-router"
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import Patient from "./pages/patient/Patient";
@@ -26,53 +26,57 @@ import Feedback from "./pages/admin/Feedback";
 import Schedule from "./pages/doctor/Schedule";
 import PrivateElement from "./components/route/PrivateElement";
 import DocIndex from "./pages/doctor/DocIndex";
-
+import useToken from "./hooks/useToken";
+import DocTherapyGroup from "./pages/doctor/DocTherapyGroup";
 function App() {
+  const { token } = useToken();
+  const loggedIn = Boolean(token?.username);
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="login" replace/>}/>    
-      <Route path="login" element={<Login/>}/>
-      <Route path="create-account" element={<CreateAccount/>}/>
-      <Route path="user" element={<PrivateElement/>}>
-        <Route path="patient" element={<Patient/>}>
-            <Route index element={<Dashboard/>}/>
-            <Route path="dashboard" element={<Dashboard/>}>
-              <Route path="appointment" element={<Appointment/>}/>
-              <Route path="therapygroup" element={<TherapyGroup/>}/>
-              <Route path="vdt" element={<Vdt/>}/>
-              <Route path="medicalrecord" element={<MedicalRecord/>}/>
-            </Route>
-            <Route path="appointment" element={<Appointment/>}/>
-            <Route path="therapygroup" element={<TherapyGroup/>}/>
-            <Route path="vdt" element={<Vdt/>}/>
-            <Route path="medicalrecord" element={<MedicalRecord/>}/>
-            <Route path="applyforhelp" element={<ApplyForHelp/>}/>
-            <Route path="profile" element={<Profile/>}/>
-            <Route path="blog" element={<Blog/>}/>
-            <Route path="doctorlist" element={<DoctorList/>}/>
-            <Route path="room" element={<Room/>}/>
+      <Route path="/" element={<Navigate to="login" replace />} />
+      <Route path="login" element={loggedIn ? <Navigate to={`/user/${token.role.toLowerCase()}`} replace /> : <Login />} />
+      <Route path="create-account" element={<CreateAccount />} />
+      <Route path="user" element={<PrivateElement />}>
+        <Route path="patient" element={<Patient />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />}>
+            <Route path="appointment" element={<Appointment />} />
+            <Route path="therapygroup" element={<TherapyGroup />} />
+            <Route path="vdt" element={<Vdt />} />
+            <Route path="medicalrecord" element={<MedicalRecord />} />
+          </Route>
+          <Route path="appointment" element={<Appointment />} />
+          <Route path="therapygroup" element={<TherapyGroup />} />
+          <Route path="vdt" element={<Vdt />} />
+          <Route path="medicalrecord" element={<MedicalRecord />} />
+          <Route path="applyforhelp" element={<ApplyForHelp />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="blog" element={<Blog />} />
+          <Route path="doctorlist" element={<DoctorList />} />
+          <Route path="room/:username" element={<Room />} />
         </Route>
-        <Route path="doctor" element={<Doctor/>}>
-          <Route index element={<DocIndex/>}/>
-          <Route path="activity" element={<Activity/>}/>
-          <Route path="office" element={<Office/>}/>
-          <Route path="homedoctor" element={<HomeDoctor/>}/>
-          <Route path="profile" element={<Profile/>}/>
-          <Route path="blog" element={<DocBlog/>}/>
-          <Route path="schedule" element={<Schedule/>}/>
+        <Route path="doctor" element={<Doctor />}>
+          <Route index element={<DocIndex />} />
+          <Route path="activity" element={<Activity />} />
+          <Route path="office" element={<Office />} />
+          <Route path="homedoctor" element={<HomeDoctor />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="blog" element={<DocBlog />} />
+          <Route path="therapygroup" element={<DocTherapyGroup />} />
+          <Route path="schedule" element={<Schedule />} />
         </Route>
-        <Route path="admin" element={<Admin/>}>
-          <Route path="dashboard" element={<AdminDashboard/>}/>
-          <Route path="doctors" element={<Doctors/>}/>
-          <Route path="helpapplications" element={<HelpApplications/>}/>
-          <Route path="profile" element={<Profile/>}/>
-          <Route path="setting" element={<Setting/>}/>
-          <Route path="feedback" element={<Feedback/>}/>
+        <Route path="admin" element={<Admin />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="doctors" element={<Doctors />} />
+          <Route path="helpapplications" element={<HelpApplications />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="setting" element={<Setting />} />
+          <Route path="feedback" element={<Feedback />} />
         </Route>
       </Route>
-      <Route path="*" element={<><h1>{noItem}</h1></>}/>
+      <Route path="*" element={<><h1>{noItem}</h1></>} />
     </Routes>
-    );
+  );
 }
 const noItem = `
 Sorry the item you are looking is not here, why don't you first find it in your HEAD! then we can try agine ;)
