@@ -61,8 +61,10 @@ const TherapyGroup = () => {
             headerName: "Starting Date",
             renderCell: (props) => {
                 return (
-                    <Countdown date={new Date(props.value).getTime()}>
-                        <Button onClick={() => handleJoin(props.row)}>Join Room</Button>
+                    <Countdown date={props.value + ".000Z"}>
+                        {new Date(props.value + ".000Z").getTime() < (Date.now + 1800000) ? <p>Closed</p> :
+                            <Button onClick={() => handleJoin(props.row)}>Join Room</Button>
+                        }
                     </Countdown>
                 )
             },

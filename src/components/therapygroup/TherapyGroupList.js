@@ -45,7 +45,12 @@ const TherapyGroupList = ({ setData, handleClose }) => {
         VideoClient.get(VideoClient.JOIN_THERAPY_GROUP + row.id + "/" + token.username, success, error);
 
     }
-
+    const conditionForBooking = (id, date) => {
+        const current = rows.find(e => e.id === id);
+        if ((new Date(date + ".000Z").getTime() > Date.now()) && current.patients.every(pat => pat !== token.username) && current.patients.length < current.maxPatientNumber)
+            return false;
+        return true;
+    }
     const column = [
         {
             field: "therapist",
@@ -63,7 +68,7 @@ const TherapyGroupList = ({ setData, handleClose }) => {
             headersName: "Starting Date",
             renderCell: (props) => {
                 return (
-                    <Countdown date={new Date(props.value).getTime()}>
+                    <Countdown date={props.value + ".000Z"}>
                         <p>closed</p>
                     </Countdown>
                 )
@@ -83,7 +88,9 @@ const TherapyGroupList = ({ setData, handleClose }) => {
                     <GridActionsCellItem
                         icon={<Book />}
                         label={"Book Place"}
+                        color={"primary"}
                         onClick={() => handleBookAppointment(row)}
+                        disabled={conditionForBooking(row.id, row.startingDate)}
                     />
                 ]
             }
