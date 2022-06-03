@@ -7,6 +7,7 @@ import TherapyGroupList from "../../components/therapygroup/TherapyGroupList";
 import { useSnackbar } from "./Patient";
 import Countdown from "react-countdown"
 import useToken from "../../hooks/useToken"
+import { useNavigate } from "react-router-dom";
 
 const TherapyGroup = () => {
     const [data, setData] = useState({ rows: [], loading: true });
@@ -14,6 +15,7 @@ const TherapyGroup = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [deleteDialog, setDeleteDialog] = useState({ open: false, row: {} });
     const { setSnackbar } = useSnackbar();
+    const nav = useNavigate();
 
     useEffect(() => {
         const success = (data) => {
@@ -41,8 +43,8 @@ const TherapyGroup = () => {
         setData({ ...data, loading: true });
         VideoClient.delete(VideoClient.THERAPY_GROUPS + "/" + deleteDialog.row.id + "/" + token.username, success, error);
     }
-    const handleJoin = () => {
-
+    const handleJoin = (row) => {
+        nav("/user/patient/room/" + row.therapist);
     }
     const column = [
         {
@@ -70,7 +72,11 @@ const TherapyGroup = () => {
             },
             flex: 1
         },
-
+        {
+            field: "duration",
+            headerName: "Duration",
+            type: "number"
+        },
         {
             field: "number",
             headerName: "Totla Audiances",

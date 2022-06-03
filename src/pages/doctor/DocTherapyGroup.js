@@ -7,12 +7,14 @@ import Countdown from "react-countdown"
 import useToken from "../../hooks/useToken"
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
+import { useNavigate } from "react-router-dom";
 
 
 const DocTherapyGroup = () => {
     const [data, setData] = useState({ rows: [], loading: true });
-    const [newTherapy, setNewTherapy] = useState({ desc: "", num: 0, startingDateTime: null });
+    const [newTherapy, setNewTherapy] = useState({ desc: "", num: 5, startingDateTime: null });
     const { token } = useToken();
+    const nav = useNavigate();
     const [openDialog, setOpenDialog] = useState(false);
     const [showPatients, setShowPatients] = useState({ open: false, patients: [] });
     const { setSnackbar } = useSnackbar();
@@ -22,7 +24,6 @@ const DocTherapyGroup = () => {
             const row = data.map(e => {
                 return { ...e, number: e.patients.length + "/" + e.maxPatientNumber }
             })
-            console.log(row);
             setData({ rows: row, loading: false });
         };
         const error = (message) => setSnackbar({ open: true, children: "Couldn't fetch data from the communication server: " + message, severity: "error" });
@@ -30,7 +31,8 @@ const DocTherapyGroup = () => {
     }, [token.username]);
 
     const handleStartSession = () => {
-
+        nav("/user/doctor/room");
+        VideoClient.delete(VideoClient.THERAPY_GROUPS)
     }
 
     const handleShowPatients = (id) => {
@@ -39,20 +41,17 @@ const DocTherapyGroup = () => {
     }
     const handleCreateNewTherapyGroup = () => {
         const req = {
-            id: data.rows.length,
             therapist: token.username,
             description: newTherapy.desc,
             startingDate: new Date(newTherapy.startingDateTime).toISOString().replace(".000Z", ""),
             maxPatientNumber: newTherapy.num,
-
+            duration: newTherapy.duration,
         }
-        console.log(req);
-        console.log(data.rows);
         setOpenDialog(false);
         setData({ ...data, loading: true });
-        const success = () => {
+        const success = (response) => {
             setSnackbar({ open: true, children: "Therapy Group has been successfully created!" });
-            setData({ rows: [...data.rows, { ...req, number: "0/" + req.maxPatientNumber }], loading: false });
+            setData({ rows: [...data.rows, { ...response, number: "0/" + req.maxPatientNumber }], loading: false });
         }
         const error = (message) => {
             setData({ ...data, loading: false });
@@ -74,10 +73,19 @@ const DocTherapyGroup = () => {
             renderCell: (props) => {
                 return (
                     <Countdown date={props.value + ".000Z"}>
-                        <Button onClick={() => handleStartSession(props.row)}>Start Session</Button>
+                        {
+                            Date.now() > new Date(new Date(props.value + ".000Z").setMinutes(new Date(props.value + ".000Z").getMinutes() + props.row.duration)).getTime() ?
+                                <p>Closed Therapy Group</p> :
+                                <Button onClick={() => handleStartSession(props.row)}>Start Session</Button>
+                        }
                     </Countdown>
                 )
             },
+            flex: 1
+        },
+        {
+            field: "duration",
+            headerName: "Duration in Minute",
             flex: 1
         },
 
@@ -133,6 +141,12 @@ const DocTherapyGroup = () => {
                             onChange={e => setNewTherapy({ ...newTherapy, num: e.target.value })}
                             label={"Max Patient Number"}
                         />
+                        <TextField
+                            type={"number"}
+                            value={newTherapy.duration || ""}
+                            onChange={e => setNewTherapy({ ...newTherapy, duration: e.target.value })}
+                            label={"Therapy Duration in Minute"}
+                        />
                     </Stack>
                 </DialogContent>
                 <DialogActions>
@@ -151,7 +165,7 @@ const DocTherapyGroup = () => {
                 <DialogContent>
                     <Stack spacing={3}>
                         {showPatients.patients.length === 0 ? <Typography>No patient has joinded yet!</Typography> :
-                            showPatients.patients.map((name) => <Typography variant="h4" color="primary">{name}</Typography>)}
+                            showPatients.patients.map((name, key) => <Typography key={key}>{key + 1}: {name}</Typography>)}
                     </Stack>
                 </DialogContent>
                 <DialogActions>
