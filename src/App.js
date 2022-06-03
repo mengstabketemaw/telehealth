@@ -28,6 +28,7 @@ import PrivateElement from "./components/route/PrivateElement";
 import DocIndex from "./pages/doctor/DocIndex";
 import useToken from "./hooks/useToken";
 import DocTherapyGroup from "./pages/doctor/DocTherapyGroup";
+import DocVideoRoom from "./pages/doctor/DocVideoRoom";
 function App() {
   const { token } = useToken();
   const loggedIn = Boolean(token?.username);
@@ -64,6 +65,7 @@ function App() {
           <Route path="blog" element={<DocBlog />} />
           <Route path="therapygroup" element={<DocTherapyGroup />} />
           <Route path="schedule" element={<Schedule />} />
+          <Route path="room" element={<DocVideoRoom />} />
         </Route>
         <Route path="admin" element={<Admin />}>
           <Route path="dashboard" element={<AdminDashboard />} />
