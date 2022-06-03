@@ -1,12 +1,20 @@
+import { Camera, ExitToApp, Mic } from "@mui/icons-material";
+import { IconButton, Stack } from "@mui/material";
 import { useMeeting } from "@videosdk.live/react-sdk";
 
 export default function VideoControllers() {
     const { leave, toggleMic, toggleWebcam } = useMeeting();
     return (
-        <div>
-            <button onClick={leave}>Leave</button>
-            <button onClick={toggleMic}>toggleMic</button>
-            <button onClick={toggleWebcam}>toggleWebcam</button>
-        </div>
+        <Stack spacing={3} direction="row" alignItems="center" justifyContent="center">
+            <IconButton>
+                <ExitToApp color="red" />
+            </IconButton>
+            <IconButton>
+                <Mic />
+            </IconButton>
+            <IconButton>
+                <Camera />
+            </IconButton>
+        </Stack>
     );
 }

@@ -1,5 +1,5 @@
 import { Button, Stack, Typography } from "@mui/material";
-import { useParticipant, useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting } from "@videosdk.live/react-sdk";
 import { useState } from "react";
 import VideoComponent from "./VideoComponent";
 import VideoControllers from "./VideoControllers";
@@ -7,7 +7,7 @@ import VideoControllers from "./VideoControllers";
 const VideoContainer = ({ user }) => {
     const [joined, setJoined] = useState(false);
     const { join } = useMeeting();
-    const { participants } = useParticipant();
+    const { participants } = useMeeting();
 
     return <>
         {!joined ? (
@@ -21,7 +21,7 @@ const VideoContainer = ({ user }) => {
             </Stack>) : (
             <>
                 {
-                    [...participants.key()].map((participantId) => (<VideoComponent participantId={participantId} />))
+                    [...participants.keys()].map((participantId, key) => (<VideoComponent key={key} participantId={participantId} />))
                 }
                 <VideoControllers />
             </>

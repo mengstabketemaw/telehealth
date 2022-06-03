@@ -1,3 +1,4 @@
+import { Paper } from "@mui/material";
 import { useParticipant } from "@videosdk.live/react-sdk";
 import { useEffect, useMemo, useRef } from "react";
 import ReactPlayer from "react-player";
@@ -34,7 +35,7 @@ export default function VideoComponent({ participantId }) {
     }, [micStream, micOn])
 
     return (
-        <div key={participantId}>
+        <Paper key={participantId} elevation={3} sx={{ padding: "1", margin: "20px" }}>
             {micOn && micRef && <audio ref={micRef} autoPlay />}
             {webcamOn && (
                 <ReactPlayer
@@ -42,19 +43,19 @@ export default function VideoComponent({ participantId }) {
                     playsinline // very very imp prop
                     pip={false}
                     light={false}
-                    controls={true}
-                    muted={true}
+                    controls={false}
+                    muted={false}
                     playing={true}
                     //
                     url={videoStream}
                     //
-                    height={"100px"}
-                    width={"100px"}
+                    height={"100%"}
+                    width={"100%"}
                     onError={(err) => {
                         console.log(err, "participant video error");
                     }}
                 />
             )}
-        </div>
+        </Paper>
     );
 }
