@@ -1,11 +1,20 @@
 import { Button, Stack, TextField, Typography } from "@mui/material"
 import { useState } from "react"
-import { useToken } from "../../hooks/useToken"
+import useToken from "../../hooks/useToken"
+import requests from "../../api/repository"
 const ApplyForHelp = () => {
   const { token } = useToken()
   const [desc, setDesc] = useState("")
   const [files, setFiles] = useState([])
 
+  function submit() {
+    
+    const data = {
+      requestorId: token.userId,
+      body: desc  ,
+    }
+    requests.post("api/Help", data)
+  }
   return (
     <>
       <br />
@@ -15,7 +24,7 @@ const ApplyForHelp = () => {
       <br />
       <Stack spacing={3}>
         <TextField
-          label={"Brifely explaine what is the problem"}
+          label={"Briefly explain what the problem is"}
           multiline
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
@@ -33,7 +42,7 @@ const ApplyForHelp = () => {
             onChange={(e) => setFiles(Object.values(e.target.files))}
           />
           <Button variant="contained" color="info" component="span">
-            Upload All the neccessary files
+            Upload All the necessary files
           </Button>
         </label>
         {files.map((e, i) => (
@@ -41,7 +50,7 @@ const ApplyForHelp = () => {
             {e?.name}
           </Typography>
         ))}
-        <Button variant="contained">Submite</Button>
+        <Button variant="contained" onClick={submit}>Submit</Button>
       </Stack>
     </>
   )
