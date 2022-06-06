@@ -23,6 +23,7 @@ const VideoContainer = ({ user }) => {
                 {
                     [...participants.keys()].map((participantId, key) => (<VideoComponent key={key} participantId={participantId} />))
                 }
+                <br />
                 <VideoControllers />
             </>
         )}
