@@ -1,20 +1,12 @@
 import { useState } from "react"
 import { OnlinePrediction } from "@mui/icons-material"
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material"
-import PatientProfile from "../../components/doctor/PatientProfile"
-import PatientProfileCard from "../../components/doctor/PatientProfileCard"
+import { Box, Button, CircularProgress, Stack, Typography } from "@mui/material"
 import { MeetingProvider, MeetingConsumer } from "@videosdk.live/react-sdk"
 import { useSnackbar } from "./Doctor"
 import VideoClient from "../../api/VideoComAPi"
 import useToken from "../../hooks/useToken"
 import VideoContainer from "../../components/videos/VideoContainer"
+import PatientQueue from "../../components/websocket/PatientQueue"
 
 const Office = () => {
   const [profile, setProfile] = useState({ open: false, data: {} })
@@ -102,16 +94,9 @@ const Office = () => {
             overflow: "scroll",
           }}
         >
-          <Stack justifyContent="center" direction="row">
-            <Typography variant="h5" color="secondary">
-              Patients
-            </Typography>
-          </Stack>
-
-          <PatientProfileCard
-            onView={() => setProfile({ open: true })}
-            name="mamush"
-            src="image"
+          <PatientQueue
+            open={profile.open}
+            handleClose={() => setProfile({ open: false })}
           />
         </Box>
       </Box>
@@ -130,10 +115,6 @@ const Office = () => {
           {!room.status !== "created" ? "START SESSION" : "STOP SESSION"}
         </Button>
       </Stack>
-      <PatientProfile
-        open={profile.open}
-        handleClose={() => setProfile({ open: false })}
-      />
     </>
   )
 }

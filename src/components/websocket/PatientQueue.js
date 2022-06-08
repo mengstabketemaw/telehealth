@@ -1,21 +1,22 @@
 import { useState } from "react"
-import SockJsClient from "react-stomp"
-import Config from "../../api/Config"
 import useToken from "../../hooks/useToken"
+import PatientProfile from "../doctor/PatientProfile"
+import { StompSessionProvider, useSubscription } from "react-stomp-hooks"
+import Config from "../../api/Config"
 
 const PatientQueue = () => {
-  const [data, setData] = useState({ status: "wating", data: {} })
-  const { token } = useToken()
-
-  const onMessage = (message) => {}
-
   return (
-    <>
-      <SockJsClient
-        url={Config.VIDEOSERVER + "/communication-server"}
-        topics={["/user/" + token.username + "/msg"]}
-      ></SockJsClient>
-    </>
+    <StompSessionProvider url={Config.VIDEOSERVER + "/communication-server"}>
+      <SubscriberComponent />
+    </StompSessionProvider>
   )
 }
+
+function SubscriberComponent() {
+  const [user, setUser] = useState({ status: "wating", data: {} })
+  const { token } = useToken()
+
+  return <></>
+}
+
 export default PatientQueue
