@@ -11,12 +11,15 @@ import Slide from '@mui/material/Slide';
 import { Avatar, Box, CircularProgress, Dialog, DialogTitle,DialogContent,DialogActions, TextField, Grid } from '@mui/material';
 import client from '../../api/client';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import requests from "../../api/repository"
+import useToken from "../../hooks/useToken"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function PatientProfile(props) {
+    const { token } = useToken()
     const [profile,setProfile] = React.useState({loading:true});
     const [medicalRecord,setMedicalRecord] = React.useState({loading:true,row:[]})
     const [prescribe,setPrescribe] = React.useState({open:false});
@@ -58,7 +61,7 @@ export default function PatientProfile(props) {
             getActions:({row})=>{
                 return [
                     <GridActionsCellItem
-                        label={"Show In Detaile"}
+                        label={"Show In Detail"}
                         showInMenu
                         onClick={()=>{
                             setDetailedView({open:true,...row})
@@ -70,7 +73,13 @@ export default function PatientProfile(props) {
     ]
 
     const handlePrescribeMedicine = () =>{
-        console.log(prescribe);
+        const data = {
+            prescribedById: 0,
+            prescribedToId: 0,
+            //remark: ,
+        }
+
+        requests.post("api/Prescription", data)
     }
 
     const handleAddReport = ()=>{

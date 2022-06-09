@@ -36,7 +36,7 @@ const fileViewerFor = (file) => {
         <Stack>
           <br/>
           <Divider/>
-          <Typography variant='h3'>E-Prescribtion</Typography>
+          <Typography variant='h3'>Prescribtion</Typography>
           <Divider/>
           <br/>
           <Typography variant='h5' color="InfoText">for Sample D.Patient</Typography>

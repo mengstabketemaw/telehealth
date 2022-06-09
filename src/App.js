@@ -29,6 +29,9 @@ import DocIndex from "./pages/doctor/DocIndex";
 import useToken from "./hooks/useToken";
 import DocTherapyGroup from "./pages/doctor/DocTherapyGroup";
 import DocVideoRoom from "./pages/doctor/DocVideoRoom";
+import Checkout from "./pages/pharmacy/Checkout"
+import Prescription from "./pages/patient/Prescription"
+
 function App() {
   const { token } = useToken();
   const loggedIn = Boolean(token?.username);
@@ -49,6 +52,7 @@ function App() {
           <Route path="appointment" element={<Appointment />} />
           <Route path="therapygroup" element={<TherapyGroup />} />
           <Route path="vdt" element={<Vdt />} />
+          <Route path="prescription" element={<Prescription />} />
           <Route path="medicalrecord" element={<MedicalRecord />} />
           <Route path="applyforhelp" element={<ApplyForHelp />} />
           <Route path="profile" element={<Profile />} />
@@ -76,6 +80,7 @@ function App() {
           <Route path="feedback" element={<Feedback />} />
         </Route>
       </Route>
+      <Route path="pharmacy/:prescriptionId" element={<Checkout />} />
       <Route path="*" element={<><h1>{noItem}</h1></>} />
     </Routes>
   );

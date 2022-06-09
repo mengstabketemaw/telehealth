@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useLocation,NavLink} from "react-router-dom"
 import { Avatar, Box, Divider, Drawer, ListItem, ListItemIcon, ListItemText,Stack, Toolbar, Typography } from "@mui/material";
-import { AccountBox, Article, Dashboard, Folder, Groups, Help, Schedule, VideoCall } from '@mui/icons-material';
+import { AccountBox, Article, Dashboard, Folder, Groups, Help, Medication, Schedule, VideoCall } from '@mui/icons-material';
 import telehealthImg from '../assets/images/Telehealth.png'
 
 const drawerWidth = 240;
@@ -62,7 +62,7 @@ function DrawerTools(){
       </Toolbar>
       <Divider style={{ background: 'white', margin: '20px'}} variant="middle"/>
     {
-        ["Dashboard","Appointment","Therapy Group","V.D.T","Medical Record"].map((name,index)=>{
+        ["Dashboard","Appointment","Therapy Group","V.D.T","Medical Record","Prescription"].map((name,index)=>{
 
             let urlname = name.toLocaleLowerCase().replace(" ","").replaceAll(".","");
             let color = pathname.includes(urlname)?"#3490ec":"#ffffff";
@@ -76,7 +76,8 @@ function DrawerTools(){
                           name==="Appointment"?<Schedule sx={{ color }}/>:
                           name==="Therapy Group"?<Groups sx={{ color }}/>:
                           name==="V.D.T"?<VideoCall sx={{ color }}/>:
-                          <Folder sx={{ color }}/>
+                          name==="Medical Record"?<Folder sx={{ color }}/>:
+                          <Medication sx={{ color }}/>
                       }
                   </ListItemIcon>
                   <ListItemText>
