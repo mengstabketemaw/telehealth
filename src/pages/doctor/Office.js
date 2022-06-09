@@ -96,6 +96,7 @@ const Office = () => {
         >
           <PatientQueue
             open={profile.open}
+            onView={() => setProfile({ open: true })}
             handleClose={() => setProfile({ open: false })}
           />
         </Box>
