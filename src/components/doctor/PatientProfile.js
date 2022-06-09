@@ -15,8 +15,8 @@ import requests from "../../api/repository"
 import useToken from "../../hooks/useToken"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+  return <Slide direction="up" ref={ref} {...props} />
+})
 
 export default function PatientProfile(props) {
     const { token } = useToken()
@@ -82,164 +82,184 @@ export default function PatientProfile(props) {
         requests.post("api/Prescription", data)
     }
 
-    const handleAddReport = ()=>{
-        console.log(report)
-    }
+  const handleAddReport = () => {
+    console.log(report)
+  }
 
-    const handleChangePrescribtion = (type) => (event) =>{
-        setPrescribe(state=>({
-            ...state,
-            [type]:event.target.value
-        }))
-    }
+  const handleChangePrescribtion = (type) => (event) => {
+    setPrescribe((state) => ({
+      ...state,
+      [type]: event.target.value,
+    }))
+  }
 
-
-   return (
-      <Dialog
-        fullScreen
-        open={props.open}
-        onClose={props.handleClose}
-        TransitionComponent={Transition}
-      >
-        <AppBar>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={props.handleClose}
-              aria-label="close"
-            >
-              <CloseIcon />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                Patient Profile
-            </Typography>
-            <Button autoFocus color="inherit" onClick={props.handleClose}>
-              Save
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Box height={"100px"}><br/><br/><br/></Box>
-        <Stack alignItems={"center"} spacing={1}>
-            <hr/>
-            <Avatar src={props.img} sx={{width:'200px',height:'200px'}}/>
-            <Divider variant='middle' width={"50%"}/>
-                {
-                    profile.loading?<CircularProgress/>:<>
-                    <Typography>Patient full name</Typography>
-                    <Typography>Male</Typography>
-                    <Typography>30 years old</Typography>
-                    <Typography>Single</Typography>
-                    </>
-                }
-            <Divider variant='middle' width={"50%"}/>
-            <Typography variant='h5' color="primary">Medical Informations</Typography>
-            <div style={{width:"90%",height:"500px"}}>
-                <DataGrid
-                    loading={medicalRecord.loading}
-                    rows={medicalRecord.row}
-                    columns={column}
-                    hideFooter
-                />
-            </div>
-            <Stack direction="row" justifyContent="flex-end" spacing={3} width={"90%"} padding={5}>
-                <Button variant="contained" onClick={()=>setPrescribe({open:true})}>Prescribe medicne</Button>
-                <Button variant="outlined" onClick={()=>setReport({open:true})}>Add report</Button>
-            </Stack>
-            <Dialog
-                open={prescribe.open}
-            >
-                <DialogTitle>Prescribe Medicine</DialogTitle>
-                <DialogContent dividers>
-                    <Grid container spacing={3}>
-                        <Grid item xs={6}>
-                            <TextField
-                                label={"Drug Name"}
-                                value={prescribe?.name||""}
-                                onChange={handleChangePrescribtion("name")}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField
-                                required
-                                label={"Strength"}
-                                value={prescribe?.strength||""}
-                                onChange={handleChangePrescribtion("strength")}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField
-                                required
-                                label={"Sig"}
-                                value={prescribe?.sig||""}
-                                onChange={handleChangePrescribtion("sig")}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField
-                                label={"Qty"}
-                                value={prescribe?.qty||""}
-                                onChange={handleChangePrescribtion("qty")}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                multiline
-                                rows={3}
-                                label={"Memo"}
-                                value={prescribe?.memo||""}
-                                onChange={handleChangePrescribtion("memo")}
-                            />
-                        </Grid>
-                    </Grid>
-
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handlePrescribeMedicine}>OK</Button>
-                    <Button onClick={()=>setPrescribe({open:false})}>Cancel</Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog
-                open={report.open}
-                onClose={()=>setReport({open:false})}
-            >
-                <DialogTitle>Add Diagnosis Report</DialogTitle>
-                <DialogContent dividers>
-                    <Box sx={{width:"70vh"}}>
-                        <TextField
-                            label="Report"
-                            required
-                            multiline
-                            rows={4}
-                            fullWidth
-                            value={report?.value||""}
-                            onChange={(e)=>setReport({...report,value:e.target.value})}
-                        />
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleAddReport}>Ok</Button>
-                    <Button onClick={()=>setReport({open:false})}>Cancel</Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog
-                open={detailedView.open}
-                onClose={()=>setDetailedView({open:false})}
-            >
-                <DialogTitle>Medical Record</DialogTitle>
-                <DialogContent dividers>
-                    <Box sx={{width:"80vw",flexGrow:1}}>
-                        {/* rendering must be performed based on the input type img,video,pdf,e-prescribtion. each one should be handled. what a pain? */}
-                        <Typography variant='h1' color="primary">This is the medical record 10Q</Typography>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={()=>setDetailedView({open:false})}>OK</Button>
-                </DialogActions>
-            </Dialog>
+  return (
+    <Dialog
+      fullScreen
+      open={props.open}
+      onClose={props.handleClose}
+      TransitionComponent={Transition}
+    >
+      <AppBar>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={props.handleClose}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            Patient Profile
+          </Typography>
+          <Button autoFocus color="inherit" onClick={props.handleClose}>
+            Save
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Box height={"100px"}>
+        <br />
+        <br />
+        <br />
+      </Box>
+      <Stack alignItems={"center"} spacing={1}>
+        <hr />
+        <Avatar src={props.img} sx={{ width: "200px", height: "200px" }} />
+        <Divider variant="middle" width={"50%"} />
+        {profile.loading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <Typography>Patient full name</Typography>
+            <Typography>Male</Typography>
+            <Typography>30 years old</Typography>
+            <Typography>Single</Typography>
+          </>
+        )}
+        <Divider variant="middle" width={"50%"} />
+        <Typography variant="h5" color="primary">
+          Medical Information
+        </Typography>
+        <div style={{ width: "90%", height: "500px" }}>
+          <DataGrid
+            loading={medicalRecord.loading}
+            rows={medicalRecord.row}
+            columns={column}
+            hideFooter
+          />
+        </div>
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          spacing={3}
+          width={"90%"}
+          padding={5}
+        >
+          <Button
+            variant="contained"
+            onClick={() => setPrescribe({ open: true })}
+          >
+            Prescribe medicine
+          </Button>
+          <Button variant="outlined" onClick={() => setReport({ open: true })}>
+            Add report
+          </Button>
         </Stack>
-      </Dialog>
-  );
+        <Dialog open={prescribe.open}>
+          <DialogTitle>Prescribe Medicine</DialogTitle>
+          <DialogContent dividers>
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
+                <TextField
+                  label={"Drug Name"}
+                  value={prescribe?.name || ""}
+                  onChange={handleChangePrescribtion("name")}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label={"Strength"}
+                  value={prescribe?.strength || ""}
+                  onChange={handleChangePrescribtion("strength")}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label={"Sig"}
+                  value={prescribe?.sig || ""}
+                  onChange={handleChangePrescribtion("sig")}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label={"Qty"}
+                  value={prescribe?.qty || ""}
+                  onChange={handleChangePrescribtion("qty")}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  label={"Memo"}
+                  value={prescribe?.memo || ""}
+                  onChange={handleChangePrescribtion("memo")}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handlePrescribeMedicine}>OK</Button>
+            <Button onClick={() => setPrescribe({ open: false })}>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog open={report.open} onClose={() => setReport({ open: false })}>
+          <DialogTitle>Add Diagnosis Report</DialogTitle>
+          <DialogContent dividers>
+            <Box sx={{ width: "70vh" }}>
+              <TextField
+                label="Report"
+                required
+                multiline
+                rows={4}
+                fullWidth
+                value={report?.value || ""}
+                onChange={(e) =>
+                  setReport({ ...report, value: e.target.value })
+                }
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleAddReport}>Ok</Button>
+            <Button onClick={() => setReport({ open: false })}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={detailedView.open}
+          onClose={() => setDetailedView({ open: false })}
+        >
+          <DialogTitle>Medical Record</DialogTitle>
+          <DialogContent dividers>
+            <Box sx={{ width: "80vw", flexGrow: 1 }}>
+              {/* rendering must be performed based on the input type img,video,pdf,e-prescribtion. each one should be handled. what a pain? */}
+              <Typography variant="h1" color="primary">
+                This is the medical record 10Q
+              </Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDetailedView({ open: false })}>OK</Button>
+          </DialogActions>
+        </Dialog>
+      </Stack>
+    </Dialog>
+  )
 }
