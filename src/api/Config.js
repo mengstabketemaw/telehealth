@@ -2,8 +2,9 @@ class Config {
   SCHEME = process.env.SCHEME ? process.env.SCHEME : "http"
   HOST = process.env.HOST ? process.env.HOST : "localhost"
   PORT = process.env.PORT ? process.env.PORT : "8080"
-  BASE = "https://telehealth-oauth-server.herokuapp.com" //`${this.SCHEME}://${this.HOST}:${this.PORT}`;
-  VIDEOSERVER = `${this.SCHEME}://${this.HOST}:8081`
+  BASE = "https://telehealth-oauth-server.herokuapp.com" //
+  // BASE = `${this.SCHEME}://${this.HOST}:${this.PORT}`
+  VIDEOSERVER = "https://communication-module-server.herokuapp.com" //`${this.SCHEME}://${this.HOST}:8081`
   USER_URL = `${this.BASE}/api/user`
   AUTH_URL = `${this.BASE}/api/oauth`
   ADMIN_URL = `${this.BASE}/api/admin`

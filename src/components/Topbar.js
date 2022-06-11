@@ -70,9 +70,8 @@ const Topbar = ({ handleDrawerToggle }) => {
 
   const handleLogout = () => {
     setAnchorEl(null)
-    auth.logoutUser(() => {
-      nav("/")
-    })
+    nav("/login")
+    auth.logoutUser()
   }
   return (
     <>
