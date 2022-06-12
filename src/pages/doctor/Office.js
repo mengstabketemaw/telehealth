@@ -7,6 +7,7 @@ import VideoClient from "../../api/VideoComAPi"
 import useToken from "../../hooks/useToken"
 import VideoContainer from "../../components/videos/VideoContainer"
 import PatientQueue from "../../components/websocket/PatientQueue"
+import Config from "../../api/Config"
 
 const Office = () => {
   const [profile, setProfile] = useState({ open: false, data: {} })
@@ -15,6 +16,18 @@ const Office = () => {
   const [room, setRoom] = useState({ status: "idle", data: {} }) //status:- idle,created,loading,error
 
   const handleStartSession = () => {
+    //stop session command
+    if (room.status === "created") {
+      setRoom({ status: "idle", data: {} })
+      VideoClient.get(
+        VideoClient.DELETE_ROOM + token?.username,
+        (f) => f,
+        (f) => f
+      )
+      return
+    }
+
+    //start session command
     setRoom({ status: "loading", data: {} })
     const success = (data) => setRoom({ status: "created", data })
     const failure = (message) => {
@@ -26,8 +39,8 @@ const Office = () => {
       setRoom({ status: "error", data: {} })
     }
     VideoClient.post(
-      { username: token.username, type: "vdt" },
       VideoClient.CREATE_ROOM,
+      { username: token.username, type: "vdt" },
       success,
       failure
     )
@@ -72,7 +85,7 @@ const Office = () => {
             <>
               <MeetingProvider
                 config={{
-                  meetingId: room.data.meetingId,
+                  meetingId: room.data.roomId,
                   micEnabled: "true",
                   webcamEnabled: "true",
                   name: token.username,
@@ -113,7 +126,7 @@ const Office = () => {
           onClick={handleStartSession}
           color={room.status === "created" ? "error" : "primary"}
         >
-          {!room.status !== "created" ? "START SESSION" : "STOP SESSION"}
+          {room.status !== "created" ? "START SESSION" : "STOP SESSION"}
         </Button>
       </Stack>
     </>
