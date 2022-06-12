@@ -3,11 +3,20 @@ import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import Config from "../../api/Config"
+import {
+  StompSessionProvider,
+  useStompClient,
+  useSubscription,
+} from "react-stomp-hooks"
+import useToken from "../../hooks/useToken"
+import { useNavigate } from "react-router-dom"
 
 const Vdt = () => {
+  const { token } = useToken()
   const [data, setData] = useState({ status: false, data: {} })
+
   const handleWaite = () => {
-    setData(true)
+    setData({ ...data, status: true })
   }
   useEffect(() => {
     //get the amount of time and number of user in the ques
@@ -22,65 +31,115 @@ const Vdt = () => {
         VIRTUAL DIAGNOSIS AND TREATMENT CENTER
       </Typography>
       <br />
-      <Grid
-        height={"50vh"}
-        container
-        direction={"row"}
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Grid item xs>
-          <Container
-            sx={{
-              width: "fit-content",
-              padding: "50px",
-              boxShadow: "2px 2px 8px #888888",
-            }}
+
+      {!data.status && (
+        <CommonComponent data={data}>
+          <LoadingButton
+            loading={data.status}
+            fullWidth
+            variant="contained"
+            onClick={handleWaite}
           >
-            <Grid
-              container
-              spacing={5}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Grid item xs={6}>
-                <Typography>Number of Patient in Queue</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography>{data.data?.patients}</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography>Time to waite in minute</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography>{data.data?.patients * 30 || "UNKNOWN"}</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography>Current Patient who are diagnosing</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography>{data.data?.current}</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <LoadingButton
-                  loading={data.status}
-                  fullWidth
-                  variant="contained"
-                  onClick={handleWaite}
-                >
-                  WAITE
-                </LoadingButton>
-                <br />
-                <br />
-                {data.status && (
-                  <Button fullWidth>read blog, while waitng</Button>
-                )}
-              </Grid>
-            </Grid>
-          </Container>
-        </Grid>
-      </Grid>
+            WAITE
+          </LoadingButton>
+        </CommonComponent>
+      )}
+
+      {data.status && (
+        <StompSessionProvider
+          connectHeaders={{ username: token.username, type: "patient" }}
+          url={Config.VIDEOSERVER + "/communication-server"}
+        >
+          <HandlePatient token={token} />
+        </StompSessionProvider>
+      )}
     </>
   )
 }
+
+function HandlePatient({ token }) {
+  const [data, setData] = useState({})
+  const nav = useNavigate()
+  useSubscription("/topic/status", ({ body }) => {
+    const message = JSON.parse(body)
+    setData(message)
+    console.log(message)
+  })
+  useSubscription("/user/" + token.username + "/msg", ({ body }) => {
+    const message = JSON.parse(body)
+    console.log(message)
+    nav("/user/patient/room/" + message.username)
+  })
+
+  return (
+    <CommonComponent data={{ data: data }}>
+      <Button>read blog while wating</Button>
+    </CommonComponent>
+  )
+}
+
+function CommonComponent({ data, children }) {
+  return (
+    <Grid
+      height={"50vh"}
+      container
+      direction={"row"}
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Grid item xs>
+        <Container
+          sx={{
+            width: "fit-content",
+            padding: "50px",
+            boxShadow: "2px 2px 8px #888888",
+          }}
+        >
+          <Grid
+            container
+            spacing={5}
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Grid item xs={6}>
+              <Typography>Number of Patient in Queue</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography>{data.data?.patients}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography>Time to waite in minute</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography>{data.data?.patients * 30 || "UNKNOWN"}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography>Current Patient who are diagnosing</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography>{data.data?.current}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              {children}
+              {/* <LoadingButton
+              loading={data.status}
+              fullWidth
+              variant="contained"
+              onClick={handleWaite}
+            >
+              WAITE
+            </LoadingButton>
+            <br />
+            <br />
+            {data.status && (
+              <Button fullWidth>read blog, while waitng</Button>
+            )} */}
+            </Grid>
+          </Grid>
+        </Container>
+      </Grid>
+    </Grid>
+  )
+}
+
 export default Vdt
