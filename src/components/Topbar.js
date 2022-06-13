@@ -72,6 +72,7 @@ const Topbar = ({ handleDrawerToggle }) => {
     setAnchorEl(null)
     nav("/login")
     auth.logoutUser()
+    window.location.reload()
   }
   return (
     <>
