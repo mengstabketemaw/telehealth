@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Alert, Snackbar } from '@mui/material';
+import { Alert, Avatar, Snackbar, Stack } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import { useLocation, NavLink } from "react-router-dom"
 import Topbar from "../../components/Topbar"
 import { Box, Divider, Drawer, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
 import { AccountBox, Article, Group, Home, Note, Schedule, VideoCall } from '@mui/icons-material';
+import telehealthImg from '../../assets/images/Telehealth.png'
 
 const drawerWidth = 240;
 
@@ -61,7 +62,7 @@ const NavigationDrawer = ({ mobileOpen, handleDrawerToggle }) => {
         }}
         sx={{
           display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944',  },
         }}
       >
         <DrawerTools />
@@ -70,7 +71,7 @@ const NavigationDrawer = ({ mobileOpen, handleDrawerToggle }) => {
         variant="permanent"
         sx={{
           display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944',  },
         }}
         open
       >
@@ -84,26 +85,36 @@ const NavigationDrawer = ({ mobileOpen, handleDrawerToggle }) => {
 function DrawerTools() {
   const { pathname } = useLocation();
   return (<>
-    <Toolbar>
-      <Typography>HealthCare</Typography>
-    </Toolbar>
-    <Divider />
+   <Toolbar>
+    
+    <Stack
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      spacing={1}
+    >
+
+    <Avatar alt="Travis Howard" src={telehealthImg} sx={{ margin: "15px", width: 150, height: 150 }} variant="rounded"/>
+    <Typography variant="h4" sx={{ color: "#ffffff"}}>Tele Health</Typography>
+      </Stack>
+      </Toolbar>
+      <Divider style={{ background: 'white', margin: '20px'}} variant="middle"/>
     {
       ["Activity", "Office", "Home Doctor", "Schedule", "Therapy Group"].map((name, index) => {
 
         let urlname = name.toLocaleLowerCase().replace(" ", "").replaceAll(".", "");
-        let color = pathname.includes(urlname) ? "primary" : "";
+        let color = pathname.includes(urlname) ? "#3490ec" : "#ffffff";
 
         return (
-          <NavLink key={index} to={urlname} style={{ color: "inherit", textDecoration: "none", display: "flex" }}>
+          <NavLink key={index} to={urlname} style={{ color: "#ffffff", textDecoration: "none", display: "flex" }}>
             <ListItem button >
               <ListItemIcon>
                 {
-                  name === "Activity" ? <Note color={color} /> :
-                    name === "Office" ? <VideoCall color={color} /> :
-                      name === "Schedule" ? <Schedule color={color} /> :
-                        name === "Therapy Group" ? <Group color={color} /> :
-                          <Home color={color} />
+                  name === "Activity" ? <Note sx={{ color }}/> :
+                    name === "Office" ? <VideoCall sx={{ color }}/> :
+                      name === "Schedule" ? <Schedule sx={{ color }}/> :
+                        name === "Therapy Group" ? <Group sx={{ color }}/> :
+                          <Home sx={{ color }}/>
                 }
               </ListItemIcon>
               <ListItemText>
@@ -115,19 +126,19 @@ function DrawerTools() {
       })
     }
 
-    <Divider />
+<Divider style={{ background: 'white', margin: '20px'}} variant="middle"/>
 
     {
       ["Profile", "Blog"].map((name, index) => {
         let urlname = name.toLocaleLowerCase().replaceAll(" ", "").replaceAll(".", "");
-        let color = pathname.includes(urlname) ? "primary" : "";
+        let color = pathname.includes(urlname) ? "#3490ec" : "#ffffff";
         return (
-          <NavLink key={index} to={urlname} style={{ color: "inherit", textDecoration: "none", display: "flex" }}>
+          <NavLink key={index} to={urlname} style={{ color: "#ffffff", textDecoration: "none", display: "flex" }}>
             <ListItem button>
               <ListItemIcon>
                 {
-                  name === "Profile" ? <AccountBox color={color} /> :
-                    <Article color={color} />
+                  name === "Profile" ? <AccountBox sx={{ color }}/> :
+                    <Article sx={{ color }}/>
                 }
               </ListItemIcon>
               <ListItemText>

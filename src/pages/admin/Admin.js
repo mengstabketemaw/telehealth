@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Alert, Snackbar } from '@mui/material';
+import { Alert, Avatar, Stack, Snackbar } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import {useLocation,NavLink} from "react-router-dom"
 import Topbar from "../../components/Topbar"
 import { Box, Divider, Drawer, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
 import { AccountBox, DocumentScanner, Feedback, Help, PieChart, Settings, } from '@mui/icons-material';
+import telehealthImg from '../../assets/images/Telehealth.png'
 
 const drawerWidth = 240;
 
@@ -61,7 +62,7 @@ const NavigationDrawer = ({mobileOpen,handleDrawerToggle}) =>{
         }}
         sx={{
           display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944',  },
         }}
       >
         <DrawerTools/>
@@ -70,7 +71,7 @@ const NavigationDrawer = ({mobileOpen,handleDrawerToggle}) =>{
         variant="permanent"
         sx={{
           display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944',  },
         }}
         open
       >
@@ -84,25 +85,35 @@ const NavigationDrawer = ({mobileOpen,handleDrawerToggle}) =>{
 function DrawerTools(){
   const {pathname} = useLocation();
   return (<>
-  <Toolbar>
-      <Typography>HealthCare</Typography>
-    </Toolbar>
-    <Divider />
+<Toolbar>
+    
+    <Stack
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      spacing={1}
+    >
+
+    <Avatar alt="Travis Howard" src={telehealthImg} sx={{ margin: "15px", width: 150, height: 150 }} variant="rounded"/>
+    <Typography variant="h4" sx={{ color: "#ffffff"}}>Tele Health</Typography>
+      </Stack>
+      </Toolbar>
+      <Divider style={{ background: 'white', margin: '20px'}} variant="middle"/>
   {
       ["Dashboard","Doctors","Help Applications","Feedback"].map((name,index)=>{
 
           let urlname = name.toLocaleLowerCase().replace(" ","").replaceAll(".","");
-          let color = pathname.includes(urlname)?"primary":"";
+          let color = pathname.includes(urlname)?"#3490ec":"#ffffff";
 
           return (
-          <NavLink key={index} to={urlname} style={{color:"inherit",textDecoration:"none", display:"flex"}}>
+          <NavLink key={index} to={urlname} style={{color:"#ffffff",textDecoration:"none", display:"flex"}}>
             <ListItem button >
                 <ListItemIcon>
                     {
-                        name==="Dashboard"?<PieChart color = {color}/>:
-                        name==="Doctors"?<DocumentScanner color = {color}/>:
-                        name==="Feedback"?<Feedback color = {color}/>:
-                        <Help color = {color}/>
+                        name==="Dashboard"?<PieChart sx={{ color }}/>:
+                        name==="Doctors"?<DocumentScanner sx={{ color }}/>:
+                        name==="Feedback"?<Feedback sx={{ color }}/>:
+                        <Help sx={{ color }}/>
                     }
                 </ListItemIcon>
                 <ListItemText>
@@ -114,19 +125,19 @@ function DrawerTools(){
       })
   }
 
-    <Divider />
+<Divider style={{ background: 'white', margin: '20px'}} variant="middle"/>
     
     {
       ["Profile","Setting"].map((name,index)=>{
         let urlname = name.toLocaleLowerCase().replaceAll(" ","").replaceAll(".","");
-        let color = pathname.includes(urlname)?"primary":"";
+        let color = pathname.includes(urlname)?"#3490ec":"#ffffff";
           return (
-          <NavLink key={index} to={urlname} style={{color:"inherit",textDecoration:"none", display:"flex"}}>
+          <NavLink key={index} to={urlname} style={{color:"#ffffff",textDecoration:"none", display:"flex"}}>
           <ListItem button>
               <ListItemIcon>
                   {
-                      name==="Profile"?<AccountBox color = {color}/>:
-                      <Settings color = {color}/>
+                      name==="Profile"?<AccountBox sx={{ color }}/>:
+                      <Settings sx={{ color }}/>
                   }
               </ListItemIcon>
               <ListItemText>
