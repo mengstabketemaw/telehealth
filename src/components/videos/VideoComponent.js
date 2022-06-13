@@ -1,61 +1,70 @@
-import { Paper } from "@mui/material";
-import { useParticipant } from "@videosdk.live/react-sdk";
-import { useEffect, useMemo, useRef } from "react";
-import ReactPlayer from "react-player";
+import { Paper } from "@mui/material"
+import { useMeeting, useParticipant } from "@videosdk.live/react-sdk"
+import { useEffect, useMemo, useRef } from "react"
+import ReactPlayer from "react-player"
 
-export default function VideoComponent({ participantId }) {
-    const micRef = useRef();
-    const { webcamStream, micStream, webcamOn, micOn } = useParticipant(participantId);
+export default function VideoComponent({ participantId, key }) {
+  const micRef = useRef()
+  const { participants } = useMeeting()
+  const { webcamStream, micStream, webcamOn, micOn, isLocal } =
+    useParticipant(participantId)
+  const videoStream = useMemo(() => {
+    if (webcamOn) {
+      const mediaStream = new MediaStream()
+      mediaStream.addTrack(webcamStream.track)
+      return mediaStream
+    }
+  }, [webcamOn, webcamStream])
 
-    const videoStream = useMemo(() => {
-        if (webcamOn) {
-            const mediaStream = new MediaStream();
-            mediaStream.addTrack(webcamStream.track);
-            return mediaStream;
-        }
-    }, [webcamOn, webcamStream])
+  useEffect(() => {
+    if (micRef.current) {
+      if (micOn) {
+        const mediaStream = new MediaStream()
+        mediaStream.addTrack(micStream.track)
 
-    useEffect(() => {
+        micRef.current.srcObject = mediaStream
+        micRef.current
+          .play()
+          .catch((error) =>
+            console.error("videoElem.current.play() failed", error)
+          )
+      } else {
+        micRef.current.srcObject = null
+      }
+    }
+  }, [micStream, micOn])
 
-        if (micRef.current) {
-            if (micOn) {
-                const mediaStream = new MediaStream();
-                mediaStream.addTrack(micStream.track);
+  let x = isLocal
+    ? { position: "fixed", height: "200px", width: "200px" }
+    : {
+        height: 100 / participantId + "%",
+        width: "fit-content",
+        margin: 1,
+        padding: "20px",
+      }
 
-                micRef.current.srcObject = mediaStream;
-                micRef.current
-                    .play()
-                    .catch((error) =>
-                        console.error("videoElem.current.play() failed", error)
-                    );
-            } else {
-                micRef.current.srcObject = null;
-            }
-        }
-    }, [micStream, micOn])
-
-    return (
-        <Paper key={participantId} elevation={3} sx={{ padding: "1", margin: "20px" }}>
-            {micOn && micRef && <audio ref={micRef} autoPlay />}
-            {webcamOn && (
-                <ReactPlayer
-                    //
-                    playsinline // very very imp prop
-                    pip={false}
-                    light={false}
-                    controls={false}
-                    muted={false}
-                    playing={true}
-                    //
-                    url={videoStream}
-                    //
-                    height={"100%"}
-                    width={"100%"}
-                    onError={(err) => {
-                        console.log(err, "participant video error");
-                    }}
-                />
-            )}
-        </Paper>
-    );
+  return (
+    <Paper key={participantId} elevation={3} sx={x}>
+      {micOn && micRef && <audio ref={micRef} autoPlay />}
+      {webcamOn && (
+        <ReactPlayer
+          //
+          playsinline // very very imp prop
+          pip={false}
+          light={false}
+          controls={false}
+          muted={false}
+          playing={true}
+          //
+          url={videoStream}
+          //
+          height={"100%"}
+          width={"100%"}
+          onError={(err) => {
+            console.log(err, "participant video error")
+          }}
+        />
+      )}
+    </Paper>
+  )
 }

@@ -1,20 +1,39 @@
-import { Camera, ExitToApp, Mic } from "@mui/icons-material";
-import { IconButton, Stack } from "@mui/material";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import {
+  ExitToApp,
+  Mic,
+  MicOff,
+  Videocam,
+  VideocamOff,
+} from "@mui/icons-material"
+import { IconButton, Stack } from "@mui/material"
+import { useMeeting } from "@videosdk.live/react-sdk"
+import useToken from "../../hooks/useToken"
 
 export default function VideoControllers() {
-    const { leave, toggleMic, toggleWebcam } = useMeeting();
-    return (
-        <Stack spacing={3} direction="row" alignItems="center" justifyContent="center">
-            <IconButton>
-                <ExitToApp color="red" />
-            </IconButton>
-            <IconButton>
-                <Mic />
-            </IconButton>
-            <IconButton>
-                <Camera />
-            </IconButton>
-        </Stack>
-    );
+  const { token } = useToken()
+  const { leave, toggleMic, toggleWebcam, localMicOn, localWebcamOn, end } =
+    useMeeting()
+  return (
+    <Stack
+      spacing={3}
+      direction="row"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <IconButton
+        onClick={() => {
+          if (token.role === "DOCTOR") end()
+          else leave()
+        }}
+      >
+        <ExitToApp color="error" />
+      </IconButton>
+      <IconButton onClick={toggleMic}>
+        {localMicOn ? <MicOff /> : <Mic />}
+      </IconButton>
+      <IconButton onClick={toggleWebcam}>
+        {localWebcamOn ? <VideocamOff /> : <Videocam />}
+      </IconButton>
+    </Stack>
+  )
 }
