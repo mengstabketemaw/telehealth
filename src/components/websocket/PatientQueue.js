@@ -4,6 +4,7 @@ import PatientProfileCard from "../doctor/PatientProfileCard"
 import { StompSessionProvider, useSubscription } from "react-stomp-hooks"
 import Config from "../../api/Config"
 import { Typography } from "@mui/material"
+import { CommonComponent } from "../../pages/patient/Vdt"
 import { useSnackbar } from "../../pages/doctor/Doctor"
 
 const PatientQueue = ({ open, handleClose, onView }) => {
@@ -24,6 +25,7 @@ const PatientQueue = ({ open, handleClose, onView }) => {
 
 function SubscriberComponent({ onView, open, handleClose }) {
   const [user, setUser] = useState({ status: "wating", data: {} })
+  const [data, setData] = useState({ data: {} })
   const { token } = useToken()
 
   //get message if patient enter VDT room.
@@ -32,15 +34,25 @@ function SubscriberComponent({ onView, open, handleClose }) {
     setUser({ status: "found", data: message })
   })
 
-  return user.status === "wating" ? (
-    <Typography>Wating for patient . . .</Typography>
-  ) : (
-    <PatientProfileCard
-      username={user.data.username}
-      onView={onView}
-      open={open}
-      handleClose={handleClose}
-    />
+  useSubscription("/topic/status", ({ body }) => {
+    const message = JSON.parse(body)
+    setData({ data: message })
+    console.log(message)
+  })
+
+  return (
+    <>
+      <CommonComponent data={data} doctor={true} />
+      <br />
+      {user.status !== "wating" && (
+        <PatientProfileCard
+          username={user.data.username}
+          onView={onView}
+          open={open}
+          handleClose={handleClose}
+        />
+      )}
+    </>
   )
 }
 

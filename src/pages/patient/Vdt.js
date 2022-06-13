@@ -78,7 +78,20 @@ function HandlePatient({ token }) {
   )
 }
 
-function CommonComponent({ data, children }) {
+export function CommonComponent({ data, doctor = false, children }) {
+  let waiting
+  if (data.data?.doctors > 1) {
+    waiting = 0
+  } else if (data.data?.patients) {
+    if (data.data?.current) {
+      waiting = (data.data?.patients / data.data?.current) * 30
+    } else {
+      waiting = data.data?.patients * 30
+    }
+  } else {
+    waiting = "UNKNOWN"
+  }
+
   return (
     <Grid
       height={"50vh"}
@@ -107,17 +120,29 @@ function CommonComponent({ data, children }) {
             <Grid item xs={6}>
               <Typography>{data.data?.patients}</Typography>
             </Grid>
-            <Grid item xs={6}>
-              <Typography>Time to waite in minute</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography>{data.data?.patients * 30 || "UNKNOWN"}</Typography>
-            </Grid>
+            {!doctor && (
+              <>
+                <Grid item xs={6}>
+                  <Typography>
+                    Approximate Time wating time in minute
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography>{waiting}</Typography>
+                </Grid>
+              </>
+            )}
             <Grid item xs={6}>
               <Typography>Current Patient who are diagnosing</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography>{data.data?.current}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography>Available Doctor</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography>{data.data?.doctors}</Typography>
             </Grid>
             <Grid item xs={12}>
               {children}
