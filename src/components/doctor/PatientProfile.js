@@ -1,86 +1,117 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import CloseIcon from '@mui/icons-material/Close';
-import Slide from '@mui/material/Slide';
-import { Avatar, Box, CircularProgress, Dialog, DialogTitle,DialogContent,DialogActions, TextField, Grid } from '@mui/material';
-import client from '../../api/client';
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import * as React from "react"
+import Button from "@mui/material/Button"
+import Divider from "@mui/material/Divider"
+import AppBar from "@mui/material/AppBar"
+import Toolbar from "@mui/material/Toolbar"
+import IconButton from "@mui/material/IconButton"
+import Typography from "@mui/material/Typography"
+import Stack from "@mui/material/Stack"
+import CloseIcon from "@mui/icons-material/Close"
+import Slide from "@mui/material/Slide"
+import {
+  Avatar,
+  Box,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Grid,
+} from "@mui/material"
+import client from "../../api/client"
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import requests from "../../api/repository"
 import useToken from "../../hooks/useToken"
+import PrescriptionForm from "./PerscriptionForm"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
 export default function PatientProfile(props) {
-    const { token } = useToken()
-    const [profile,setProfile] = React.useState({loading:true});
-    const [medicalRecord,setMedicalRecord] = React.useState({loading:true,row:[]})
-    const [prescribe,setPrescribe] = React.useState({open:false});
-    const [report,setReport] = React.useState({open:false});
-    const [detailedView,setDetailedView] = React.useState({open:false})
-    
-    React.useEffect(()=>{
-        client.post()
-        .then(()=>{
-            setProfile({loading:false})
-            setMedicalRecord({loading:false,row:[
-                {id:1,date:"1999-12-2",desc:"X ray for my ribe",type:"image/png"},
-                {id:2,date:"1999-11-2",desc:"Rage for my elbow",type:"video/mp4"},
-                {id:3,date:"2012-12-3",desc:"Medical Prescription",type:"E-prescription"},
-            ]})
-        });
+  const { token } = useToken()
+  const [profile, setProfile] = React.useState({ loading: true })
+  const [medicalRecord, setMedicalRecord] = React.useState({
+    loading: true,
+    row: [],
+  })
+  const [prescribe, setPrescribe] = React.useState({ open: false })
+  const [report, setReport] = React.useState({ open: false })
+  const [detailedView, setDetailedView] = React.useState({ open: false })
+
+  React.useEffect(() => {
+    client.post().then(() => {
+      setProfile({ loading: false })
+      setMedicalRecord({
+        loading: false,
+        row: [
+          {
+            id: 1,
+            date: "1999-12-2",
+            desc: "X ray for my ribe",
+            type: "image/png",
+          },
+          {
+            id: 2,
+            date: "1999-11-2",
+            desc: "Rage for my elbow",
+            type: "video/mp4",
+          },
+          {
+            id: 3,
+            date: "2012-12-3",
+            desc: "Medical Prescription",
+            type: "E-prescription",
+          },
+        ],
+      })
     })
+  })
 
-    const column=[
-        {
-            field:"date",
-            headerName:"Date",
-            type:"date",
-            flex:0.5
-        },
-        {
-            field:"desc",
-            headerName:"Describtion",
-            flex:1
-        },
-        {
-            field:"type",
-            headerName:"Type",
-            flex:0.5
-        },
-        {
-            field:"actions",
-            type:"actions",
-            getActions:({row})=>{
-                return [
-                    <GridActionsCellItem
-                        label={"Show In Detail"}
-                        showInMenu
-                        onClick={()=>{
-                            setDetailedView({open:true,...row})
-                        }}
-                    />
-                ]
-            }
-        }
-    ]
+  const column = [
+    {
+      field: "date",
+      headerName: "Date",
+      type: "date",
+      flex: 0.5,
+    },
+    {
+      field: "desc",
+      headerName: "Describtion",
+      flex: 1,
+    },
+    {
+      field: "type",
+      headerName: "Type",
+      flex: 0.5,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      getActions: ({ row }) => {
+        return [
+          <GridActionsCellItem
+            label={"Show In Detail"}
+            showInMenu
+            onClick={() => {
+              setDetailedView({ open: true, ...row })
+            }}
+          />,
+        ]
+      },
+    },
+  ]
 
-    const handlePrescribeMedicine = () =>{
-        const data = {
-            prescribedById: 0,
-            prescribedToId: 0,
-            //remark: ,
-        }
-
-        requests.post("api/Prescription", data)
+  const handlePrescribeMedicine = () => {
+    const data = {
+      prescribedById: 0,
+      prescribedToId: 0,
+      //remark: ,
     }
+
+    requests.post("api/Prescription", data)
+  }
 
   const handleAddReport = () => {
     console.log(report)
@@ -149,99 +180,7 @@ export default function PatientProfile(props) {
             hideFooter
           />
         </div>
-        <Stack
-          direction="row"
-          justifyContent="flex-end"
-          spacing={3}
-          width={"90%"}
-          padding={5}
-        >
-          <Button
-            variant="contained"
-            onClick={() => setPrescribe({ open: true })}
-          >
-            Prescribe medicine
-          </Button>
-          <Button variant="outlined" onClick={() => setReport({ open: true })}>
-            Add report
-          </Button>
-        </Stack>
-        <Dialog open={prescribe.open}>
-          <DialogTitle>Prescribe Medicine</DialogTitle>
-          <DialogContent dividers>
-            <Grid container spacing={3}>
-              <Grid item xs={6}>
-                <TextField
-                  label={"Drug Name"}
-                  value={prescribe?.name || ""}
-                  onChange={handleChangePrescribtion("name")}
-                  required
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  label={"Strength"}
-                  value={prescribe?.strength || ""}
-                  onChange={handleChangePrescribtion("strength")}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  label={"Sig"}
-                  value={prescribe?.sig || ""}
-                  onChange={handleChangePrescribtion("sig")}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  label={"Qty"}
-                  value={prescribe?.qty || ""}
-                  onChange={handleChangePrescribtion("qty")}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  label={"Memo"}
-                  value={prescribe?.memo || ""}
-                  onChange={handleChangePrescribtion("memo")}
-                />
-              </Grid>
-            </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handlePrescribeMedicine}>OK</Button>
-            <Button onClick={() => setPrescribe({ open: false })}>
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Dialog open={report.open} onClose={() => setReport({ open: false })}>
-          <DialogTitle>Add Diagnosis Report</DialogTitle>
-          <DialogContent dividers>
-            <Box sx={{ width: "70vh" }}>
-              <TextField
-                label="Report"
-                required
-                multiline
-                rows={4}
-                fullWidth
-                value={report?.value || ""}
-                onChange={(e) =>
-                  setReport({ ...report, value: e.target.value })
-                }
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleAddReport}>Ok</Button>
-            <Button onClick={() => setReport({ open: false })}>Cancel</Button>
-          </DialogActions>
-        </Dialog>
+        <PrescriptionForm pres={prescribe} repo={report} />
         <Dialog
           open={detailedView.open}
           onClose={() => setDetailedView({ open: false })}
