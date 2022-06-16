@@ -44,21 +44,14 @@ function SubscriberComponent({ onView, open, handleClose }) {
     <>
       <CommonComponent data={data} doctor={true} />
       <br />
-      <PatientProfileCard
-        username={"user.data.username"}
-        onView={onView}
-        open={open}
-        handleClose={handleClose}
-      />
-
-      {/* {user.status !== "wating" && (
+      {user.status !== "wating" && (
         <PatientProfileCard
           username={user.data.username}
           onView={onView}
           open={open}
           handleClose={handleClose}
         />
-      )} */}
+      )}
     </>
   )
 }

@@ -40,7 +40,7 @@ const Vdt = () => {
             variant="contained"
             onClick={handleWaite}
           >
-            WAITE
+            WAIT
           </LoadingButton>
         </CommonComponent>
       )}
@@ -146,19 +146,6 @@ export function CommonComponent({ data, doctor = false, children }) {
             </Grid>
             <Grid item xs={12}>
               {children}
-              {/* <LoadingButton
-              loading={data.status}
-              fullWidth
-              variant="contained"
-              onClick={handleWaite}
-            >
-              WAITE
-            </LoadingButton>
-            <br />
-            <br />
-            {data.status && (
-              <Button fullWidth>read blog, while waitng</Button>
-            )} */}
             </Grid>
           </Grid>
         </Container>
