@@ -1,8 +1,7 @@
-import { Bookmark } from "@mui/icons-material"
+import { Bookmark, Comment } from "@mui/icons-material"
 import {
   Avatar,
   Box,
-  Button,
   Card,
   CardActionArea,
   CardActions,
@@ -10,40 +9,64 @@ import {
   Grid,
   Typography,
 } from "@mui/material"
+import { useEffect, useState } from "react"
+import Config from "../../api/Config"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
+import useToken from "../../hooks/useToken"
 
-const BlogCard = () => {
+const BlogCard = ({ data }) => {
+  const { token } = useToken()
+  const [author, setAuthor] = useState()
+  const nav = useNavigate()
+  useEffect(() => {
+    axios.get(Config.USER_URL + "/id/" + 7).then(({ data }) => {
+      setAuthor(data.user)
+    })
+  }, [])
   return (
     <Grid item xs={12} sm={6} md={4}>
       <Card>
-        <CardActionArea>
+        <CardActionArea
+          onClick={() => {
+            if (token.role === "DOCTOR")
+              nav("/user/doctor/blogdetaile", { state: { ...data } })
+            else if (token.role === "PATIENT")
+              nav("/user/patient/blogdetaile", { state: { ...data } })
+            else nav("/user/admin/blogdetaile", { state: { ...data } })
+            console.log(data)
+          }}
+        >
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              React useContext
+              {data.title}
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-              Lizards are a widespread group of squamate reptiles, with over
-              6,000 species, ranging across all continents except Antarctica
+              {data.body}
             </Typography>
           </CardContent>
         </CardActionArea>
         <CardActions>
           <Box>
-            <Avatar src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" />
+            {author?.email && (
+              <Avatar src={`${Config.USER_URL}/avatar/${author?.email}`} />
+            )}
             <Box ml={2}>
               <Typography variant="subtitle2" component="p">
-                Guy Clemons
+                {author?.firstname} {author?.middlename}
               </Typography>
               <Typography
                 variant="subtitle2"
                 color="textSecondary"
                 component="p"
               >
-                May 14, 2020
+                {new Date(data.postDate).toDateString()}
               </Typography>
             </Box>
           </Box>
           <Box>
-            <Bookmark />
+            <Comment />
+            {data.comments?.length || 0}
           </Box>
         </CardActions>
       </Card>
