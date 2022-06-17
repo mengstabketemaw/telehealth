@@ -58,6 +58,7 @@ const Appointment = () => {
       homedoctor,
     })
   }
+
   const handleDelete = () => {
     setDeleteAppointment({ open: false })
     setData({ ...data, loading: true })
