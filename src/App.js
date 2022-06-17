@@ -31,6 +31,7 @@ import DocTherapyGroup from "./pages/doctor/DocTherapyGroup"
 import DocVideoRoom from "./pages/doctor/DocVideoRoom"
 import Checkout from "./pages/pharmacy/Checkout"
 import Prescription from "./pages/patient/Prescription"
+import BlogDetaile from "./components/blog/BlogDetaile"
 
 function App() {
   const { token } = useToken()
@@ -76,6 +77,7 @@ function App() {
           <Route path="homedoctor" element={<HomeDoctor />} />
           <Route path="profile" element={<Profile />} />
           <Route path="blog" element={<DocBlog />} />
+          <Route path="blogdetaile" element={<BlogDetaile />} />
           <Route path="therapygroup" element={<DocTherapyGroup />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="room" element={<DocVideoRoom />} />
