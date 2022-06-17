@@ -1,17 +1,41 @@
-import * as React from 'react';
-import {useLocation,NavLink} from "react-router-dom"
-import { Avatar, Box, Divider, Drawer, ListItem, ListItemIcon, ListItemText,Stack, Toolbar, Typography } from "@mui/material";
-import { AccountBox, Article, Dashboard, Folder, Groups, Help, Medication, Schedule, VideoCall } from '@mui/icons-material';
-import telehealthImg from '../assets/images/Telehealth.png'
+import * as React from "react"
+import { useLocation, NavLink } from "react-router-dom"
+import {
+  Avatar,
+  Box,
+  Divider,
+  Drawer,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material"
+import {
+  AccountBox,
+  Article,
+  Dashboard,
+  Folder,
+  Groups,
+  Help,
+  Medication,
+  Schedule,
+  VideoCall,
+} from "@mui/icons-material"
+import telehealthImg from "../assets/images/Telehealth.png"
 
-const drawerWidth = 240;
+const drawerWidth = 240
 
-const NavigationDrawer = ({mobileOpen,handleDrawerToggle}) =>{
-  
-    return (<>
+const NavigationDrawer = ({ mobileOpen, handleDrawerToggle }) => {
+  return (
+    <>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: drawerWidth, padding: "30px" },
+          flexShrink: { sm: 0 },
+        }}
         aria-label="mailbox folders"
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -23,98 +47,151 @@ const NavigationDrawer = ({mobileOpen,handleDrawerToggle}) =>{
             keepMounted: true, // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944', },
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              bgcolor: "#212944",
+              padding: "0 0 0 10px",
+            },
           }}
         >
-          <DrawerTools/>
+          <DrawerTools />
         </Drawer>
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944', },
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              bgcolor: "#212944",
+              padding: "0 0 0 10px",
+            },
           }}
           open
         >
-          <DrawerTools/>
+          <DrawerTools />
         </Drawer>
       </Box>
-    
-    </>)
+    </>
+  )
 }
 
-function DrawerTools(){
-    const {pathname} = useLocation();
-    return (<>
-    <Toolbar>
-    
-    <Stack
-      direction="column"
-      justifyContent="center"
-      alignItems="center"
-      spacing={1}
-    >
-
-    <Avatar alt="Travis Howard" src={telehealthImg} sx={{ margin: "15px", width: 150, height: 150 }} variant="rounded"/>
-    <Typography variant="h4" sx={{ color: "#ffffff"}}>Tele Health</Typography>
-      </Stack>
+function DrawerTools() {
+  const { pathname } = useLocation()
+  return (
+    <>
+      <Toolbar>
+        <Stack
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          spacing={1}
+        >
+          <Avatar
+            alt="Travis Howard"
+            src={telehealthImg}
+            sx={{ margin: "15px", width: 130, height: 130 }}
+            variant="rounded"
+          />
+          <Typography variant="h4" sx={{ color: "#dbdee3" }}>
+            Tele Health
+          </Typography>
+        </Stack>
       </Toolbar>
-      <Divider style={{ background: 'white', margin: '20px'}} variant="middle"/>
-    {
-        ["Dashboard","Appointment","Therapy Group","V.D.T","Medical Record","Prescription"].map((name,index)=>{
+      <Divider
+        style={{ background: "white", margin: "20px" }}
+        variant="middle"
+      />
+      {[
+        "Dashboard",
+        "Appointment",
+        "Therapy Group",
+        "V.D.T",
+        "Medical Record",
+        "Prescription",
+      ].map((name, index) => {
+        let urlname = name
+          .toLocaleLowerCase()
+          .replace(" ", "")
+          .replaceAll(".", "")
+        let color = pathname.includes(urlname) ? "#31b8cf" : "#dbdee3"
 
-            let urlname = name.toLocaleLowerCase().replace(" ","").replaceAll(".","");
-            let color = pathname.includes(urlname)?"#3490ec":"#ffffff";
-
-            return (
-            <NavLink key={index} to={urlname} style={{color:"#ffffff",textDecoration:"none", display:"flex"}}>
-              <ListItem button >
-                  <ListItemIcon>
-                      {
-                          name==="Dashboard"?<Dashboard sx={{ color }}/>:
-                          name==="Appointment"?<Schedule sx={{ color }}/>:
-                          name==="Therapy Group"?<Groups sx={{ color }}/>:
-                          name==="V.D.T"?<VideoCall sx={{ color }}/>:
-                          name==="Medical Record"?<Folder sx={{ color }}/>:
-                          <Medication sx={{ color }}/>
-                      }
-                  </ListItemIcon>
-                  <ListItemText>
-                          <Typography color={color}>{name}</Typography>
-                  </ListItemText>
-              </ListItem>
-           </NavLink>
-            )
-        })
-    }
-
-    <Divider style={{ background: 'white', margin: '20px'}} variant="middle"/>
-      
-      {
-        ["Apply For Help","Profile","Blog"].map((name,index)=>{
-          let urlname = name.toLocaleLowerCase().replaceAll(" ","").replaceAll(".","");
-          let color = pathname.includes(urlname)?"#3490ec":"#ffffff";
-            return (
-            <NavLink key={index} to={urlname} style={{color:"#ffffff",textDecoration:"none", display:"flex"}}>
+        return (
+          <NavLink
+            key={index}
+            to={urlname}
+            style={{
+              color: "#dbdee3",
+              textDecoration: "none",
+              display: "flex",
+            }}
+          >
             <ListItem button>
-                <ListItemIcon>
-                    {
-                        name==="Apply For Help"?<Help sx={{ color }}/>:
-                        name==="Profile"?<AccountBox sx={{ color }}/>:
-                        <Article sx={{ color }}/>
-                    }
-                </ListItemIcon>
-                <ListItemText>
-                  <Typography color={color}>{name}</Typography>
-                </ListItemText>
+              <ListItemIcon>
+                {name === "Dashboard" ? (
+                  <Dashboard sx={{ color }} />
+                ) : name === "Appointment" ? (
+                  <Schedule sx={{ color }} />
+                ) : name === "Therapy Group" ? (
+                  <Groups sx={{ color }} />
+                ) : name === "V.D.T" ? (
+                  <VideoCall sx={{ color }} />
+                ) : name === "Medical Record" ? (
+                  <Folder sx={{ color }} />
+                ) : (
+                  <Medication sx={{ color }} />
+                )}
+              </ListItemIcon>
+              <ListItemText>
+                <Typography color={color}>{name}</Typography>
+              </ListItemText>
             </ListItem>
-            </NavLink>
-            )
-        })
-    }
-    
-    </>)
+          </NavLink>
+        )
+      })}
+
+      <Divider
+        style={{ background: "white", margin: "20px" }}
+        variant="middle"
+      />
+
+      {["Apply For Help", "Profile", "Blog"].map((name, index) => {
+        let urlname = name
+          .toLocaleLowerCase()
+          .replaceAll(" ", "")
+          .replaceAll(".", "")
+        let color = pathname.includes(urlname) ? "#31b8cf" : "#dbdee3"
+        return (
+          <NavLink
+            key={index}
+            to={urlname}
+            style={{
+              color: "#dbdee3",
+              textDecoration: "none",
+              display: "flex",
+            }}
+          >
+            <ListItem button>
+              <ListItemIcon>
+                {name === "Apply For Help" ? (
+                  <Help sx={{ color }} />
+                ) : name === "Profile" ? (
+                  <AccountBox sx={{ color }} />
+                ) : (
+                  <Article sx={{ color }} />
+                )}
+              </ListItemIcon>
+              <ListItemText>
+                <Typography color={color}>{name}</Typography>
+              </ListItemText>
+            </ListItem>
+          </NavLink>
+        )
+      })}
+    </>
+  )
 }
 
-export default NavigationDrawer;
+export default NavigationDrawer

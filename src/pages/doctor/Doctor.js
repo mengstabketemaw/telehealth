@@ -6,7 +6,7 @@ import Topbar from "../../components/Topbar"
 import { Box, Divider, Drawer, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
 import { AccountBox, Article, Group, Home, Note, Schedule, VideoCall } from '@mui/icons-material';
 import telehealthImg from '../../assets/images/Telehealth.png'
-
+ 
 const drawerWidth = 240;
 
 const SnackBarContext = React.createContext();
@@ -62,7 +62,7 @@ const NavigationDrawer = ({ mobileOpen, handleDrawerToggle }) => {
         }}
         sx={{
           display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944',  },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944', padding: "0 0 0 10px" },
         }}
       >
         <DrawerTools />
@@ -71,7 +71,7 @@ const NavigationDrawer = ({ mobileOpen, handleDrawerToggle }) => {
         variant="permanent"
         sx={{
           display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944',  },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#212944', padding: "0 0 0 10px" },
         }}
         open
       >
@@ -94,8 +94,8 @@ function DrawerTools() {
       spacing={1}
     >
 
-    <Avatar alt="Travis Howard" src={telehealthImg} sx={{ margin: "15px", width: 150, height: 150 }} variant="rounded"/>
-    <Typography variant="h4" sx={{ color: "#ffffff"}}>Tele Health</Typography>
+    <Avatar alt="Travis Howard" src={telehealthImg} sx={{ margin: "15px", width: 130, height: 130 }} variant="rounded"/>
+    <Typography variant="h4" sx={{ color: "#dbdee3"}}>Tele Health</Typography>
       </Stack>
       </Toolbar>
       <Divider style={{ background: 'white', margin: '20px'}} variant="middle"/>
@@ -103,10 +103,10 @@ function DrawerTools() {
       ["Activity", "Office", "Home Doctor", "Schedule", "Therapy Group"].map((name, index) => {
 
         let urlname = name.toLocaleLowerCase().replace(" ", "").replaceAll(".", "");
-        let color = pathname.includes(urlname) ? "#3490ec" : "#ffffff";
+        let color = pathname.includes(urlname) ? "#3490ec" : "#dbdee3";
 
         return (
-          <NavLink key={index} to={urlname} style={{ color: "#ffffff", textDecoration: "none", display: "flex" }}>
+          <NavLink key={index} to={urlname} style={{ color: "#dbdee3", textDecoration: "none", display: "flex" }}>
             <ListItem button >
               <ListItemIcon>
                 {
@@ -131,9 +131,9 @@ function DrawerTools() {
     {
       ["Profile", "Blog"].map((name, index) => {
         let urlname = name.toLocaleLowerCase().replaceAll(" ", "").replaceAll(".", "");
-        let color = pathname.includes(urlname) ? "#3490ec" : "#ffffff";
+        let color = pathname.includes(urlname) ? "#3490ec" : "#dbdee3";
         return (
-          <NavLink key={index} to={urlname} style={{ color: "#ffffff", textDecoration: "none", display: "flex" }}>
+          <NavLink key={index} to={urlname} style={{ color: "#dbdee3", textDecoration: "none", display: "flex" }}>
             <ListItem button>
               <ListItemIcon>
                 {
@@ -152,4 +152,5 @@ function DrawerTools() {
 
   </>)
 }
+
 export default Doctor;
