@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import {
   Avatar,
+  Backdrop,
   Box,
   Button,
   CircularProgress,
@@ -9,15 +10,37 @@ import {
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import { Approval, Delete, Map, Receipt } from "@mui/icons-material"
 import schedule from "../../api/Scheduler"
+import useToken from "../../hooks/useToken"
+import { useSnackbar } from "./Doctor"
+import PatientProfile from "../../components/doctor/PatientProfile"
 
 const HomeDoctor = () => {
   const [status, setStatus] = useState({ loading: true, activated: false })
-
+  const { token } = useToken()
+  const { setSnackbar } = useSnackbar()
   useEffect(() => {
-    setStatus({ loading: false, activated: false })
+    schedule.get("/doctor/" + token.userId + "/").then(({ data }) => {
+      let isHomeDoctor = data.properties.is_home_doctor
+      setStatus({ loading: false, activated: isHomeDoctor })
+    })
   }, [])
 
-  const handleEnableHomeDoctor = () => {}
+  const handleEnableHomeDoctor = () => {
+    setStatus({ loading: true, activated: false })
+    schedule
+      .get(`/doctor/home/?id=${token.userId}&is_home_doctor=1`)
+      .then(() => {
+        setStatus({ loading: false, activated: true })
+      })
+      .catch(({ message }) => {
+        setStatus({ loading: false, activated: false })
+        setSnackbar({
+          children: "Could't do it: " + message,
+          severity: "error",
+          open: true,
+        })
+      })
+  }
   return (
     <>
       <br />
@@ -71,61 +94,55 @@ const HomeDoctor = () => {
 
 export function HomeAppointments() {
   const [data, setData] = useState({ loading: true, row: [] })
+  const [info, setInfo] = useState(false)
+  const [location, setLocation] = useState({ open: false })
+  const { token } = useToken()
+  const { setSnackbar } = useSnackbar()
+
+  const handleShowPatient = () => {}
+
+  const handleApprove = (row) => {
+    row.status = row.status === "Approved" ? "Disapproved" : "Approved"
+    console.log(row)
+    setData({ ...data, loading: true })
+    schedule
+      .put(`/doctor/${token.userId}/homeappt/${row.id}/`, row)
+      .then((response) => {
+        let newDate = data.row.map((e) => {
+          if (e.id === row.id) return row
+          return e
+        })
+        setData({ loading: false, row: newDate })
+      })
+      .catch(({ message }) => {
+        setData({ ...data, loading: false })
+        setSnackbar({
+          children: "Couldn't do it: " + message,
+          open: true,
+          severity: "error",
+        })
+      })
+  }
+
   useEffect(() => {
-    schedule.post().then(() => {
+    schedule.get(`/doctor/${token.userId}/homeappt/`).then(({ data }) => {
       setData({
         loading: false,
-        row: [
-          {
-            id: 1,
-            avatar: "a",
-            name: "mamush",
-            sex: "male",
-            age: "12",
-            dateTime: "2022-12-12 10:12:12",
-            status: "Approved",
-            location: "addis ababa",
-          },
-        ],
+        row: data,
       })
     })
   }, [])
 
   const column = [
     {
-      field: "avatar",
-      headerName: "Avatar",
-      width: "100",
-      renderCell: ({ value }) => {
-        return (
-          <Avatar src={value} sx={{ width: "70px", height: "70px" }}>
-            value
-          </Avatar>
-        )
-      },
-    },
-    {
-      field: "name",
-      headerName: "Name",
+      field: "patient",
+      headerName: "Patient Id",
       flex: 1,
     },
     {
-      field: "sex",
-      headerName: "Sex",
-    },
-    {
-      field: "age",
-      headerName: "Age",
-    },
-    {
-      field: "dateTime",
+      field: "appt_date",
       headerName: "Date Time",
       type: "dateTime",
-      flex: 1,
-    },
-    {
-      field: "location",
-      headerName: "Location",
       flex: 1,
     },
     {
@@ -143,31 +160,57 @@ export function HomeAppointments() {
           showInMenu
         />,
         <GridActionsCellItem
-          label="Show Medical Record"
+          label="Show Patient Information"
           icon={<Receipt />}
           showInMenu
         />,
         <GridActionsCellItem
-          label="Approve Request"
+          label={
+            row.status === "Approved" ? "Disapprove Request" : "Approve Request"
+          }
           icon={<Approval />}
+          onClick={() => handleApprove(row)}
           showInMenu
         />,
-        <GridActionsCellItem label="Delete" icon={<Delete />} />,
       ],
     },
   ]
 
   return (
-    <div style={{ width: "100%", height: "500px" }}>
-      <DataGrid
-        rowHeight={100}
-        loading={data.loading}
-        columns={column}
-        rows={data.row}
-        hideFooter
-      />
-    </div>
+    <>
+      <div style={{ width: "100%", height: "500px" }}>
+        <DataGrid
+          rowHeight={100}
+          loading={data.loading}
+          columns={column}
+          rows={data.row}
+          hideFooter
+        />
+      </div>
+      <ShowPatientInfo info={info} setInfo={setInfo} />
+      <ShowLocation location={location} setLocation={setLocation} />
+    </>
   )
+}
+
+function ShowPatientInfo() {
+  const [data, setData] = useState({ loading: true, username: "" })
+
+  useEffect(() => {}, [])
+
+  if (data.loading)
+    return (
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={true}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    )
+}
+
+function ShowLocation() {
+  return null
 }
 
 export default HomeDoctor
