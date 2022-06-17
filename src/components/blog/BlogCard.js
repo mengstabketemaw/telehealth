@@ -34,7 +34,6 @@ const BlogCard = ({ data }) => {
             else if (token.role === "PATIENT")
               nav("/user/patient/blogdetaile", { state: { ...data } })
             else nav("/user/admin/blogdetaile", { state: { ...data } })
-            console.log(data)
           }}
         >
           <CardContent>

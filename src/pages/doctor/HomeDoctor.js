@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
   Typography,
 } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
@@ -13,6 +14,9 @@ import schedule from "../../api/Scheduler"
 import useToken from "../../hooks/useToken"
 import { useSnackbar } from "./Doctor"
 import PatientProfile from "../../components/doctor/PatientProfile"
+import axios from "axios"
+import Config from "../../api/Config"
+import WhereIsThisPatient from "../../components/maps/WhereIsThisPatient"
 
 const HomeDoctor = () => {
   const [status, setStatus] = useState({ loading: true, activated: false })
@@ -94,12 +98,16 @@ const HomeDoctor = () => {
 
 export function HomeAppointments() {
   const [data, setData] = useState({ loading: true, row: [] })
-  const [info, setInfo] = useState(false)
-  const [location, setLocation] = useState({ open: false })
+  const [info, setInfo] = useState({ open: false })
   const { token } = useToken()
   const { setSnackbar } = useSnackbar()
 
-  const handleShowPatient = () => {}
+  const handleShowPatient = (row) => {
+    setInfo({ open: true, id: row.patient, profile: true, location: false })
+  }
+  const handleShowLocation = (row) => {
+    setInfo({ open: true, id: row.patient, profile: false, location: true })
+  }
 
   const handleApprove = (row) => {
     row.status = row.status === "Approved" ? "Disapproved" : "Approved"
@@ -128,7 +136,14 @@ export function HomeAppointments() {
     schedule.get(`/doctor/${token.userId}/homeappt/`).then(({ data }) => {
       setData({
         loading: false,
-        row: data,
+        row: [
+          {
+            id: "45",
+            appt_date: "2002-12-12T13:02:00Z",
+            patient: "15",
+            status: "Requested",
+          },
+        ],
       })
     })
   }, [])
@@ -143,6 +158,9 @@ export function HomeAppointments() {
       field: "appt_date",
       headerName: "Date Time",
       type: "dateTime",
+      valueFormatter: ({ value }) => {
+        return new Date(value).toLocaleString()
+      },
       flex: 1,
     },
     {
@@ -157,11 +175,13 @@ export function HomeAppointments() {
         <GridActionsCellItem
           label="Show Location On Map"
           icon={<Map />}
+          onClick={() => handleShowLocation(row)}
           showInMenu
         />,
         <GridActionsCellItem
           label="Show Patient Information"
           icon={<Receipt />}
+          onClick={() => handleShowPatient(row)}
           showInMenu
         />,
         <GridActionsCellItem
@@ -187,16 +207,30 @@ export function HomeAppointments() {
           hideFooter
         />
       </div>
-      <ShowPatientInfo info={info} setInfo={setInfo} />
-      <ShowLocation location={location} setLocation={setLocation} />
+      {info.open && <ShowPatientInfo info={info} setInfo={setInfo} />}
     </>
   )
 }
 
-function ShowPatientInfo() {
-  const [data, setData] = useState({ loading: true, username: "" })
+function ShowPatientInfo({ info, setInfo }) {
+  const [data, setData] = useState({ loading: true, user: {} })
+  const { setSnackbar } = useSnackbar()
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    axios
+      .get(Config.USER_URL + "/id/" + info.id)
+      .then(({ data }) => {
+        setData({ loading: false, user: data.user })
+      })
+      .catch(({ message }) => {
+        setSnackbar({
+          open: true,
+          children: "Couldn't load user from auth: " + message,
+          severity: "error",
+        })
+        setInfo({ open: false })
+      })
+  }, [])
 
   if (data.loading)
     return (
@@ -207,10 +241,33 @@ function ShowPatientInfo() {
         <CircularProgress color="inherit" />
       </Backdrop>
     )
-}
 
-function ShowLocation() {
-  return null
+  if (data.user.email && info?.profile)
+    return (
+      <PatientProfile
+        open={info}
+        username={data.user.email}
+        handleClose={() => setInfo({ open: false })}
+      />
+    )
+  if (info?.location)
+    return (
+      <Dialog
+        open={info}
+        fullWidth
+        maxWidth={"100%"}
+        onClose={() => setInfo({ open: false })}
+      >
+        <WhereIsThisPatient
+          userInfo={{
+            username: data.user.email,
+            lat: data.user.latitude,
+            lng: data.user.longitude,
+            name: data.user.firstname + " " + data.user.middlename,
+          }}
+        />
+      </Dialog>
+    )
 }
 
 export default HomeDoctor

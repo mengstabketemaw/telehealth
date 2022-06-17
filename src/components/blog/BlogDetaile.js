@@ -28,8 +28,8 @@ export default function BlogDetaile() {
       <Divider />
       <br />
       <Stack spacing={3}>
-        {state.comments?.map((e) => (
-          <Comment comment={e} />
+        {state.comments?.map((e, i) => (
+          <Comment key={i} comment={e} />
         ))}
       </Stack>
       <br />

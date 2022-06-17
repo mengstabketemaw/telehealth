@@ -10,7 +10,7 @@ import CloseIcon from "@mui/icons-material/Close"
 import Slide from "@mui/material/Slide"
 import axios from "axios"
 import Config from "../../api/Config"
-import useSnackbar from "../../pages/doctor/Doctor"
+import { useSnackbar } from "../../pages/doctor/Doctor"
 import mati from "../../api/repository"
 import {
   Avatar,
@@ -46,50 +46,57 @@ export default function PatientProfile(props) {
   const [detailedView, setDetailedView] = React.useState({ open: false })
 
   React.useEffect(() => {
-    ;(async function () {
-      try {
-        let {
-          data: { user },
-        } = await axios.get(Config.USER_URL / "username/" + props.username)
-        setProfile({ loading: false, user })
-        let { data } = await mati.get("api/MedicalRecord/user/" + profile.id)
-        setMedicalRecord({ loading: false, row: data })
-      } catch ({ message }) {
+    axios
+      .get(`${Config.USER_URL}/username/${props.username}`)
+      .then(({ data }) => {
+        setProfile({ loading: false, user: data.user })
+      })
+      .catch(({ message }) => {
         setSnackbar({
-          children: "Could't load data: " + message,
+          children: "Could't load profile: " + message,
           severity: "error",
           open: true,
         })
-      }
-    })()
-
-    client.post().then(() => {
-      setProfile({ loading: false })
-      setMedicalRecord({
-        loading: false,
-        row: [
-          {
-            id: 1,
-            date: "1999-12-2",
-            desc: "X ray for my ribe",
-            type: "image/png",
-          },
-          {
-            id: 2,
-            date: "1999-11-2",
-            desc: "Rage for my elbow",
-            type: "video/mp4",
-          },
-          {
-            id: 3,
-            date: "2012-12-3",
-            desc: "Medical Prescription",
-            type: "E-prescription",
-          },
-        ],
       })
-    })
-  })
+    // mati
+    //   .get("api/MedicalRecord/user/" + profile.id)
+    //   .then(({ data }) => {
+    //     setMedicalRecord({ loading: false, row: data })
+    //   })
+    //   .catch(({ message }) => {
+    //     setSnackbar({
+    //       children: "Could't load medical record: " + message,
+    //       severity: "error",
+    //       open: true,
+    //     })
+    //   })
+    // client.post().then(() => {
+    //   setProfile({ loading: false })
+    //   setMedicalRecord({
+    //     loading: false,
+    //     row: [
+    //       {
+    //         id: 1,
+    //         date: "1999-12-2",
+    //         desc: "X ray for my ribe",
+    //         type: "image/png",
+    //       },
+    //       {
+    //         id: 2,
+    //         date: "1999-11-2",
+    //         desc: "Rage for my elbow",
+    //         type: "video/mp4",
+    //       },
+    //       {
+    //         id: 3,
+    //         date: "2012-12-3",
+    //         desc: "Medical Prescription",
+    //         type: "E-prescription",
+    //       },
+    //     ],
+    //   })
+    // })
+  }, [])
 
   const column = [
     {
@@ -178,16 +185,22 @@ export default function PatientProfile(props) {
       </Box>
       <Stack alignItems={"center"} spacing={1}>
         <hr />
-        <Avatar src={props.img} sx={{ width: "200px", height: "200px" }} />
+        <Avatar
+          src={`${Config.USER_URL}/avatar/${token.username}`}
+          sx={{ width: "200px", height: "200px" }}
+        />
         <Divider variant="middle" width={"50%"} />
         {profile.loading ? (
           <CircularProgress />
         ) : (
           <>
-            <Typography>Patient full name</Typography>
-            <Typography>Male</Typography>
-            <Typography>30 years old</Typography>
-            <Typography>Single</Typography>
+            <Typography variant="h5" color="green">
+              {profile.user.firstname} {profile.user.middlename}
+            </Typography>
+            <Typography>Sex: {profile.user.sex}</Typography>
+            <Typography>birthDate: {profile.user.birthDate}</Typography>
+            <Typography>phoneNo: {profile.user.phoneNumber}</Typography>
+            <Typography>homePhoneNo: {profile.user.homePhoneNumber}</Typography>
           </>
         )}
         <Divider variant="middle" width={"50%"} />
