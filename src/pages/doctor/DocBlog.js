@@ -1,12 +1,33 @@
-import { Typography } from "@mui/material";
-import BlogCard from "../../components/blog/BlogCard";
+import { Typography, Grid } from "@mui/material"
+import BlogCard from "../../components/blog/BlogCard"
 
 const DocBlog = () => {
-    return (<>
-    <br/>
-    <Typography variant="h4" color="primary">Blog</Typography>
-    <br/>
-    <BlogCard/>
-    </>)
+  return (
+    <>
+      <br />
+      <Typography variant="h4" color="primary">
+        Blog
+      </Typography>
+      <br />
+      <Grid container spacing={3}>
+        <BlogCard />
+        <BlogCard />
+        <BlogCard />
+        <BlogCard />
+        <BlogCard />
+      </Grid>
+      <BlogLists />
+      <WriteBlog />
+    </>
+  )
 }
-export default DocBlog;
+
+function BlogLists() {
+  return <></>
+}
+
+function WriteBlog() {
+  return <></>
+}
+
+export default DocBlog

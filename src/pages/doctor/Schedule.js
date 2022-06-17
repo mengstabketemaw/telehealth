@@ -22,7 +22,7 @@ import {
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon"
 import axios from "axios"
 import { useEffect, useState } from "react"
-import schedule from "../../api/Scheduler"
+import mick from "../../api/Scheduler"
 import useToken from "../../hooks/useToken"
 import { useSnackbar } from "./Doctor"
 
@@ -33,7 +33,7 @@ const Schedule = () => {
   const { token } = useToken()
 
   useEffect(() => {
-    schedule
+    mick
       .get("/doctor/" + token.userId + "/availablity/")
       .then(({ data }) => {
         let res = data.map((e) => {
@@ -48,7 +48,11 @@ const Schedule = () => {
       })
       .catch(({ message }) => {
         setSchedules({ loading: false, data: [] })
-        setSnackbar({ open: true, severity: "error", children: message })
+        setSnackbar({
+          open: true,
+          severity: "error",
+          children: "Could't load data from mick: " + message,
+        })
       })
   }, [])
 
@@ -81,25 +85,43 @@ const Schedule = () => {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            label="Edit"
-            icon={<Edit color="secondary" />}
-            onClick={(f) => f}
-          />,
-          <GridActionsCellItem
             label="delete"
             icon={<Delete />}
-            onClick={(f) => f}
+            onClick={(f) => handleDelete(params.id)}
           />,
         ]
       },
     },
   ]
 
+  const handleDelete = async (id) => {
+    setSchedules({ ...schedules, loading: true })
+    try {
+      await mick.delete(`/doctor/${token.userId}/availablity/${id}`)
+      let data = schedules.data.filter((e) => e.id !== id)
+      setSchedules({ loading: false, data })
+    } catch ({ message }) {
+      setSchedules({ ...schedules, loading: false })
+      setSnackbar({
+        children: "Couldn't delete: " + message,
+        severity: "error",
+        open: true,
+      })
+    }
+  }
+
   const handleAddWorkingHoure = () => {
     setSchedules({ ...schedules, loading: true })
     setAddSchedule({ ...addSchedule, open: false })
-    axios
-      .post(addSchedule)
+    mick
+      .post(`/doctor/${token.userId}/availablity/`, {
+        date_time: {
+          date: addSchedule.day,
+          start_time: addSchedule.start_time.toFormat("TT"),
+          end_time: addSchedule.end_time.toFormat("TT"),
+        },
+        doctor: token.userId,
+      })
       .then(({ data }) => {
         setSchedules({ data: { ...schedules.data, ...data }, loading: false })
         setSnackbar({

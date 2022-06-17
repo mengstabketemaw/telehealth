@@ -8,6 +8,10 @@ import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
 import CloseIcon from "@mui/icons-material/Close"
 import Slide from "@mui/material/Slide"
+import axios from "axios"
+import Config from "../../api/Config"
+import useSnackbar from "../../pages/doctor/Doctor"
+import mati from "../../api/repository"
 import {
   Avatar,
   Box,
@@ -31,6 +35,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function PatientProfile(props) {
   const { token } = useToken()
+  const { setSnackbar } = useSnackbar()
   const [profile, setProfile] = React.useState({ loading: true })
   const [medicalRecord, setMedicalRecord] = React.useState({
     loading: true,
@@ -41,6 +46,23 @@ export default function PatientProfile(props) {
   const [detailedView, setDetailedView] = React.useState({ open: false })
 
   React.useEffect(() => {
+    ;(async function () {
+      try {
+        let {
+          data: { user },
+        } = await axios.get(Config.USER_URL / "username/" + props.username)
+        setProfile({ loading: false, user })
+        let { data } = await mati.get("api/MedicalRecord/user/" + profile.id)
+        setMedicalRecord({ loading: false, row: data })
+      } catch ({ message }) {
+        setSnackbar({
+          children: "Could't load data: " + message,
+          severity: "error",
+          open: true,
+        })
+      }
+    })()
+
     client.post().then(() => {
       setProfile({ loading: false })
       setMedicalRecord({
