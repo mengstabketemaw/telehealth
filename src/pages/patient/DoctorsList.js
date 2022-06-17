@@ -1,14 +1,18 @@
-import { Stack, Typography } from "@mui/material";
-import Consultants from "../../components/appointment/Consultants";
+import { Stack, Typography } from "@mui/material"
+import Consultants from "../../components/appointment/Consultants"
 
-const DoctorList = () =>{
-    return <>
-<Stack>
-    <br/>
-    <Typography color="primary" variant="h4">Schedule Appointment NOW</Typography>
-    <br/>
-    <Consultants/>
-</Stack>
+const DoctorList = () => {
+  return (
+    <>
+      <Stack>
+        <br />
+        <Typography color="primary" variant="h4">
+          Schedule Appointment NOW
+        </Typography>
+        <br />
+        <Consultants />
+      </Stack>
     </>
+  )
 }
-export default DoctorList;
+export default DoctorList

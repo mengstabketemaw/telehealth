@@ -1,6 +1,8 @@
 const HelpApplications = () => {
-    return (<>
-    <h1>This is HelpApplications</h1>
-    </>)
+  return (
+    <>
+      <h1>This is HelpApplications</h1>
+    </>
+  )
 }
-export default HelpApplications;
+export default HelpApplications

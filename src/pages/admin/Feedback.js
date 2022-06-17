@@ -1,6 +1,8 @@
-const Feedback = () =>{
-    return (<>
-    <h1>This is Feedback</h1>
-    </>)
+const Feedback = () => {
+  return (
+    <>
+      <h1>This is Feedback</h1>
+    </>
+  )
 }
-export default Feedback;
+export default Feedback

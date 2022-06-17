@@ -1,22 +1,32 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import Divider from '@mui/material/Divider';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import CloseIcon from '@mui/icons-material/Close';
-import Slide from '@mui/material/Slide';
-import { Avatar } from '@mui/material';
+import * as React from "react"
+import Button from "@mui/material/Button"
+import Dialog from "@mui/material/Dialog"
+import Divider from "@mui/material/Divider"
+import AppBar from "@mui/material/AppBar"
+import Toolbar from "@mui/material/Toolbar"
+import IconButton from "@mui/material/IconButton"
+import Typography from "@mui/material/Typography"
+import Stack from "@mui/material/Stack"
+import CloseIcon from "@mui/icons-material/Close"
+import Slide from "@mui/material/Slide"
+import { Avatar } from "@mui/material"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+  return <Slide direction="up" ref={ref} {...props} />
+})
 
-export default function DoctorProfile({open,handleClose,name,img,specialization,homedoctor,consultation,id,...row}) {
-  React.useEffect(()=>{})
+export default function DoctorProfile({
+  open,
+  handleClose,
+  name,
+  img,
+  specialization,
+  homedoctor,
+  consultation,
+  id,
+  ...row
+}) {
+  React.useEffect(() => {})
 
   return (
     <div>
@@ -26,7 +36,7 @@ export default function DoctorProfile({open,handleClose,name,img,specialization,
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: 'relative' }}>
+        <AppBar sx={{ position: "relative" }}>
           <Toolbar>
             <IconButton
               edge="start"
@@ -45,12 +55,14 @@ export default function DoctorProfile({open,handleClose,name,img,specialization,
           </Toolbar>
         </AppBar>
         <Stack alignItems={"center"} spacing={1}>
-          <hr/>
-          <Avatar src={img||row.avatar} sx={{width:'200px',height:'200px'}}/>
-          <Divider/>
-          
+          <hr />
+          <Avatar
+            src={img || row.avatar}
+            sx={{ width: "200px", height: "200px" }}
+          />
+          <Divider />
         </Stack>
       </Dialog>
     </div>
-  );
+  )
 }

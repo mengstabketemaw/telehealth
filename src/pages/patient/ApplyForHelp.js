@@ -8,10 +8,9 @@ const ApplyForHelp = () => {
   const [files, setFiles] = useState([])
 
   function submit() {
-    
     const data = {
       requestorId: token.userId,
-      body: desc  ,
+      body: desc,
     }
     requests.post("api/Help", data)
   }
@@ -50,7 +49,9 @@ const ApplyForHelp = () => {
             {e?.name}
           </Typography>
         ))}
-        <Button variant="contained" onClick={submit}>Submit</Button>
+        <Button variant="contained" onClick={submit}>
+          Submit
+        </Button>
       </Stack>
     </>
   )

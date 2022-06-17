@@ -9,21 +9,21 @@ import {
   Grid,
   Stack,
   TextField,
-} from "@mui/material";
-import axios from "axios";
-import { useState } from "react";
-import useToken from "../../hooks/useToken";
-import requests from "../../api/repository";
-import { useSnackbar } from "../../pages/doctor/Doctor";
+} from "@mui/material"
+import axios from "axios"
+import { useState } from "react"
+import useToken from "../../hooks/useToken"
+import requests from "../../api/repository"
+import { useSnackbar } from "../../pages/doctor/Doctor"
 
 export default function PrescriptionForm({ pres, repo }) {
-  const { token } = useToken();
-  const [prescribe, setPrescribe] = useState(pres);
-  const [report, setReport] = useState(repo);
-  const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
-  const [preValue, setPreValue] = useState("");
-  const { setSnackbar } = useSnackbar();
+  const { token } = useToken()
+  const [prescribe, setPrescribe] = useState(pres)
+  const [report, setReport] = useState(repo)
+  const [loading, setLoading] = useState(false)
+  const [options, setOptions] = useState([])
+  const [preValue, setPreValue] = useState("")
+  const { setSnackbar } = useSnackbar()
 
   const handlePrescribeMedicine = () => {
     const data = {
@@ -32,65 +32,65 @@ export default function PrescriptionForm({ pres, repo }) {
       medication: prescribe.name,
       strength: prescribe.strength,
       remark: prescribe.remark,
-    };
+    }
 
-    requests.post("api/Prescription", data);
-    setPrescribe({ open: false });
+    requests.post("api/Prescription", data)
+    setPrescribe({ open: false })
     setSnackbar({
       open: true,
       children: "Prescription is successfully added ",
-    });
-  };
+    })
+  }
 
   const handleAddReport = () => {
     const data = {
       patientId: 10, //hard coded value needs to be changed to patient's ID //
       record: report.value,
-    };
+    }
 
-    requests.post("api/MedicalRecord", data);
-    setReport({ open: false });
+    requests.post("api/MedicalRecord", data)
+    setReport({ open: false })
     setSnackbar({
       open: true,
       children: "Record is successfully added ",
-    });
-  };
+    })
+  }
 
   const handleChangePrescribtion = (type) => (event) => {
     setPrescribe((state) => ({
       ...state,
       [type]: event.target.value,
-    }));
-  };
+    }))
+  }
 
-  let cancelToken;
+  let cancelToken
   const getRxTherms = async (value) => {
-    if (value === "") return;
+    if (value === "") return
 
     if (typeof cancelToken != typeof undefined) {
-      cancelToken.cancel("Operation canceled due to new request.");
+      cancelToken.cancel("Operation canceled due to new request.")
     }
-    cancelToken = axios.CancelToken.source();
-    setLoading(true);
+    cancelToken = axios.CancelToken.source()
+    setLoading(true)
     axios
       .get(
         `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${value}&ef=STRENGTHS_AND_FORMS&maxList=10`,
         { cancelToken: cancelToken.token }
       )
       .then(({ data }) => {
-        let stre = data[2]["STRENGTHS_AND_FORMS"];
+        let stre = data[2]["STRENGTHS_AND_FORMS"]
 
         let options = data[1].map((e, i) => {
           return {
             id: i,
             label: e,
             strength: stre[i],
-          };
-        });
-        setLoading(false);
-        setOptions(options);
-      });
-  };
+          }
+        })
+        setLoading(false)
+        setOptions(options)
+      })
+  }
 
   return (
     <>
@@ -126,12 +126,12 @@ export default function PrescriptionForm({ pres, repo }) {
                 options={options}
                 value={preValue}
                 onChange={(event, newValue) => {
-                  setOptions(newValue ? [newValue, ...options] : options);
-                  setPrescribe({ ...prescribe, name: newValue?.label });
-                  setPreValue(newValue);
+                  setOptions(newValue ? [newValue, ...options] : options)
+                  setPrescribe({ ...prescribe, name: newValue?.label })
+                  setPreValue(newValue)
                 }}
                 onInputChange={(event, newInputValue) => {
-                  getRxTherms(newInputValue);
+                  getRxTherms(newInputValue)
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Rx Therm" fullWidth />
@@ -148,7 +148,7 @@ export default function PrescriptionForm({ pres, repo }) {
                 getOptionLabel={(val) => val || ""}
                 value={prescribe?.strength || ""}
                 onChange={(event, newValue) => {
-                  setPrescribe({ ...prescribe, strength: newValue });
+                  setPrescribe({ ...prescribe, strength: newValue })
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Strength" fullWidth />
@@ -194,5 +194,5 @@ export default function PrescriptionForm({ pres, repo }) {
         </DialogActions>
       </Dialog>
     </>
-  );
+  )
 }

@@ -1,19 +1,19 @@
-import * as React from 'react';
+import * as React from "react"
 import { useState } from "react"
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
+import Typography from "@mui/material/Typography"
+import TextField from "@mui/material/TextField"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Grid from "@mui/material/Grid"
 import requests from "../../api/repository"
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom"
 
 export default function Review() {
-  const { prescriptionId } = useParams();
-  const [prescribedBy, setPrescribedBy] = useState(0);
+  const { prescriptionId } = useParams()
+  const [prescribedBy, setPrescribedBy] = useState(0)
   requests.get(`api/Prescription/${prescriptionId}`).then(function (response) {
-    
-    setPrescribedBy(response.prescribedById);});
-    console.log(prescribedBy)
+    setPrescribedBy(response.prescribedById)
+  })
+  console.log(prescribedBy)
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -67,5 +67,5 @@ export default function Review() {
         </Grid>
       </Grid>
     </React.Fragment>
-  );
+  )
 }

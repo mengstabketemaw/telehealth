@@ -1,13 +1,16 @@
-import { Typography } from "@mui/material";
-import UserProfile from "../../components/profile/UserProfile";
+import { Typography } from "@mui/material"
+import UserProfile from "../../components/profile/UserProfile"
 
-const Profile = ()=>{
-    return (<>
-    <br/>
-    <Typography variant="h4" color="primary">Profile</Typography>
-    <br/>
-    <UserProfile/>
+const Profile = () => {
+  return (
+    <>
+      <br />
+      <Typography variant="h4" color="primary">
+        Profile
+      </Typography>
+      <br />
+      <UserProfile />
     </>
-    )
+  )
 }
-export default Profile;
+export default Profile
