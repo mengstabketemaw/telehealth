@@ -18,8 +18,15 @@ const sx = {
   alignItems: "center",
   justifyContent: "center",
 }
+
+const isActivated = () => {
+  if (sessionStorage.getItem("activated") === "true")
+    return { loading: false, disabled: false }
+  return { loading: true, disabled: true }
+}
+
 const PrivateElement = ({ children }) => {
-  const [data, setData] = useState({ loading: false, disabled: false })
+  const [data, setData] = useState(isActivated())
   let location = useLocation()
   const nav = useNavigate()
   const { token, setToken } = useToken()
@@ -27,13 +34,14 @@ const PrivateElement = ({ children }) => {
   useEffect(() => {
     ;(async function () {
       if (!token?.userId) return
-      setData({ ...data, loading: true })
+      if (!data.disabled) return
       const {
         data: {
           user: { disabled },
         },
       } = await axios.get(Config.USER_URL + "/id/" + token.userId)
       console.log(disabled)
+      sessionStorage.setItem("activated", disabled)
       setData({ loading: false, disabled })
     })()
   }, [token?.userId])

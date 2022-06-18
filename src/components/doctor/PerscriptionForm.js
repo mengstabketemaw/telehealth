@@ -16,7 +16,12 @@ import useToken from "../../hooks/useToken"
 import requests from "../../api/repository"
 import { useSnackbar } from "../../pages/doctor/Doctor"
 
-export default function PrescriptionForm({ pres, repo }) {
+export default function PrescriptionForm({
+  pres,
+  repo,
+  patientId,
+  setMedicalPrescription,
+}) {
   const { token } = useToken()
   const [prescribe, setPrescribe] = useState(pres)
   const [report, setReport] = useState(repo)
@@ -28,23 +33,37 @@ export default function PrescriptionForm({ pres, repo }) {
   const handlePrescribeMedicine = () => {
     const data = {
       prescribedById: token.userId,
-      prescribedToId: 10, //hard coded value needs to be changed to patient's ID //
+      prescribedToId: patientId,
       medication: prescribe.name,
       strength: prescribe.strength,
       remark: prescribe.remark,
     }
-
-    requests.post("api/Prescription", data)
+    setMedicalPrescription((state) => ({ ...state, loading: true }))
     setPrescribe({ open: false })
-    setSnackbar({
-      open: true,
-      children: "Prescription is successfully added ",
-    })
+    requests
+      .post("api/Prescription", data)
+      .then((response) => {
+        setMedicalPrescription((state) => ({
+          loading: false,
+          row: [...state.row, response],
+        }))
+        setSnackbar({
+          open: true,
+          children: "Prescription is successfully added ",
+        })
+      })
+      .catch(({ message }) => {
+        setSnackbar({
+          open: true,
+          children: "Could't do it: " + message,
+          severity: "error",
+        })
+      })
   }
 
   const handleAddReport = () => {
     const data = {
-      patientId: 10, //hard coded value needs to be changed to patient's ID //
+      patientId: patientId,
       record: report.value,
     }
 

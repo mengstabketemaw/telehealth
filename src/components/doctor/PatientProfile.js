@@ -23,9 +23,7 @@ import {
   TextField,
   Grid,
 } from "@mui/material"
-import client from "../../api/client"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
-import requests from "../../api/repository"
 import useToken from "../../hooks/useToken"
 import PrescriptionForm from "./PerscriptionForm"
 
@@ -41,6 +39,10 @@ export default function PatientProfile(props) {
     loading: true,
     row: [],
   })
+  const [medicalPrescription, setMedicalPrescription] = React.useState({
+    loading: true,
+    row: [],
+  })
   const [prescribe, setPrescribe] = React.useState({ open: false })
   const [report, setReport] = React.useState({ open: false })
   const [detailedView, setDetailedView] = React.useState({ open: false })
@@ -50,6 +52,31 @@ export default function PatientProfile(props) {
       .get(`${Config.USER_URL}/username/${props.username}`)
       .then(({ data }) => {
         setProfile({ loading: false, user: data.user })
+        mati
+          .get("api/MedicalRecord/user/" + data.user.id)
+          .then((data) => {
+            setMedicalRecord({ loading: false, row: data })
+          })
+          .catch(({ message }) => {
+            setSnackbar({
+              children: "Could't load medical record: " + message,
+              severity: "error",
+              open: true,
+            })
+          })
+
+        mati
+          .get("api/Prescription/patient?id=" + data.user.id)
+          .then((data) => {
+            setMedicalPrescription({ loading: false, row: data })
+          })
+          .catch(({ message }) => {
+            setSnackbar({
+              children: "Could't load medical record: " + message,
+              severity: "error",
+              open: true,
+            })
+          })
       })
       .catch(({ message }) => {
         setSnackbar({
@@ -58,49 +85,19 @@ export default function PatientProfile(props) {
           open: true,
         })
       })
-    // mati
-    //   .get("api/MedicalRecord/user/" + profile.id)
-    //   .then(({ data }) => {
-    //     setMedicalRecord({ loading: false, row: data })
-    //   })
-    //   .catch(({ message }) => {
-    //     setSnackbar({
-    //       children: "Could't load medical record: " + message,
-    //       severity: "error",
-    //       open: true,
-    //     })
-    //   })
-    // client.post().then(() => {
-    //   setProfile({ loading: false })
-    //   setMedicalRecord({
-    //     loading: false,
-    //     row: [
-    //       {
-    //         id: 1,
-    //         date: "1999-12-2",
-    //         desc: "X ray for my ribe",
-    //         type: "image/png",
-    //       },
-    //       {
-    //         id: 2,
-    //         date: "1999-11-2",
-    //         desc: "Rage for my elbow",
-    //         type: "video/mp4",
-    //       },
-    //       {
-    //         id: 3,
-    //         date: "2012-12-3",
-    //         desc: "Medical Prescription",
-    //         type: "E-prescription",
-    //       },
-    //     ],
-    //   })
-    // })
   }, [])
 
   const column = [
     {
-      field: "date",
+      field: "medicalRecordId",
+      headerName: "Id",
+    },
+    {
+      field: "fileName",
+      headerName: "File Name",
+    },
+    {
+      field: "recordDate",
       headerName: "Date",
       type: "date",
       flex: 0.5,
@@ -132,14 +129,50 @@ export default function PatientProfile(props) {
     },
   ]
 
+  const columnPrescribtion = [
+    {
+      field: "prescriptionId",
+      headerName: "Id",
+    },
+    {
+      field: "prescribedById",
+      headerName: "Doctor",
+    },
+    {
+      field: "presribeDate",
+      headerName: "Date",
+    },
+    {
+      field: "medication",
+      headerName: "Medicine",
+      flex: 1,
+    },
+    {
+      field: "strength",
+      headerName: "Strength",
+      flex: 1,
+    },
+    {
+      field: "remark",
+      headerName: "Remark",
+      flex: 1,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+    },
+  ]
+
   const handlePrescribeMedicine = () => {
     const data = {
       prescribedById: 0,
       prescribedToId: 0,
-      //remark: ,
+      medication: "string",
+      strength: "string",
+      remark: "string",
     }
 
-    requests.post("api/Prescription", data)
+    mati.post("api/Prescription", data)
   }
 
   const handleAddReport = () => {
@@ -211,29 +244,91 @@ export default function PatientProfile(props) {
           <DataGrid
             loading={medicalRecord.loading}
             rows={medicalRecord.row}
+            getRowId={(row) => row.medicalRecordId}
             columns={column}
             hideFooter
           />
         </div>
-        <PrescriptionForm pres={prescribe} repo={report} />
-        <Dialog
-          open={detailedView.open}
-          onClose={() => setDetailedView({ open: false })}
-        >
-          <DialogTitle>Medical Record</DialogTitle>
-          <DialogContent dividers>
-            <Box sx={{ width: "80vw", flexGrow: 1 }}>
-              {/* rendering must be performed based on the input type img,video,pdf,e-prescribtion. each one should be handled. what a pain? */}
-              <Typography variant="h1" color="primary">
-                This is the medical record 10Q
-              </Typography>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDetailedView({ open: false })}>OK</Button>
-          </DialogActions>
-        </Dialog>
+        <Divider variant="middle" width={"50%"} />
+        <Typography variant="h5" color="primary">
+          E-Prescribtions
+        </Typography>
+        <div style={{ width: "90%", height: "500px" }}>
+          <DataGrid
+            loading={medicalPrescription.loading}
+            rows={medicalPrescription.row}
+            getRowId={(row) => row.prescriptionId}
+            columns={columnPrescribtion}
+            hideFooter
+          />
+        </div>
+
+        {profile?.user?.id && (
+          <PrescriptionForm
+            setMedicalPrescription={setMedicalPrescription}
+            patientId={profile.user.id}
+            pres={prescribe}
+            repo={report}
+          />
+        )}
+        <ShowDetaileMedicalRecord
+          detailedView={detailedView}
+          setDetailedView={setDetailedView}
+        />
       </Stack>
     </Dialog>
   )
+}
+
+function ShowDetaileMedicalRecord({ detailedView, setDetailedView }) {
+  if (detailedView.fileName)
+    return (
+      <Dialog
+        fullWidth
+        open={detailedView.open}
+        onClose={() => setDetailedView({ open: false })}
+      >
+        <DialogTitle>Medical Record</DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ width: "80vw", flexGrow: 1 }}>
+            {detailedView?.type?.includes("image") && (
+              <img
+                height={"100%"}
+                width={"100%"}
+                src={
+                  "http://matiows-001-site1.btempurl.com/api/File/" +
+                  detailedView.fileName
+                }
+              />
+            )}
+            {detailedView?.type?.includes("pdf") && (
+              <iframe
+                height={"100%"}
+                width={"100%"}
+                src={
+                  "http://matiows-001-site1.btempurl.com/api/File/" +
+                  detailedView.fileName
+                }
+              />
+            )}
+            {detailedView?.type?.includes("video") && (
+              <video controls width={"auto"}>
+                <source
+                  src={
+                    "http://matiows-001-site1.btempurl.com/api/File/" +
+                    detailedView.fileName
+                  }
+                  type={detailedView.type}
+                />
+              </video>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetailedView({ open: false })}>OK</Button>
+        </DialogActions>
+      </Dialog>
+    )
+
+  return null
 }

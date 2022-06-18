@@ -59,6 +59,7 @@ function App() {
             <Route path="vdt" element={<Vdt />} />
             <Route path="medicalrecord" element={<MedicalRecord />} />
           </Route>
+          <Route path="blogdetaile" element={<BlogDetaile />} />
           <Route path="appointment" element={<Appointment />} />
           <Route path="therapygroup" element={<TherapyGroup />} />
           <Route path="vdt" element={<Vdt />} />

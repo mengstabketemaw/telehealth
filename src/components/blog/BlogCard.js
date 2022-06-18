@@ -1,4 +1,4 @@
-import { Bookmark, Comment } from "@mui/icons-material"
+import { Comment } from "@mui/icons-material"
 import {
   Avatar,
   Box,
@@ -12,15 +12,17 @@ import {
 import { useEffect, useState } from "react"
 import Config from "../../api/Config"
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import useToken from "../../hooks/useToken"
 
 const BlogCard = ({ data }) => {
   const { token } = useToken()
+  const { pathname } = useLocation()
   const [author, setAuthor] = useState()
   const nav = useNavigate()
+  console.log(pathname)
   useEffect(() => {
-    axios.get(Config.USER_URL + "/id/" + 7).then(({ data }) => {
+    axios.get(Config.USER_URL + "/id/" + data.authorId).then(({ data }) => {
       setAuthor(data.user)
     })
   }, [])
@@ -41,7 +43,9 @@ const BlogCard = ({ data }) => {
               {data.title}
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-              {data.body}
+              {pathname.includes("blogdetaile")
+                ? data.body + "  . . . "
+                : data.body.substr(0, 100)}
             </Typography>
           </CardContent>
         </CardActionArea>
