@@ -2,16 +2,64 @@ import { Button, Stack, TextField, Typography } from "@mui/material"
 import { useState } from "react"
 import useToken from "../../hooks/useToken"
 import requests from "../../api/repository"
+import { useSnackbar } from "./Patient"
+
 const ApplyForHelp = () => {
   const { token } = useToken()
   const [desc, setDesc] = useState("")
   const [files, setFiles] = useState([])
+  const { setSnackbar } = useSnackbar()
 
-  function submit() {
-    const data = {
+  async function submit() {
+    var filename = ""
+    var data = {
       requestorId: token.userId,
       body: desc,
     }
+
+    if (files.length !== 0) {
+      const dat = new FormData()
+      dat.append("file", files[0])
+      var type = ""
+      if (files[0].type.includes("image")) {
+        type = "IMAGE"
+      } else if (files[0].type.includes("video")) {
+        type = "VIDEO"
+      } else if (files[0].type.includes("pdf")) {
+        type = "PDF"
+      } else {
+        type = "UNKNOWN"
+      }
+
+      await requests
+        .post("api/File/upload", dat)
+        .then((data) => {
+          filename = String(data)
+          setSnackbar({
+            children:
+              "Help request sent successfully, Please wait for approval",
+            open: true,
+            severity: "success",
+          })
+          setDesc("")
+          setFiles([])
+        })
+        .catch((e) => {
+          setSnackbar({
+            children: "Help request is not sent" + e,
+            open: true,
+            severity: "error",
+          })
+        })
+
+      data = {
+        requestorId: token.userId,
+        body: desc,
+        filename: String(filename),
+        type: String(type),
+      }
+    }
+
     requests.post("api/Help", data)
   }
   return (
@@ -41,7 +89,7 @@ const ApplyForHelp = () => {
             onChange={(e) => setFiles(Object.values(e.target.files))}
           />
           <Button variant="contained" color="info" component="span">
-            Upload All the necessary files
+            Upload the necessary file
           </Button>
         </label>
         {files.map((e, i) => (
