@@ -20,6 +20,17 @@ import mati from "../../api/repository"
 
 export default function BlogDetaile() {
   const { state } = useLocation()
+  const [com, setCom] = useState({ loading: true, comments: [] })
+  useEffect(() => {
+    mati
+      .get("api/Blog/" + state.blogId)
+      .then((data) => {
+        setCom({ loading: false, comments: data.comments })
+      })
+      .catch(({ message }) => {
+        console.log("There was error loading comments: " + message)
+      })
+  }, [])
 
   return (
     <>
@@ -27,13 +38,18 @@ export default function BlogDetaile() {
       <br />
       <Divider />
       <br />
+      <br />
+      <Typography>Comments ({com.comments.length})</Typography>
+      <br />
       <Stack spacing={3}>
-        {state.comments?.map((e, i) => (
-          <Comment key={i} comment={e} />
-        ))}
+        {com.comments.loading ? (
+          <p>loading comments . . .</p>
+        ) : (
+          com.comments?.map((e, i) => <Comment key={i} comment={e} />)
+        )}
       </Stack>
       <br />
-      <WriteComment blogId={state.blogId} />
+      <WriteComment setCommentState={setCom} blogId={state.blogId} />
     </>
   )
 }
@@ -42,10 +58,12 @@ function Comment({ comment }) {
   const [loading, setLoading] = useState(true)
   const [author, setAuthor] = useState()
   useEffect(() => {
-    axios.get(Config.USER_URL + "/id/" + 7).then(({ data }) => {
-      setLoading(false)
-      setAuthor(data.user)
-    })
+    axios
+      .get(Config.USER_URL + "/id/" + comment.commentorId)
+      .then(({ data }) => {
+        setLoading(false)
+        setAuthor(data.user)
+      })
   }, [])
   if (loading) <p>loading . . .</p>
   if (author)
@@ -74,14 +92,14 @@ function Comment({ comment }) {
     )
 }
 
-function WriteComment({ blogId }) {
+function WriteComment({ blogId, setCommentState }) {
   const { token } = useToken()
   const [comment, setComment] = useState("")
-  const [error, setError] = useState()
+  const [error, setError] = useState({ loading: false, msg: "" })
 
   return (
     <Stack spacing={3} width={"100%"}>
-      <p>{error}</p>
+      <p>{error.msg}</p>
       <TextField
         fullWidth
         label={"write here . . ."}
@@ -90,8 +108,9 @@ function WriteComment({ blogId }) {
       />
       <Button
         width={"200px"}
+        disabled={error.loading}
         onClick={() => {
-          setError("loading")
+          setError({ loading: true, msg: "" })
           mati
             .post("api/Comment", {
               blogId,
@@ -99,11 +118,15 @@ function WriteComment({ blogId }) {
               commentorId: token.userId,
               body: comment,
             })
-            .then(() => {
+            .then((data) => {
+              setCommentState((state) => ({
+                loading: false,
+                comments: [...state.comments, data],
+              }))
               setComment("")
-              window.location.reload()
+              setError({ loading: false, msg: "" })
             })
-            .catch(({ message }) => setError(message))
+            .catch(({ message }) => setError({ loading: false, msg: message }))
         }}
       >
         Comment

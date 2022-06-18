@@ -30,8 +30,7 @@ const DocBlog = () => {
   )
 }
 
-function BlogLists() {
-  const { setSnackbar } = useSnackbar()
+export function BlogLists() {
   const [blogs, setBlogs] = useState({ loading: true, data: [] })
   useEffect(() => {
     mati
@@ -40,11 +39,7 @@ function BlogLists() {
         setBlogs({ loading: false, data })
       })
       .catch(({ message }) => {
-        setSnackbar({
-          open: true,
-          children: "Could't Load blog: " + message,
-          severity: "error",
-        })
+        console.log("Could't load ", message)
       })
   }, [])
 
@@ -54,7 +49,7 @@ function BlogLists() {
     return (
       <Grid container spacing={3}>
         {blogs.data.map((e, i) => (
-          <BlogCard data={e} />
+          <BlogCard key={i} data={e} />
         ))}
       </Grid>
     )
