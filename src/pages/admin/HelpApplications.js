@@ -1,6 +1,6 @@
 import * as React from "react"
-import { DisabledByDefault, Done } from "@mui/icons-material"
-import { Avatar, Button, Chip, Tooltip, Typography } from "@mui/material"
+import { DisabledByDefault, Done, Download } from "@mui/icons-material"
+import { Avatar, Button, Chip, Paper, Tooltip, Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import CustomNoDataOverlay from "../../components/gridComponents/CustomNoDataOverlay"
 import requests from "../../api/repository"
@@ -14,46 +14,22 @@ import DialogContentText from "@mui/material/DialogContentText"
 import DialogTitle from "@mui/material/DialogTitle"
 
 const HelpApplications = () => {
-  const { setSnackbar } = useSnackbar()
   const [data, setData] = useState({ loading: true, row: [] })
+  const { setSnackbar } = useSnackbar()
 
-  const [open, setOpen] = React.useState(false)
-  const [scroll, setScroll] = React.useState("paper")
+  const handleApprove = (row) => {}
 
-  const handleClickOpen = (scrollType) => () => {
-    setOpen(true)
-    setScroll(scrollType)
-  }
+  const handleDisapprove = (row) => {}
 
-  const handleClose = () => {
-    setOpen(false)
-  }
+  const handleDownload = (row) => {}
 
-  const descriptionElementRef = React.useRef(null)
-  React.useEffect(() => {
-    if (open) {
-      const { current: descriptionElement } = descriptionElementRef
-      if (descriptionElement !== null) {
-        descriptionElement.focus()
-      }
-    }
-  }, [open])
+  const handleShowProfile = (row) => {}
 
   useEffect(() => {
     requests
       .get("api/Help/requested")
-      .then(({ data }) => {
-        const mappedData = data.map((element) => {
-          return {
-            helpId: element.helpId,
-            requestorId: element.requestorId,
-            body: element.body,
-            status: element.status,
-            fileName: element.fileName,
-            postDate: element.postDate,
-          }
-        })
-        setData({ loading: false, row: mappedData })
+      .then((data) => {
+        setData({ loading: false, row: data })
       })
       .catch((error) => {
         setSnackbar({
@@ -67,27 +43,35 @@ const HelpApplications = () => {
 
   const column = [
     {
-      field: "name",
-      flex: 1,
+      field: "helpId",
       headerName: "Requestor",
-      //Menge please put the user's full name here
-      //you can access the user ID with (requestorId)
-    },
-    {
-      field: "postDate",
       flex: 1,
-      headerName: "Request Date",
     },
     {
-      field: "docRoles",
-      flex: 0.5,
-      headerName: "Roles",
+      field: "requestorId",
+      flex: 1,
+      headerName: "Patient",
+    },
+    {
+      field: "body",
+      flex: 1,
+      headerName: "Description",
       renderCell: ({ value }) => {
         return (
           <Tooltip
-            title={value.split(",").map((name) => (
-              <p>{name}</p>
-            ))}
+            placement="bottom-start"
+            title={
+              <Paper
+                sx={{
+                  padding: 1,
+                  width: "300px",
+                  height: "300px",
+                  overflow: "scroll",
+                }}
+              >
+                <Typography>{value}</Typography>
+              </Paper>
+            }
           >
             <p>{value}</p>
           </Tooltip>
@@ -95,9 +79,35 @@ const HelpApplications = () => {
       },
     },
     {
-      field: "homedoctor",
-      headerName: "Home Doctor",
-      type: "boolean",
+      field: "postDate",
+      headerName: "Posted Date",
+      flex: 1,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      getActions: ({ row }) => [
+        <GridActionsCellItem
+          onClick={() => handleApprove(row)}
+          label="Approved"
+          showInMenu
+        />,
+        <GridActionsCellItem
+          onClick={() => handleDisapprove(row)}
+          label="Disapprove"
+          showInMenu
+        />,
+        <GridActionsCellItem
+          onClick={() => handleDownload(row)}
+          icon={<Download />}
+          label="download File"
+        />,
+        <GridActionsCellItem
+          onClick={() => handleShowProfile(row)}
+          label="Show Profile"
+          showInMenu
+        />,
+      ],
     },
   ]
 
@@ -114,7 +124,15 @@ const HelpApplications = () => {
           rows={data.row}
           columns={column}
           hideFooter
-          rowHeight={100}
+          getRowId={(rows) => rows.helpId}
+          initialState={{
+            columns: {
+              columnVisibilityModel: {
+                helpId: false,
+                requestorId: false,
+              },
+            },
+          }}
           components={{ NoRowsOverlay: CustomNoDataOverlay }}
         />
       </div>
