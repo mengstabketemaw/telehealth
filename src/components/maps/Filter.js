@@ -14,14 +14,17 @@ const Filter = () => {
   const handleChange = (key) => (e, v) => {
     search({ ...filterState, [key]: v })
   }
+
+  const handleFilter = () => {}
+
   return (
     <>
       <Stack spacing={5} style={{ padding: 12 }} width={"200px"}>
         <Stack>
           <Typography>Distance your Location</Typography>
           <Slider
-            min={10}
-            max={300000}
+            min={1}
+            max={50000}
             valueLabelDisplay={"auto"}
             value={filterState.distance}
             onChange={handleChange("distance")}

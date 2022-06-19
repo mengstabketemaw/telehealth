@@ -1,13 +1,17 @@
-import { Button, Typography } from "@mui/material"
+import { Delete } from "@mui/icons-material"
+import { Button, Dialog, Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import { DateTime } from "luxon"
 import { useEffect, useState } from "react"
 import mick from "../../api/Scheduler"
+import NearbyDoctors from "../../components/maps/NearByDoctors"
+import SearchWrapper from "../../components/maps/SearchWrapper"
 import useToken from "../../hooks/useToken"
 import { useSnackbar } from "../patient/Patient"
 
 const HomeAppointment = () => {
   const [data, setData] = useState({ loading: true, row: [] })
+  const [locateNearbyDoctor, setLocateNearbyDoctor] = useState({ open: true })
   const { token } = useToken()
   const { setSnackbar } = useSnackbar()
   useEffect(() => {
@@ -31,9 +35,10 @@ const HomeAppointment = () => {
       headerName: "Id",
     },
     {
-      field: "temp",
-      headerName: "Patient Id",
+      field: "Doctor",
+      headerName: "Doctor",
       flex: 1,
+      renderCell: ({ value }) => <DoctorName id={value} />,
     },
     {
       field: "appt_date",
@@ -54,14 +59,9 @@ const HomeAppointment = () => {
       type: "actions",
       getActions: ({ row }) => [
         <GridActionsCellItem
-          label="Show Location On Map"
+          label="Delete"
+          icon={<Delete color="secondary" />}
           onClick={() => {}}
-          showInMenu
-        />,
-        <GridActionsCellItem
-          label="Show Patient Information"
-          onClick={() => {}}
-          showInMenu
         />,
       ],
     },
@@ -83,8 +83,34 @@ const HomeAppointment = () => {
           hideFooter
         />
       </div>
-      <Button>Locate Nearby Doctors</Button>
+      <Button onClick={() => setLocateNearbyDoctor({ open: true })}>
+        Locate Nearby Doctors
+      </Button>
+      {locateNearbyDoctor.open && (
+        <Dialog
+          open={locateNearbyDoctor.open}
+          onClose={() => setLocateNearbyDoctor({ open: false })}
+          fullWidth
+          maxWidth={"90%"}
+        >
+          <SearchWrapper>
+            <NearbyDoctors
+              handleClose={() => setLocateNearbyDoctor({ open: false })}
+            />
+          </SearchWrapper>
+        </Dialog>
+      )}
     </>
   )
 }
+
+function DoctorName({ id }) {
+  const [name, setName] = useState({ loading: true, data: "" })
+  useEffect(() => {}, [])
+  if (name.loading) return <p>loading . . .</p>
+  if (name.data) return <p>Doctor {name}</p>
+
+  return <p>Name not Found</p>
+}
+
 export default HomeAppointment

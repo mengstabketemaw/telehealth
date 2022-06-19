@@ -9,9 +9,9 @@ const point = new L.Icon({
 function DoctorsIcon(username) {
   return new L.Icon({
     iconUrl: `${Config.USER_URL}/avatar/${username}`,
-    iconSize: [70, 70], // size of the icon
-    iconAnchor: [70 / 2, 70 / 2], // point of the icon which will correspond to marker's location
-    popupAnchor: [0, 70 / 2], // point from which the popup should open relative to the iconAnchor
+    iconSize: [40, 40], // size of the icon
+    iconAnchor: [40 / 2, 40 / 2], // point of the icon which will correspond to marker's location
+    popupAnchor: [0, 40 / 2], // point from which the popup should open relative to the iconAnchor
   })
 }
 
