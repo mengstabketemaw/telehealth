@@ -217,7 +217,7 @@ export default function PatientProfile(props) {
       <Stack alignItems={"center"} spacing={1}>
         <hr />
         <Avatar
-          src={`${Config.USER_URL}/avatar/${token.username}`}
+          src={`${Config.USER_URL}/avatar/${props.username}`}
           sx={{ width: "200px", height: "200px" }}
         />
         <Divider variant="middle" width={"50%"} />

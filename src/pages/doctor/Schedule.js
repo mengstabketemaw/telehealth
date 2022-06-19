@@ -14,11 +14,8 @@ import {
   Typography,
 } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
-import {
-  DatePicker,
-  TimePicker,
-  LocalizationProvider,
-} from "@mui/x-date-pickers"
+import { DateTime } from "luxon"
+import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon"
 import axios from "axios"
 import { useEffect, useState } from "react"
@@ -36,15 +33,7 @@ const Schedule = () => {
     mick
       .get("/doctor/" + token.userId + "/availablity/")
       .then(({ data }) => {
-        let res = data.map((e) => {
-          return {
-            id: e.id,
-            date: e.date_time.date,
-            start: e.date_time.start_time,
-            end: e.date_time.end_time,
-          }
-        }, [])
-        setSchedules({ loading: false, data: res })
+        setSchedules({ loading: false, data })
       })
       .catch(({ message }) => {
         setSchedules({ loading: false, data: [] })
@@ -63,21 +52,46 @@ const Schedule = () => {
       flex: 1,
     },
     {
-      field: "date",
-      header: "Date",
-      type: "date",
+      field: "days",
+      header: "Day",
       flex: 1,
+      valueGetter: ({ value }) => {
+        switch (value) {
+          case 1:
+            return "Monday"
+          case 2:
+            return "Tusday"
+          case 3:
+            return "Wednesday"
+          case 4:
+            return "Thursday"
+          case 5:
+            return "Friday"
+          case 6:
+            return "Saturday"
+          case 7:
+            return "Sunday"
+          default:
+            break
+        }
+      },
     },
     {
-      field: "start",
+      field: "start_time",
       header: "Start Time",
       type: "dateTime",
       flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.TIME_SIMPLE)
+      },
     },
     {
-      field: "end",
+      field: "end_time",
       header: "End Time",
       flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.TIME_SIMPLE)
+      },
     },
     {
       field: "actions",
@@ -97,7 +111,7 @@ const Schedule = () => {
   const handleDelete = async (id) => {
     setSchedules({ ...schedules, loading: true })
     try {
-      await mick.delete(`/doctor/${token.userId}/availablity/${id}`)
+      await mick.delete(`/doctor/${token.userId}/availablity/${id}/`)
       let data = schedules.data.filter((e) => e.id !== id)
       setSchedules({ loading: false, data })
     } catch ({ message }) {
@@ -115,15 +129,13 @@ const Schedule = () => {
     setAddSchedule({ ...addSchedule, open: false })
     mick
       .post(`/doctor/${token.userId}/availablity/`, {
-        date_time: {
-          date: addSchedule.day,
-          start_time: addSchedule.start_time.toFormat("TT"),
-          end_time: addSchedule.end_time.toFormat("TT"),
-        },
+        days: addSchedule.day,
+        start_time: addSchedule.start_time.toFormat("TT"),
+        end_time: addSchedule.end_time.toFormat("TT"),
         doctor: token.userId,
       })
       .then(({ data }) => {
-        setSchedules({ data: { ...schedules.data, ...data }, loading: false })
+        setSchedules({ data: [...schedules.data, data], loading: false })
         setSnackbar({
           children: "Schedule Added Successfully",
           open: true,

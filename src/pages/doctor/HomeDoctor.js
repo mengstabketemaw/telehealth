@@ -6,35 +6,37 @@ import {
   Button,
   CircularProgress,
   Dialog,
+  Switch,
   Typography,
 } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import { Approval, Delete, Map, Receipt } from "@mui/icons-material"
-import schedule from "../../api/Scheduler"
+import mick from "../../api/Scheduler"
 import useToken from "../../hooks/useToken"
 import { useSnackbar } from "./Doctor"
 import PatientProfile from "../../components/doctor/PatientProfile"
 import axios from "axios"
 import Config from "../../api/Config"
 import WhereIsThisPatient from "../../components/maps/WhereIsThisPatient"
+import { DateTime } from "luxon"
 
 const HomeDoctor = () => {
   const [status, setStatus] = useState({ loading: true, activated: false })
   const { token } = useToken()
   const { setSnackbar } = useSnackbar()
   useEffect(() => {
-    schedule.get("/doctor/" + token.userId + "/").then(({ data }) => {
+    mick.get("/doctor/" + token.userId + "/").then(({ data }) => {
       let isHomeDoctor = data.properties.is_home_doctor
       setStatus({ loading: false, activated: isHomeDoctor })
     })
   }, [])
 
-  const handleEnableHomeDoctor = () => {
+  const handleEnableHomeDoctor = (arg) => {
     setStatus({ loading: true, activated: false })
-    schedule
-      .get(`/doctor/home/?id=${token.userId}&is_home_doctor=1`)
+    mick
+      .get(`/doctor/home/?id=${token.userId}&is_home_doctor=${arg}`)
       .then(() => {
-        setStatus({ loading: false, activated: true })
+        setStatus({ loading: false, activated: arg === 1 })
       })
       .catch(({ message }) => {
         setStatus({ loading: false, activated: false })
@@ -66,7 +68,14 @@ const HomeDoctor = () => {
           loading
         </Box>
       ) : status.activated ? (
-        <HomeAppointments />
+        <>
+          <HomeAppointments />
+          <Switch
+            checked={status.activated}
+            onChange={() => handleEnableHomeDoctor(0)}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+        </>
       ) : (
         <Box
           sx={{
@@ -87,7 +96,7 @@ const HomeDoctor = () => {
           <Typography variant="caption" color="CaptionText">
             notice! Other patients can see your home location
           </Typography>
-          <Button onClick={handleEnableHomeDoctor}>
+          <Button onClick={() => handleEnableHomeDoctor(1)}>
             Enable home Doctor service
           </Button>
         </Box>
@@ -103,17 +112,17 @@ export function HomeAppointments() {
   const { setSnackbar } = useSnackbar()
 
   const handleShowPatient = (row) => {
-    setInfo({ open: true, id: row.patient, profile: true, location: false })
+    setInfo({ open: true, id: row.temp, profile: true, location: false })
   }
   const handleShowLocation = (row) => {
-    setInfo({ open: true, id: row.patient, profile: false, location: true })
+    setInfo({ open: true, id: row.temp, profile: false, location: true })
   }
 
   const handleApprove = (row) => {
     row.status = row.status === "Approved" ? "Disapproved" : "Approved"
     console.log(row)
     setData({ ...data, loading: true })
-    schedule
+    mick
       .put(`/doctor/${token.userId}/homeappt/${row.id}/`, row)
       .then((response) => {
         let newDate = data.row.map((e) => {
@@ -133,24 +142,17 @@ export function HomeAppointments() {
   }
 
   useEffect(() => {
-    schedule.get(`/doctor/${token.userId}/homeappt/`).then(({ data }) => {
+    mick.get(`/doctor/${token.userId}/homeappt/`).then(({ data }) => {
       setData({
         loading: false,
-        row: [
-          {
-            id: "45",
-            appt_date: "2002-12-12T13:02:00Z",
-            patient: "15",
-            status: "Requested",
-          },
-        ],
+        row: data,
       })
     })
   }, [])
 
   const column = [
     {
-      field: "patient",
+      field: "temp",
       headerName: "Patient Id",
       flex: 1,
     },
@@ -158,8 +160,8 @@ export function HomeAppointments() {
       field: "appt_date",
       headerName: "Date Time",
       type: "dateTime",
-      valueFormatter: ({ value }) => {
-        return new Date(value).toLocaleString()
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_MED)
       },
       flex: 1,
     },
