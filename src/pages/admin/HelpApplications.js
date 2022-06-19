@@ -1,27 +1,55 @@
 import * as React from "react"
-import { DisabledByDefault, Done, Download } from "@mui/icons-material"
-import { Avatar, Button, Chip, Paper, Tooltip, Typography } from "@mui/material"
+import { Download } from "@mui/icons-material"
+import { Paper, Tooltip, Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import CustomNoDataOverlay from "../../components/gridComponents/CustomNoDataOverlay"
 import requests from "../../api/repository"
 import { useSnackbar } from "./Admin"
-import useToken from "../../hooks/useToken"
 import { useEffect, useState } from "react"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogContentText from "@mui/material/DialogContentText"
-import DialogTitle from "@mui/material/DialogTitle"
+import { DateTime } from "luxon"
 
 const HelpApplications = () => {
   const [data, setData] = useState({ loading: true, row: [] })
   const { setSnackbar } = useSnackbar()
 
-  const handleApprove = (row) => {}
+  const handleApprove = (row, approve) => {
+    setData({ ...data, loading: true })
+    requests
+      .post(`api/Help/${approve}?helpId=${row.helpId}`)
+      .then(() => {
+        let newData = data.row.filter((e) => e.helpId !== row.helpId)
+        setData({ row: newData, loading: false })
+        setSnackbar({
+          open: true,
+          children: "Request has been " + approve + "d",
+          severity: "success",
+        })
+      })
+      .catch((e) => {
+        setSnackbar({
+          open: true,
+          children: "Error while " + approve + " : " + e,
+          severity: "error",
+        })
+      })
+  }
 
-  const handleDisapprove = (row) => {}
-
-  const handleDownload = (row) => {}
+  const handleDownload = (row) => {
+    if (row.fileName) {
+      let downloadLink = document.createElement("a")
+      downloadLink.href = `http://matiows-001-site1.btempurl.com/api/File/${row.fileName}`
+      downloadLink.target = "_blank"
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+      document.body.removeChild(downloadLink)
+    } else {
+      setSnackbar({
+        children: "Request has no file",
+        open: true,
+        severity: "info",
+      })
+    }
+  }
 
   const handleShowProfile = (row) => {}
 
@@ -34,7 +62,7 @@ const HelpApplications = () => {
       .catch((error) => {
         setSnackbar({
           open: true,
-          children: "Could't load data from the server: " + error.message,
+          children: "Couldn't load data from the server: " + error.message,
           severity: "error",
         })
         setData({ row: [], loading: false })
@@ -74,7 +102,7 @@ const HelpApplications = () => {
               </Paper>
             }
           >
-            <p>{value}</p>
+            <p>{value.substr(0, 50)} ... </p>
           </Tooltip>
         )
       },
@@ -83,19 +111,24 @@ const HelpApplications = () => {
       field: "postDate",
       headerName: "Posted Date",
       flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(
+          DateTime.DATETIME_MED_WITH_SECONDS
+        )
+      },
     },
     {
       field: "actions",
       type: "actions",
       getActions: ({ row }) => [
         <GridActionsCellItem
-          onClick={() => handleApprove(row)}
-          label="Approved"
+          onClick={() => handleApprove(row, "approve")}
+          label="Approve"
           showInMenu
         />,
         <GridActionsCellItem
-          onClick={() => handleDisapprove(row)}
-          label="Disapprove"
+          onClick={() => handleApprove(row, "decline")}
+          label="Decline"
           showInMenu
         />,
         <GridActionsCellItem
