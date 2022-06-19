@@ -20,7 +20,7 @@ const sx = {
 }
 
 const isActivated = () => {
-  if (sessionStorage.getItem("activated") === "true")
+  if (sessionStorage.getItem("disabled") === "false")
     return { loading: false, disabled: false }
   return { loading: true, disabled: true }
 }
@@ -41,7 +41,7 @@ const PrivateElement = ({ children }) => {
         },
       } = await axios.get(Config.USER_URL + "/id/" + token.userId)
       console.log(disabled)
-      sessionStorage.setItem("activated", disabled)
+      sessionStorage.setItem("disabled", disabled)
       setData({ loading: false, disabled })
     })()
   }, [token?.userId])

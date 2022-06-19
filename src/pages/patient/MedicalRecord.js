@@ -1,5 +1,6 @@
-import { Add } from "@mui/icons-material"
+import { Add, QrCode } from "@mui/icons-material"
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -12,35 +13,32 @@ import {
 } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import { useEffect, useState } from "react"
-import client from "../../api/client"
 import MedicalRecordProfile from "../../components/medicalrecord/MedicalRecordProfile"
 import { useSnackbar } from "./Patient"
+import mati from "../../api/repository"
+import useToken from "../../hooks/useToken"
 
 const MedicalRecord = () => {
-  const [data, setData] = useState({ row: [], loading: true })
+  const { token } = useToken()
+  const [medicalrecord, setMedicalRecord] = useState({ row: [], loading: true })
   const { setSnackbar } = useSnackbar()
   const [open, setOpen] = useState(false)
   const [viewDetaile, setViewDetaile] = useState({ open: false })
   const [record, setRecord] = useState({ desc: "", file: "" })
 
   useEffect(() => {
-    //get the medical record here
-    setData({
-      row: [
-        {
-          id: 1,
-          date: "12/12/2014",
-          file: {
-            type: "e-prescribtion",
-            url: "https://www.orimi.com/pdf-test.pdf",
-          },
-          describtion:
-            "This is video that i have recived for my medical condition",
-          addedby: "You",
-        },
-      ],
-      loading: false,
-    })
+    mati
+      .get("api/MedicalRecord/user/" + token.userId)
+      .then((data) => {
+        setMedicalRecord({ loading: false, row: data })
+      })
+      .catch(({ message }) => {
+        setSnackbar({
+          children: "Could't load medical record: " + message,
+          severity: "error",
+          open: true,
+        })
+      })
   }, [])
   const handleShowItem = (row) => {
     setViewDetaile({
@@ -52,38 +50,40 @@ const MedicalRecord = () => {
 
   const column = [
     {
-      field: "date",
+      field: "medicalRecordId",
+      headerName: "Id",
+    },
+    {
+      field: "fileName",
+      headerName: "File Name",
+    },
+    {
+      field: "recordDate",
       headerName: "Date",
-      flex: 1,
       type: "date",
+      flex: 0.5,
     },
     {
-      field: "file",
-      headerName: "Type",
-      renderCell: ({ value }) => value.type,
-      flex: 1,
-    },
-    {
-      field: "describtion",
+      field: "desc",
       headerName: "Describtion",
       flex: 1,
     },
     {
-      field: "addedby",
-      headerName: "Added By",
-      flex: 1,
+      field: "type",
+      headerName: "Type",
+      flex: 0.5,
     },
     {
       field: "actions",
       type: "actions",
-      getActions: (params) => {
+      getActions: ({ row }) => {
         return [
           <GridActionsCellItem
-            label={"Show Detaile"}
-            onClick={() => {
-              handleShowItem(params.row)
-            }}
+            label={"Show In Detail"}
             showInMenu
+            onClick={() => {
+              setViewDetaile({ open: true, ...row })
+            }}
           />,
         ]
       },
@@ -92,30 +92,37 @@ const MedicalRecord = () => {
 
   const handleSave = () => {
     setOpen(false)
-    //here lay the logic to call the end point to save the data
-    //after saving the file you have to get the url for that file let just call it
-    let url = "utl"
-    setData({ ...data, loading: true })
-    client.post().then(() => {
-      setData({
-        row: [
-          ...data.row,
-          {
-            id: 2,
-            date: "12/12/2012",
-            file: { type: record.file.type, url },
-            describtion: record.desc,
-            addedby: "You",
-          },
-        ],
-        loading: false,
+    setMedicalRecord({ ...medicalrecord, loading: true })
+    let req = new FormData()
+    req.append("file", record.file)
+    mati
+      .post("api/file/upload", req)
+      .then((filename) => {
+        mati
+          .post("api/MedicalRecord/filename", {
+            patientId: token.userId,
+            fileName: filename,
+            desc: record.desc,
+          })
+          .then((data) => {
+            setMedicalRecord((state) => ({
+              loading: false,
+              row: [...state.row, data],
+            }))
+            setSnackbar({
+              open: true,
+              children: "Medical Record Added Successfully!",
+            })
+          })
       })
-      setSnackbar({
-        open: true,
-        children: "File is Successfully Saved",
-        severity: "success",
+      .catch(({ message }) => {
+        setMedicalRecord({ ...medicalrecord, loading: false })
+        setSnackbar({
+          open: true,
+          children: "Could't do it: " + message,
+          severity: "error",
+        })
       })
-    })
   }
 
   return (
@@ -128,10 +135,11 @@ const MedicalRecord = () => {
       <Stack alignItems={"flex-end"}>
         <div style={{ height: "400px", width: "100%" }}>
           <DataGrid
-            rows={data.row}
+            rows={medicalrecord.row}
             columns={column}
-            loading={data.loading}
+            loading={medicalrecord.loading}
             hideFooter
+            getRowId={(row) => row.medicalRecordId}
           />
         </div>
         <Button startIcon={<Add />} onClick={() => setOpen(true)}>
@@ -170,7 +178,12 @@ const MedicalRecord = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      {viewDetaile.open && <MedicalRecordProfile {...viewDetaile} />}
+      {viewDetaile.open && (
+        <MedicalRecordProfile
+          {...viewDetaile}
+          handleClose={() => setViewDetaile({ open: false })}
+        />
+      )}
     </>
   )
 }

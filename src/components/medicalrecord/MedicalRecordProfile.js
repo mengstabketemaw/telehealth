@@ -8,16 +8,14 @@ import Typography from "@mui/material/Typography"
 import CloseIcon from "@mui/icons-material/Close"
 import Slide from "@mui/material/Slide"
 import { Divider, Grid, Stack } from "@mui/material"
-import QRCode from "react-qr-code"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-const fileViewerFor = (file) => {
-  console.log(file)
-  let type = file?.type
-  let url = file?.url
+const fileViewerFor = (type, fileName) => {
+  let url = `http://matiows-001-site1.btempurl.com/api/File/${fileName}`
+  let downloadurl = `http://matiows-001-site1.btempurl.com/api/File/download/${fileName}`
   const typ = type?.toLowerCase()
   let view = null
   if (typ?.includes("pdf")) {
@@ -25,50 +23,19 @@ const fileViewerFor = (file) => {
   } else if (typ?.includes("video")) {
     view = (
       <video controls width={"auto"}>
-        <source src={url} type={type} />
+        <source src={url} />
       </video>
     )
   } else if (typ?.includes("image")) {
     view = <img src={url} height={"auto"} width={"auto"} />
-  } else if (type?.includes("prescribtion")) {
-    //get the prescribtion detaile using the url or the id
-    //
-    view = (
-      <>
-        <Stack>
-          <br />
-          <Divider />
-          <Typography variant="h3">Prescribtion</Typography>
-          <Divider />
-          <br />
-          <Typography variant="h5" color="InfoText">
-            for Sample D.Patient
-          </Typography>
-          <br />
-          <Typography variant="h6">
-            New order: Omeprazol 40 mg Cap delayed rel
-          </Typography>
-          <Typography>Sig: 1 capsule orally daily</Typography>
-          <Typography>Qty: 1(one) unit not specified</Typography>
-          <Typography>
-            the dispense approved, plus an additional 0 refill(s). Substitution
-            is allowed.
-          </Typography>
-          <br />
-          <QRCode value={url} />
-          <br />
-          <br />
-          <Button sx={{ width: "200px" }} variant="contained">
-            Download QRCode
-          </Button>
-        </Stack>
-      </>
-    )
   } else {
     view = (
       <p>
-        The file format is not supported <a href={url}>download</a> the file
-        directly
+        The file format is not supported{" "}
+        <a target="_blank" href={url}>
+          download
+        </a>{" "}
+        the file directly
       </p>
     )
   }
@@ -111,23 +78,17 @@ export default function MedicalRecordProfile({ open, handleClose, ...row }) {
             <Typography>Date</Typography>
           </Grid>
           <Grid xs={11} item>
-            <Typography color={"GrayText"}>{row.date}</Typography>
+            <Typography color={"GrayText"}>{row.recordDate}</Typography>
           </Grid>
           <Grid xs={1} item>
             <Typography>Describtion</Typography>
           </Grid>
           <Grid xs={11} item>
-            <Typography color={"GrayText"}>{row.describtion}</Typography>
-          </Grid>
-          <Grid xs={1} item>
-            <Typography>Added by</Typography>
-          </Grid>
-          <Grid xs={11} item>
-            <Typography color={"GrayText"}>{row.addedby}</Typography>
+            <Typography color={"GrayText"}>{row.desc}</Typography>
           </Grid>
           <Grid xs={12} item>
             <Typography>File</Typography>
-            {fileViewerFor(row.file)}
+            {fileViewerFor(row.type, row.fileName)}
           </Grid>
         </Grid>
       </Dialog>
