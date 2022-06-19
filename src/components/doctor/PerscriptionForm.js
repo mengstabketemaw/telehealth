@@ -64,7 +64,7 @@ export default function PrescriptionForm({
   const handleAddReport = () => {
     const data = {
       patientId: patientId,
-      record: report.value,
+      desc: report.value,
     }
 
     requests.post("api/MedicalRecord", data)

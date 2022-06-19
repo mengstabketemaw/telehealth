@@ -64,14 +64,12 @@ const Doctors = () => {
         setData({ ...data, loading: false })
         setSnackbar({
           open: true,
-          children: "error changing use account: " + error.message,
+          children: "error changing user account: " + error.message,
           severity: "error",
         })
       })
   }
 
-  //from https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
-  //good answer by kj-sudarshan
   const handleDownloadApi = async (id) => {
     setSnackbar({
       open: true,
@@ -125,7 +123,7 @@ const Doctors = () => {
     {
       field: "specialization",
       flex: 1,
-      headerName: "specialization",
+      headerName: "Specialization",
       renderCell: ({ row }) => {
         return (
           <Button onClick={() => handleDownloadApi(row.doctorId)}>

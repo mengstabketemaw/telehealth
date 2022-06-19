@@ -54,7 +54,7 @@ const ForgetPasswordDialog = ({ open, handleClose }) => {
         <DialogContent>
           <DialogContentText>
             To Reset your password, please enter your email address here. we
-            will send you link to rest your password.
+            will send you link to reset your password.
           </DialogContentText>
           <TextField
             autoFocus
