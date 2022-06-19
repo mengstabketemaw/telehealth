@@ -14,6 +14,9 @@ import Typography from "@mui/material/Typography"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import Medication from "./Medication"
 import Review from "./Review"
+import requests from "../../api/repository"
+import { useParams } from "react-router-dom"
+import { useEffect } from "react"
 
 function Copyright() {
   return (
@@ -44,15 +47,39 @@ function getStepContent(step) {
 const theme = createTheme()
 
 export default function Checkout() {
+  const { prescriptionId } = useParams()
   const [activeStep, setActiveStep] = React.useState(0)
 
   const handleNext = () => {
+    if (activeStep === 1) {
+      requests
+        .post(`api/Prescription/take?prescriptionId=${prescriptionId}`)
+        .then(console.log("prescription taken"))
+        .catch()
+    }
     setActiveStep(activeStep + 1)
   }
 
   const handleBack = () => {
     setActiveStep(activeStep - 1)
   }
+
+  useEffect(() => {
+    async function fetchData() {
+      await requests
+        .get(`api/Prescription/${prescriptionId}`)
+        .then((data) => {
+          //ATTENTION
+          //Menge I need loading screen here
+          //
+          if (data["status"] === 1) {
+            setActiveStep(2)
+          }
+        })
+        .catch((error) => {})
+    }
+    fetchData()
+  }, [])
 
   return (
     <ThemeProvider theme={theme}>
@@ -91,7 +118,7 @@ export default function Checkout() {
             {activeStep === steps.length ? (
               <React.Fragment>
                 <Typography variant="h5" gutterBottom>
-                  Thank you for your service.
+                  Prescription taken. Thank you for your service.
                 </Typography>
               </React.Fragment>
             ) : (
@@ -109,7 +136,7 @@ export default function Checkout() {
                     onClick={handleNext}
                     sx={{ mt: 3, ml: 1 }}
                   >
-                    {activeStep === steps.length - 1 ? "Place order" : "Next"}
+                    {activeStep === steps.length - 1 ? "Confirm take" : "Next"}
                   </Button>
                 </Box>
               </React.Fragment>
