@@ -5,7 +5,6 @@ import { DateTime } from "luxon"
 import { useEffect, useState } from "react"
 import mick from "../../api/Scheduler"
 import NearbyDoctors from "../../components/maps/NearByDoctors"
-import SearchWrapper from "../../components/maps/SearchWrapper"
 import useToken from "../../hooks/useToken"
 import { useSnackbar } from "../patient/Patient"
 
@@ -93,11 +92,9 @@ const HomeAppointment = () => {
           fullWidth
           maxWidth={"90%"}
         >
-          <SearchWrapper>
-            <NearbyDoctors
-              handleClose={() => setLocateNearbyDoctor({ open: false })}
-            />
-          </SearchWrapper>
+          <NearbyDoctors
+            handleClose={() => setLocateNearbyDoctor({ open: false })}
+          />
         </Dialog>
       )}
     </>
