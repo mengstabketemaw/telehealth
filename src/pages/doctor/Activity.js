@@ -1,44 +1,51 @@
-import { Avatar, Typography } from "@mui/material"
+import { Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import { useEffect, useState } from "react"
-import { randomeUser } from "../../api/client"
+import { useSnackbar } from "./Doctor"
+import mick from "../../api/Scheduler"
+import { ShowPatientInfo } from "./HomeDoctor"
+import useToken from "../../hooks/useToken"
+import { Person, VideoCall } from "@mui/icons-material"
+import { useNavigate } from "react-router-dom"
 const Activity = () => {
   const [data, setData] = useState({ row: [], loading: true })
+  const [info, setInfo] = useState({ open: false })
+  const { setSnackbar } = useSnackbar()
+  const { token } = useToken()
+  const nav = useNavigate()
+
   const handleViewProfile = (row) => {
-    console.log(row)
+    setInfo({ open: true, id: row.temp, profile: true, location: false })
   }
-  const handleViewMedicalRecord = (row) => {
-    console.log(row)
+
+  const handleStartSession = () => {
+    nav("/user/doctor/room")
   }
   const column = [
     {
-      field: "img",
-      headerName: "Avatar",
-      width: "100",
-      renderCell: ({ value }) => {
-        return (
-          <Avatar src={value} sx={{ width: "70px", height: "70px" }}>
-            value
-          </Avatar>
-        )
-      },
+      field: "id",
+      headerName: "Id",
     },
     {
-      field: "patientname",
-      flex: 1,
-      headerName: "Patient Name",
-    },
-    {
-      field: "type",
-      flex: 1,
-      headerName: "Type",
-    },
-    {
-      field: "datetime",
-      flex: 1,
+      field: "date",
       headerName: "Date Time",
-      type: "dateTime",
+      flex: 1,
     },
+    {
+      field: "start_time",
+      headerName: "Date Time",
+      flex: 1,
+    },
+    {
+      field: "end_time",
+      headerName: "Date Time",
+      flex: 1,
+    },
+    {
+      field: "temp",
+      headerName: "Patient Id",
+    },
+
     {
       field: "actions",
       type: "actions",
@@ -46,12 +53,14 @@ const Activity = () => {
         return [
           <GridActionsCellItem
             label="View Profile"
+            icon={<Person />}
             onClick={() => handleViewProfile(params.row)}
             showInMenu
           />,
           <GridActionsCellItem
-            label="See Medical Record"
-            onClick={() => handleViewMedicalRecord(params.row)}
+            label="Start Video Session"
+            icon={<VideoCall />}
+            onClick={() => handleStartSession()}
             showInMenu
           />,
         ]
@@ -60,33 +69,18 @@ const Activity = () => {
   ]
 
   useEffect(() => {
-    randomeUser
-      .get()
-      .then((response) => response.data)
-      .then((da) => {
-        const { results } = da
-        const dola = results.map((e, i) => ({
-          id: i,
-          img: e.picture.large,
-          patientname: `${e.name.title} ${e.name.first} ${e.name.last}`,
-          type: e.email,
-          datetime: e.dob.date,
-        }))
-        setData({ row: dola, loading: false })
+    setData({ loading: true, row: [] })
+    mick
+      .get(`/doctor/${token.userId}/appt/`)
+      .then(({ data }) => {
+        setData({ loading: false, row: data })
       })
-      .catch(() => {
-        setData({
-          row: [
-            {
-              id: 1,
-              name: "Mengstab",
-              img: "asdfasdf",
-              homedoctor: true,
-              consultation: true,
-              specialization: "This is specailization",
-            },
-          ],
-          loading: false,
+      .catch(({ message }) => {
+        setData({ loading: false, row: [] })
+        setSnackbar({
+          children: "Could't do it: " + message,
+          severity: "error",
+          open: true,
         })
       })
   }, [])
@@ -107,6 +101,7 @@ const Activity = () => {
           columns={column}
         />
       </div>
+      {info.open && <ShowPatientInfo info={info} setInfo={setInfo} />}
     </>
   )
 }

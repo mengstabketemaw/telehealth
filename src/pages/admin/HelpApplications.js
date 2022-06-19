@@ -59,6 +59,7 @@ const HelpApplications = () => {
       renderCell: ({ value }) => {
         return (
           <Tooltip
+            leaveDelay={800}
             placement="bottom-start"
             title={
               <Paper

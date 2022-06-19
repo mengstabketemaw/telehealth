@@ -19,6 +19,7 @@ import {
   Folder,
   Groups,
   Help,
+  Home,
   Medication,
   Schedule,
   VideoCall,
@@ -107,6 +108,7 @@ function DrawerTools() {
       {[
         "Dashboard",
         "Appointment",
+        "Home Doctor",
         "Therapy Group",
         "V.D.T",
         "Medical Record",
@@ -134,6 +136,8 @@ function DrawerTools() {
                   <Dashboard sx={{ color }} />
                 ) : name === "Appointment" ? (
                   <Schedule sx={{ color }} />
+                ) : name === "Home Doctor" ? (
+                  <Home sx={{ color }} />
                 ) : name === "Therapy Group" ? (
                   <Groups sx={{ color }} />
                 ) : name === "V.D.T" ? (

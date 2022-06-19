@@ -75,6 +75,7 @@ const HomeDoctor = () => {
             onChange={() => handleEnableHomeDoctor(0)}
             inputProps={{ "aria-label": "controlled" }}
           />
+          <p>Home Doctor is Enabled</p>
         </>
       ) : (
         <Box
@@ -214,7 +215,7 @@ export function HomeAppointments() {
   )
 }
 
-function ShowPatientInfo({ info, setInfo }) {
+export function ShowPatientInfo({ info, setInfo }) {
   const [data, setData] = useState({ loading: true, user: {} })
   const { setSnackbar } = useSnackbar()
 

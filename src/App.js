@@ -32,7 +32,7 @@ import DocVideoRoom from "./pages/doctor/DocVideoRoom"
 import Checkout from "./pages/pharmacy/Checkout"
 import Prescription from "./pages/patient/Prescription"
 import BlogDetaile from "./components/blog/BlogDetaile"
-
+import HomeAppointment from "./pages/patient/HomeAppointment"
 function App() {
   const { token } = useToken()
   const loggedIn = Boolean(token?.username)
@@ -61,6 +61,7 @@ function App() {
           </Route>
           <Route path="blogdetaile" element={<BlogDetaile />} />
           <Route path="appointment" element={<Appointment />} />
+          <Route path="homedoctor" element={<HomeAppointment />} />
           <Route path="therapygroup" element={<TherapyGroup />} />
           <Route path="vdt" element={<Vdt />} />
           <Route path="prescription" element={<Prescription />} />
