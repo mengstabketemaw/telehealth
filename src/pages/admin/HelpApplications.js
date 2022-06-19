@@ -19,9 +19,18 @@ const HelpApplications = () => {
       .then(() => {
         let newData = data.row.filter((e) => e.helpId !== row.helpId)
         setData({ row: newData, loading: false })
+        setSnackbar({
+          open: true,
+          children: "Request has been " + approve + "d",
+          severity: "success",
+        })
       })
       .catch((e) => {
-        console.log(e)
+        setSnackbar({
+          open: true,
+          children: "Error while " + approve + " : " + e,
+          severity: "error",
+        })
       })
   }
 
@@ -53,7 +62,7 @@ const HelpApplications = () => {
       .catch((error) => {
         setSnackbar({
           open: true,
-          children: "Could't load data from the server: " + error.message,
+          children: "Couldn't load data from the server: " + error.message,
           severity: "error",
         })
         setData({ row: [], loading: false })
