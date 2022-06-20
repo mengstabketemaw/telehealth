@@ -1,63 +1,60 @@
-import { Avatar } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import DoctorProfile from "./DoctorProfile"
+import mick from "../../api/Scheduler"
+import { useSnackbar } from "../../pages/patient/Patient"
+import useToken from "../../hooks/useToken"
+import { DateTime } from "luxon"
 
 const Consultants = () => {
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [openDialog, setOpenDialog] = useState({ open: false })
+  const [data, setData] = useState({ loading: false, row: [] })
+  const [profile, setProfile] = useState({ open: false })
+  const { setSnackbar } = useSnackbar()
+  const { token } = useToken()
+  const nav = useNavigate()
 
   const handleView = (arg) => {
-    setOpenDialog({ open: true, ...arg })
+    setProfile({ open: true, doctor: arg.id })
+  }
+
+  const scheduleAppointment = (row, dateValue) => {
+    setProfile({ ...profile, open: false })
+    mick
+      .post(`/patient/${token.userId}/appt/`, {
+        doctor: row.doctor,
+        appt_date: {
+          date: DateTime.fromISO(dateValue.date).toISODate(),
+          start_time: DateTime.fromISO(dateValue.start).toISOTime(),
+          end_time: DateTime.fromISO(dateValue.end).toISOTime(),
+        },
+        temp: token.userId,
+      })
+      .then(() => {
+        setSnackbar({ open: true, children: "Successfull operation!" })
+        nav("/user/patient/appointment")
+      })
+      .catch((error) => {
+        setSnackbar({
+          open: true,
+          children:
+            "Couldn't Schedule appointment: " + error.response.data.detail,
+          severity: "error",
+        })
+      })
   }
 
   const column = [
     {
-      field: "img",
-      headerName: "Avatar",
-      width: "100",
-      renderCell: ({ value }) => {
-        return (
-          <Avatar
-            src={value}
-            sx={{ width: "100px", height: "100px" }}
-            variant="square"
-          />
-        )
-      },
-    },
-    {
-      field: "name",
+      field: "id",
       flex: 1,
-      headerName: "Name",
-    },
-    {
-      field: "specialization",
-      flex: 1,
-      headerName: "Specialization",
-    },
-    {
-      field: "consultation",
-      headerName: "Consultation",
-      type: "boolean",
-    },
-    {
-      field: "homedoctor",
-      headerName: "Home Doctor",
-      type: "boolean",
+      headerName: "Doctor",
     },
     {
       field: "actions",
       type: "actions",
       getActions: (params) => {
         return [
-          <GridActionsCellItem
-            label="View Profile"
-            onClick={() => handleView(params.row)}
-            color="primary"
-            showInMenu
-          />,
           <GridActionsCellItem
             label="Schedule Appointment"
             showInMenu
@@ -69,33 +66,17 @@ const Consultants = () => {
   ]
 
   useEffect(() => {
-    fetch("https://randomuser.me/api/?results=10")
-      .then((response) => response.json())
-      .then((da) => {
-        const { results } = da
-        const dola = results.map((e, i) => ({
-          id: i,
-          name: `${e.name.title} ${e.name.first} ${e.name.last}`,
-          specialization: e.email,
-          img: e.picture.large,
-          homedoctor: false,
-          consultation: true,
-        }))
-        setData(dola)
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-        setData([
-          {
-            id: 1,
-            name: "Mengstab",
-            img: "asdfasdf",
-            homedoctor: true,
-            consultation: true,
-            specialization: "This is specailization",
-          },
-        ])
+    mick
+      .get("/doctor/")
+      .then(({ data: { features } }) =>
+        setData({ loading: false, row: features })
+      )
+      .catch(({ message }) => {
+        setSnackbar({
+          open: true,
+          children: "Could't Fetch Data: " + message,
+          severity: "error",
+        })
       })
   }, [])
 
@@ -105,14 +86,17 @@ const Consultants = () => {
         <DataGrid
           rowHeight={100}
           hideFooter
-          rows={data}
+          rows={data.row}
           columns={column}
-          loading={loading}
+          loading={data.loading}
         />
-        <DoctorProfile
-          {...openDialog}
-          handleClose={() => setOpenDialog({ open: false })}
-        />
+        {profile.open && (
+          <DoctorProfile
+            {...profile}
+            handleClose={() => setProfile({ open: false })}
+            apply={scheduleAppointment}
+          />
+        )}
       </div>
     </>
   )

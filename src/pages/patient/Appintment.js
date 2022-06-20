@@ -71,9 +71,45 @@ const Appointment = () => {
   const handleEdit = (row) => {
     setProfile({
       open: true,
-      handleClose: () => setProfile({ open: false }),
       ...row,
     })
+  }
+
+  const editRow = (row, dateValue) => {
+    mick
+      .put(`/patient/${token.userId}/appt/${row.id}/`, {
+        id: row.id,
+        doctor: row.doctor,
+        appt_date: {
+          date: DateTime.fromISO(dateValue.date).toISODate(),
+          start_time: DateTime.fromISO(dateValue.start).toISOTime(),
+          end_time: DateTime.fromISO(dateValue.end).toISOTime(),
+        },
+        temp: token.userId,
+      })
+      .then(({ data }) => {
+        setProfile({ open: false })
+        setData((e) => {
+          let x = {
+            ...row,
+            date: data.appt_date.date,
+            start_time: data.appt_date.start_time,
+            end_time: data.appt_date.end_time,
+          }
+          let newData = e.rows.filter((z) => z.id !== x.id)
+          console.log(e, x)
+          return { loading: false, rows: [...newData, x] }
+        })
+        setSnackbar({ open: true, children: "Successfull operation" })
+      })
+      .catch(({ message }) => {
+        setProfile({ open: false })
+        setSnackbar({
+          open: true,
+          children: "Error: " + message,
+          severity: "error",
+        })
+      })
   }
 
   const handleDelete = () => {
@@ -98,7 +134,7 @@ const Appointment = () => {
   const getRoom = (row) => {
     setSnackbar({ open: true, children: "please wait." })
     axios
-      .get(`${Configx.USER_URL}/id/${row.doctor}`)
+      .get(`${Config.USER_URL}/id/${row.doctor}`)
       .then(({ data }) => {
         nav("/user/patient/room/" + data.user.email)
       })
@@ -122,6 +158,9 @@ const Appointment = () => {
       headerName: "Date",
       type: "dateTime",
       flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.DATE_MED)
+      },
     },
     {
       field: "start_time",
@@ -189,7 +228,13 @@ const Appointment = () => {
           loading={data.loading}
         />
       </div>
-      {profile.open && <DoctorProfile {...profile} setData={setData} />}
+      {profile.open && (
+        <DoctorProfile
+          {...profile}
+          handleClose={() => setProfile({ open: false })}
+          apply={editRow}
+        />
+      )}
       {deleteAppointment.open && (
         <Dialog open onClose={() => setDeleteAppointment({ open: false })}>
           <DialogTitle>Cancel Appointment</DialogTitle>

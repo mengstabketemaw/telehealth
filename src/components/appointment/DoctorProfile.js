@@ -10,7 +10,12 @@ import TextField from "@mui/material/TextField"
 import Stack from "@mui/material/Stack"
 import CloseIcon from "@mui/icons-material/Close"
 import Slide from "@mui/material/Slide"
-import { Avatar, Container, Grid } from "@mui/material"
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Avatar,
+} from "@mui/material"
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon"
 import {
   DatePicker,
@@ -20,25 +25,76 @@ import {
 import { useSnackbar } from "../../pages/patient/Patient"
 import axios from "axios"
 import Config from "../../api/Config"
-import mick from "../../api/Scheduler"
 import { DateTime } from "luxon"
+import mick from "../../api/Scheduler"
 import useToken from "../../hooks/useToken"
+import { DataGrid } from "@mui/x-data-grid"
+import { ManRounded } from "@mui/icons-material"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export default function DoctorProfile({ open, handleClose, setData, ...row }) {
+const column = [
+  {
+    field: "id",
+    header: "Number",
+    flex: 1,
+  },
+  {
+    field: "days",
+    header: "Day",
+    flex: 1,
+    valueGetter: ({ value }) => {
+      switch (value) {
+        case 1:
+          return "Monday"
+        case 2:
+          return "Tusday"
+        case 3:
+          return "Wednesday"
+        case 4:
+          return "Thursday"
+        case 5:
+          return "Friday"
+        case 6:
+          return "Saturday"
+        case 7:
+          return "Sunday"
+        default:
+          break
+      }
+    },
+  },
+  {
+    field: "start_time",
+    header: "Start Time",
+    type: "dateTime",
+    flex: 1,
+    valueGetter: ({ value }) => {
+      return DateTime.fromISO(value).toLocaleString(DateTime.TIME_SIMPLE)
+    },
+  },
+  {
+    field: "end_time",
+    header: "End Time",
+    flex: 1,
+    valueGetter: ({ value }) => {
+      return DateTime.fromISO(value).toLocaleString(DateTime.TIME_SIMPLE)
+    },
+  },
+]
+
+export default function DoctorProfile({ open, handleClose, apply, ...row }) {
   const [dateValue, setDateValue] = React.useState({
-    date: row.date,
-    start: DateTime.fromISO(row.start_time),
-    end: DateTime.fromISO(row.end_time),
+    date: row?.date || null,
+    start: DateTime.fromISO(row?.start_time) || null,
+    end: DateTime.fromISO(row?.end_time) || null,
   })
   const [user, setUser] = React.useState({ loading: true, data: {} })
+  const [schedules, setSchedules] = React.useState({ loading: true, data: [] })
   const { setSnackbar } = useSnackbar()
-  const { token } = useToken()
 
-  console.log(row)
   React.useEffect(() => {
     axios
       .get(`${Config.USER_URL}/id/${row.doctor}`)
@@ -56,42 +112,21 @@ export default function DoctorProfile({ open, handleClose, setData, ...row }) {
       })
   }, [])
 
-  const handleEdit = () => {
+  React.useEffect(() => {
     mick
-      .put(`/patient/${token.userId}/appt/${row.id}/`, {
-        id: row.id,
-        doctor: row.doctor,
-        appt_date: {
-          date: DateTime.fromISO(row.date).toISODate(),
-          start_time: DateTime.fromISO(row.start_time).toISOTime(),
-          end_time: DateTime.fromISO(row.end_time).toISOTime(),
-        },
-        temp: row.temp,
-      })
+      .get("/doctor/" + row.doctor + "/availablity/")
       .then(({ data }) => {
-        handleClose()
-        setData((e) => {
-          let x = {
-            ...row,
-            date: dateValue.date,
-            start_time: dateValue.date,
-            end_time: dateValue.end,
-          }
-          let newData = e.rows.filter((z) => z.id !== x.id)
-          console.log(e, x)
-          return { loading: false, rows: [...newData, x] }
-        })
-        setSnackbar({ open: true, children: "Successfull operation" })
+        setSchedules({ loading: false, data })
       })
       .catch(({ message }) => {
-        handleClose()
+        setSchedules({ loading: false, data: [] })
         setSnackbar({
           open: true,
-          children: "Error: " + message,
           severity: "error",
+          children: "Could't load data from mick: " + message,
         })
       })
-  }
+  }, [])
 
   return (
     <div>
@@ -114,7 +149,11 @@ export default function DoctorProfile({ open, handleClose, setData, ...row }) {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Schedule Appointment
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleEdit}>
+            <Button
+              autoFocus
+              color="inherit"
+              onClick={() => apply(row, dateValue)}
+            >
               Save
             </Button>
           </Toolbar>
@@ -122,46 +161,68 @@ export default function DoctorProfile({ open, handleClose, setData, ...row }) {
         {user.loading ? (
           <p>loading</p>
         ) : (
-          <Stack alignItems={"center"} spacing={3}>
-            <hr />
-            <Avatar
-              src={`${Config.USER_URL}/avatar/${user.data.user.email}`}
-              sx={{ width: "200px", height: "200px" }}
-            />
-            <Divider />
-            <Typography variant="h6">{user.data.user.firstname}</Typography>
-            <Typography variant="p" color="GrayText">
-              {user.data.specialization}
-            </Typography>
-            <LocalizationProvider dateAdapter={AdapterLuxon}>
-              <DatePicker
-                label="Date"
-                value={dateValue.date}
-                onChange={(value) =>
-                  setDateValue({ ...dateValue, date: value })
-                }
-                renderInput={(parms) => <TextField {...parms} />}
+          <>
+            <Stack alignItems={"center"} spacing={3}>
+              <hr />
+              <Avatar
+                src={`${Config.USER_URL}/avatar/${user.data.user.email}`}
+                sx={{ width: "200px", height: "200px" }}
               />
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterLuxon}>
-              <TimePicker
-                label="Start Time"
-                value={dateValue.start}
-                onChange={(value) =>
-                  setDateValue({ ...dateValue, start: value })
-                }
-                renderInput={(parms) => <TextField {...parms} />}
-              />
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterLuxon}>
-              <TimePicker
-                label="End Time"
-                value={dateValue.end}
-                onChange={(value) => setDateValue({ ...dateValue, end: value })}
-                renderInput={(parms) => <TextField {...parms} />}
-              />
-            </LocalizationProvider>
-          </Stack>
+              <Divider />
+              <Typography variant="h6">{user.data.user.firstname}</Typography>
+              <Typography variant="p" color="GrayText">
+                {user.data.specialization}
+              </Typography>
+              <LocalizationProvider dateAdapter={AdapterLuxon}>
+                <DatePicker
+                  label="Date"
+                  value={dateValue.date}
+                  onChange={(value) =>
+                    setDateValue({ ...dateValue, date: value })
+                  }
+                  renderInput={(parms) => <TextField {...parms} />}
+                />
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterLuxon}>
+                <TimePicker
+                  label="Start Time"
+                  value={dateValue.start}
+                  onChange={(value) =>
+                    setDateValue({ ...dateValue, start: value })
+                  }
+                  renderInput={(parms) => <TextField {...parms} />}
+                />
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterLuxon}>
+                <TimePicker
+                  label="End Time"
+                  value={dateValue.end}
+                  onChange={(value) =>
+                    setDateValue({ ...dateValue, end: value })
+                  }
+                  renderInput={(parms) => <TextField {...parms} />}
+                />
+              </LocalizationProvider>
+              <br />
+            </Stack>
+            <Divider variant="middle" />
+            <Accordion width={"100%"}>
+              <AccordionSummary expandIcon={<ManRounded />}>
+                <Typography>Working Houre</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div style={{ height: "500px", width: "80%" }}>
+                  <DataGrid
+                    rowHeight={100}
+                    hideFooter
+                    rows={schedules.data}
+                    columns={column}
+                    loading={schedules.loading}
+                  />
+                </div>
+              </AccordionDetails>
+            </Accordion>
+          </>
         )}
       </Dialog>
     </div>
