@@ -1,8 +1,10 @@
 import { Delete } from "@mui/icons-material"
 import { Button, Dialog, Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
+import axios from "axios"
 import { DateTime } from "luxon"
 import { useEffect, useState } from "react"
+import Config from "../../api/Config"
 import mick from "../../api/Scheduler"
 import NearbyDoctors from "../../components/maps/NearByDoctors"
 import useToken from "../../hooks/useToken"
@@ -28,13 +30,61 @@ const HomeAppointment = () => {
       })
   }, [])
 
+  const apply = (id, date) => {
+    console.log(id, date)
+    setLocateNearbyDoctor({ open: false })
+    setData({ ...data, loading: true })
+    mick
+      .post(`/doctor/${id}/homeappt/`, {
+        doctor: id,
+        appt_date: date,
+        temp: token.userId,
+        status: "Requested",
+      })
+      .then((res) => {
+        setSnackbar({
+          open: true,
+          children:
+            "Request have be sent successfully, please wait for approval!",
+        })
+        setData({ loading: false, row: [...data.row, res.data] })
+      })
+      .catch(({ message }) => {
+        setData({ ...data, loading: false })
+        setSnackbar({
+          open: true,
+          children: "Could't do it m: " + message,
+          severity: "error",
+        })
+      })
+  }
+
+  const handleDelete = (row) => {
+    setData({ ...data, loading: true })
+    mick
+      .delete(`/doctor/${row.doctor}/homeappt/${row.id}/`)
+      .then(() => {
+        let newData = data.row.filter((e) => e.id !== row.id)
+        setData({ loading: false, row: newData })
+        setSnackbar({ open: true, children: "Successfull operation!" })
+      })
+      .catch(({ message }) => {
+        setData({ ...data, loading: false })
+        setSnackbar({
+          children: "Couldn't delete appointment: " + message,
+          open: true,
+          severity: "error",
+        })
+      })
+  }
+
   const column = [
     {
       field: "id",
       headerName: "Id",
     },
     {
-      field: "Doctor",
+      field: "doctor",
       headerName: "Doctor",
       flex: 1,
       renderCell: ({ value }) => <DoctorName id={value} />,
@@ -60,7 +110,7 @@ const HomeAppointment = () => {
         <GridActionsCellItem
           label="Delete"
           icon={<Delete color="secondary" />}
-          onClick={() => {}}
+          onClick={() => handleDelete(row)}
         />,
       ],
     },
@@ -93,6 +143,7 @@ const HomeAppointment = () => {
           maxWidth={"90%"}
         >
           <NearbyDoctors
+            apply={apply}
             handleClose={() => setLocateNearbyDoctor({ open: false })}
           />
         </Dialog>
@@ -103,9 +154,19 @@ const HomeAppointment = () => {
 
 function DoctorName({ id }) {
   const [name, setName] = useState({ loading: true, data: "" })
-  useEffect(() => {}, [])
+  useEffect(() => {
+    axios
+      .get(`${Config.USER_URL}/id/${id}`)
+      .then(({ data }) => {
+        setName({
+          loading: false,
+          data: data.user.firstname + " " + data.user.middlename,
+        })
+      })
+      .catch(({ message }) => {})
+  }, [id])
   if (name.loading) return <p>loading . . .</p>
-  if (name.data) return <p>Doctor {name}</p>
+  if (name.data) return <p>Doctor {name.data}</p>
 
   return <p>Name not Found</p>
 }

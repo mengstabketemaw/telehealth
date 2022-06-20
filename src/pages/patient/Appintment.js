@@ -13,11 +13,35 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import { useEffect, useState } from "react"
 import CustomNoDataOverlay from "../../components/gridComponents/CustomNoDataOverlay"
 import CreateNewAppointment from "../../components/appointment/CreateNewAppointment"
-import { randomeUser } from "../../api/client"
+import mick from "../../api/Scheduler"
 import DoctorProfile from "../../components/appointment/DoctorProfile"
-import Client from "../../api/client"
 import { useSnackbar } from "./Patient"
 import { useNavigate } from "react-router-dom"
+import useToken from "../../hooks/useToken"
+import { DateTime } from "luxon"
+
+const distractAppt = (data) => {
+  if (Array.isArray(data)) {
+    return data.map((e) => {
+      let { date, start_time, end_time } = e.appt_date
+      return {
+        id: e.id,
+        doctor: e.doctor,
+        date,
+        start_time,
+        end_time,
+      }
+    })
+  }
+  let { date, start_time, end_time } = data.appt_date
+  return {
+    id: data.id,
+    doctor: data.doctor,
+    date,
+    start_time,
+    end_time,
+  }
+}
 
 const Appointment = () => {
   const nav = useNavigate()
@@ -25,52 +49,48 @@ const Appointment = () => {
   const [profile, setProfile] = useState({ open: false })
   const [deleteAppointment, setDeleteAppointment] = useState({ open: false })
   const { setSnackbar } = useSnackbar()
+  const { token } = useToken()
 
   useEffect(() => {
-    randomeUser
-      .get()
-      .then((response) => response.data.results)
-      .then((response) => {
-        setData({
-          rows: response.map((e, i) => {
-            return {
-              id: i,
-              name: `${e.name.title} ${e.name.first} ${e.name.last}`,
-              specialization: e.email,
-              avatar: e.picture.large,
-              date: e.registered.date,
-              type: e.gender === "male" ? "Consultation" : "Home Appointment",
-            }
-          }),
-          loading: false,
+    mick
+      .get(`/patient/${token.userId}/appt/`)
+      .then(({ data }) => {
+        setData({ rows: distractAppt(data), loading: false })
+      })
+      .catch(({ message }) => {
+        setSnackbar({
+          open: true,
+          children: "Error: " + message,
+          severity: "error",
         })
       })
   }, [])
 
   const handleEdit = (row) => {
-    const consultation = row.type.includes("tation")
-    const homedoctor = row.type.includes("ome")
     setProfile({
       open: true,
       handleClose: () => setProfile({ open: false }),
       ...row,
-      consultation,
-      homedoctor,
     })
   }
 
   const handleDelete = () => {
-    setDeleteAppointment({ open: false })
+    setDeleteAppointment({ ...deleteAppointment, open: false })
     setData({ ...data, loading: true })
-    Client.post().then(() => {
-      //data must be fetched from the server
-      setData({ ...data, loading: false })
-      setSnackbar({
-        open: true,
-        children: "Appointment has been canceled",
-        severity: "success",
+    mick
+      .delete(`/patient/${token.userId}/appt/${deleteAppointment.row.id}/`)
+      .then(() => {
+        let newData = data.rows.filter((e) => e.id !== deleteAppointment.row.id)
+        setData({ rows: newData, loading: false })
       })
-    })
+      .catch(({ message }) => {
+        setData({ ...data, loading: false })
+        setSnackbar({
+          open: true,
+          children: "Could't cancel appt: " + message,
+          severity: "error",
+        })
+      })
   }
 
   const getRoom = (row) => {
@@ -79,20 +99,8 @@ const Appointment = () => {
 
   const column = [
     {
-      field: "avatar",
-      headerName: "Avatar",
-      renderCell: ({ value }) => {
-        return <Avatar src={value} sx={{ width: "60px", height: "60px" }} />
-      },
-    },
-    {
-      field: "name",
-      headerName: "Name",
-      flex: 1,
-    },
-    {
-      field: "specialization",
-      headerName: "Specialization",
+      field: "doctor",
+      headerName: "Doctor",
       flex: 1,
     },
     {
@@ -102,9 +110,20 @@ const Appointment = () => {
       flex: 1,
     },
     {
-      field: "type",
-      headerName: "Type",
-      flex: 0.7,
+      field: "start_time",
+      headerName: "Start Time",
+      flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.TIME_SIMPLE)
+      },
+    },
+    {
+      field: "end_time",
+      headerName: "End Time",
+      flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.TIME_SIMPLE)
+      },
     },
     {
       field: "actions",
@@ -155,14 +174,13 @@ const Appointment = () => {
           loading={data.loading}
         />
       </div>
-      <DoctorProfile {...profile} />
+      {profile.open && <DoctorProfile {...profile} setData={setData} />}
       {deleteAppointment.open && (
         <Dialog open onClose={() => setDeleteAppointment({ open: false })}>
           <DialogTitle>Cancel Appointment</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to cance your schedule with{" "}
-              <strong>Dr. {deleteAppointment?.row?.name}</strong>
+              Are you sure you want to cance your schedule
             </DialogContentText>
           </DialogContent>
           <DialogActions>

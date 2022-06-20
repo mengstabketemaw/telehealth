@@ -1,6 +1,4 @@
 import { useState } from "react"
-import Location from "../../components/maps/MapUtils"
-import NearByDoctors from "../../components/maps/NearByDoctors"
 import WhereIsThisPatient from "../../components/maps/WhereIsThisPatient"
 
 const users = [
