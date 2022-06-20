@@ -71,7 +71,7 @@ export default function DoctorProfile({ open, handleClose, setData, ...row }) {
       })
       .then(({ data }) => {
         handleClose()
-        x = {
+        let x = {
           ...row,
           date: dateValue.date,
           start_time: dateValue.date,
