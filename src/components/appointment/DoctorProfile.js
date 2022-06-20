@@ -14,7 +14,6 @@ import { Avatar, Container, Grid } from "@mui/material"
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon"
 import {
   DatePicker,
-  DateTimePicker,
   LocalizationProvider,
   TimePicker,
 } from "@mui/x-date-pickers"
@@ -63,22 +62,23 @@ export default function DoctorProfile({ open, handleClose, setData, ...row }) {
         id: row.id,
         doctor: row.doctor,
         appt_date: {
-          date: row.date,
-          start_time: row.start_time,
-          end_time: row.end_time,
+          date: DateTime.fromISO(row.date).toISODate(),
+          start_time: DateTime.fromISO(row.start_time).toISOTime(),
+          end_time: DateTime.fromISO(row.end_time).toISOTime(),
         },
         temp: row.temp,
       })
       .then(({ data }) => {
         handleClose()
-        let x = {
-          ...row,
-          date: dateValue.date,
-          start_time: dateValue.date,
-          end_time: dateValue.end,
-        }
         setData((e) => {
-          let newData = e.rows.map((z) => z.id !== data.id)
+          let x = {
+            ...row,
+            date: dateValue.date,
+            start_time: dateValue.date,
+            end_time: dateValue.end,
+          }
+          let newData = e.rows.filter((z) => z.id !== x.id)
+          console.log(e, x)
           return { loading: false, rows: [...newData, x] }
         })
         setSnackbar({ open: true, children: "Successfull operation" })

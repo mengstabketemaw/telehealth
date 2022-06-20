@@ -1,4 +1,4 @@
-import { Delete, Edit } from "@mui/icons-material"
+import { Delete, Edit, VideoCall } from "@mui/icons-material"
 import {
   Avatar,
   Typography,
@@ -19,6 +19,8 @@ import { useSnackbar } from "./Patient"
 import { useNavigate } from "react-router-dom"
 import useToken from "../../hooks/useToken"
 import { DateTime } from "luxon"
+import axios from "axios"
+import Config from "../../api/Config"
 
 const distractAppt = (data) => {
   if (Array.isArray(data)) {
@@ -94,7 +96,19 @@ const Appointment = () => {
   }
 
   const getRoom = (row) => {
-    // nav("/user/patient/room/"+row.username)
+    setSnackbar({ open: true, children: "please wait." })
+    axios
+      .get(`${Configx.USER_URL}/id/${row.doctor}`)
+      .then(({ data }) => {
+        nav("/user/patient/room/" + data.user.email)
+      })
+      .catch(({ message }) => {
+        setSnackbar({
+          open: true,
+          children: "Could't fetch user info: " + message,
+          severity: "error",
+        })
+      })
   }
 
   const column = [
@@ -144,8 +158,9 @@ const Appointment = () => {
             onClick={() => setDeleteAppointment({ open: true, row })}
           />,
           <GridActionsCellItem
-            label={"Room"}
+            label={"Go to Room"}
             showInMenu
+            icon={<VideoCall />}
             onClick={() => getRoom(row)}
           />,
         ]
