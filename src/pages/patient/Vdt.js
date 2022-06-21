@@ -1,5 +1,17 @@
 import { LoadingButton } from "@mui/lab"
-import { Box, Container, Grid, Typography, Tab } from "@mui/material"
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Tab,
+  Button,
+  CardActionArea,
+  Card,
+  CardContent,
+  Avatar,
+  CardActions,
+} from "@mui/material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import axios from "axios"
 import { useEffect, useState } from "react"
@@ -11,6 +23,7 @@ import {
 } from "react-stomp-hooks"
 import useToken from "../../hooks/useToken"
 import { useNavigate } from "react-router-dom"
+import mati from "../../api/repository"
 import Chat from "react-simple-chat"
 import "react-simple-chat/src/components/index.css"
 
@@ -136,8 +149,15 @@ function HandlePatient() {
       body: JSON.stringify({ from: token.username, message }),
     })
   }
+
   return (
-    <Box sx={{ width: "100%", typography: "body1" }}>
+    <Box
+      sx={{
+        height: "75vh",
+        typography: "body1",
+        overflow: "scroll",
+      }}
+    >
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={(e, v) => setValue(v)}>
@@ -148,7 +168,7 @@ function HandlePatient() {
         <TabPanel value="1">
           <CurrentStatus current={current} />
         </TabPanel>
-        <TabPanel value="3">
+        <TabPanel value="2">
           <VdtBlog />
         </TabPanel>
       </TabContext>
@@ -164,7 +184,7 @@ function HandlePatient() {
 }
 
 function VdtBlog() {
-  return <p>This is vdt blog</p>
+  return <VdtBlogLists />
 }
 
 function CurrentStatus({ current }) {
@@ -221,6 +241,96 @@ export function CommonComponent({ data, doctor = false, children }) {
           </Grid>
         </Container>
       </Grid>
+    </Grid>
+  )
+}
+
+function VdtBlogLists() {
+  const [blogs, setBlogs] = useState({ loading: true, data: [] })
+  const [detaile, setDetaile] = useState({ value: false, index: -1 })
+  useEffect(() => {
+    mati
+      .get("api/Blog")
+      .then((data) => {
+        setBlogs({ loading: false, data })
+      })
+      .catch(({ message }) => {
+        console.log("Could't load ", message)
+      })
+  }, [])
+
+  if (blogs.loading) return <Typography>loading . . .</Typography>
+
+  if (detaile.value)
+    return (
+      <>
+        <Button onClick={() => setDetaile({ value: false, index: -1 })}>
+          back
+        </Button>
+        <VdtBlogCard data={blogs.data[detaile.index]} detaile={true} />
+      </>
+    )
+
+  if (blogs.data?.length)
+    return (
+      <Grid container spacing={3}>
+        {blogs.data.map((e, i) => (
+          <VdtBlogCard key={i} index={i} data={e} setDetaile={setDetaile} />
+        ))}
+      </Grid>
+    )
+  else return <Typography>No blog</Typography>
+}
+
+function VdtBlogCard({
+  data,
+  detaile = false,
+  setDetaile = (f) => f,
+  index = 0,
+}) {
+  const [author, setAuthor] = useState()
+  useEffect(() => {
+    axios.get(Config.USER_URL + "/id/" + data.authorId).then(({ data }) => {
+      setAuthor(data.user)
+    })
+  }, [])
+  return (
+    <Grid item xs={12}>
+      <Card>
+        <CardActionArea
+          onClick={() => {
+            setDetaile({ value: true, index })
+          }}
+        >
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {data.title}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              {detaile ? data.body + "  . . . " : data.body.substr(0, 100)}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Box>
+            {author?.email && (
+              <Avatar src={`${Config.USER_URL}/avatar/${author?.email}`} />
+            )}
+            <Box ml={2}>
+              <Typography variant="subtitle2" component="p">
+                {author?.firstname} {author?.middlename}
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                color="textSecondary"
+                component="p"
+              >
+                {new Date(data.postDate).toDateString()}
+              </Typography>
+            </Box>
+          </Box>
+        </CardActions>
+      </Card>
     </Grid>
   )
 }
