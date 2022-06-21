@@ -16,14 +16,16 @@ import Medication from "./Medication"
 import Review from "./Review"
 import requests from "../../api/repository"
 import { useParams } from "react-router-dom"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { Avatar, Alert, CircularProgress, Snackbar } from "@mui/material"
+import telehealthImg from "../../assets/images/GreyTelehealth.png"
 
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
+      <Link color="inherit" href="#">
+        Tele Health
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -31,7 +33,7 @@ function Copyright() {
   )
 }
 
-const steps = ["Shipping address", "Review your order"]
+const steps = ["Conditions", "Drug information"]
 
 function getStepContent(step) {
   switch (step) {
@@ -49,13 +51,28 @@ const theme = createTheme()
 export default function Checkout() {
   const { prescriptionId } = useParams()
   const [activeStep, setActiveStep] = React.useState(0)
+  const [loading, setLoading] = useState(true)
+  const [open, setOpen] = useState(false)
+  const [severity, setSeverity] = useState("info")
+  const [message, setMessage] = useState("")
 
   const handleNext = () => {
     if (activeStep === 1) {
+      setLoading(true)
       requests
         .post(`api/Prescription/take?prescriptionId=${prescriptionId}`)
-        .then(console.log("prescription taken"))
-        .catch()
+        .then(() => {
+          setLoading(false)
+          setOpen(true)
+          setSeverity("success")
+          setMessage("Prescription successfully taken")
+        })
+        .catch((error) => {
+          setLoading(false)
+          setOpen(true)
+          setSeverity("error")
+          setMessage("Error : " + error)
+        })
     }
     setActiveStep(activeStep + 1)
   }
@@ -75,8 +92,13 @@ export default function Checkout() {
           if (data["status"] === 1) {
             setActiveStep(2)
           }
+          setLoading(false)
         })
-        .catch((error) => {})
+        .catch((error) => {
+          setOpen(true)
+          setSeverity("error")
+          setMessage("Error loading data from server.")
+        })
     }
     fetchData()
   }, [])
@@ -94,18 +116,24 @@ export default function Checkout() {
         }}
       >
         <Toolbar>
+          <Avatar
+            src={telehealthImg}
+            sx={{ margin: "15px", width: 80, height: 80 }}
+            variant="rounded"
+          />
           <Typography variant="h6" color="inherit" noWrap>
-            Company name
+            Tele Health
           </Typography>
         </Toolbar>
       </AppBar>
+
       <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
         <Paper
           variant="outlined"
           sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
         >
           <Typography component="h1" variant="h4" align="center">
-            Checkout
+            Prescription
           </Typography>
           <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
             {steps.map((label) => (
@@ -114,35 +142,62 @@ export default function Checkout() {
               </Step>
             ))}
           </Stepper>
-          <React.Fragment>
-            {activeStep === steps.length ? (
-              <React.Fragment>
-                <Typography variant="h5" gutterBottom>
-                  Prescription taken. Thank you for your service.
-                </Typography>
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                {getStepContent(activeStep)}
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  {activeStep !== 0 && (
-                    <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
-                      Back
-                    </Button>
-                  )}
+          {loading ? (
+            <Box
+              sx={{
+                width: "100%",
+                height: "50vh",
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+              }}
+            >
+              <CircularProgress />
+              <Typography>loading</Typography>
+            </Box>
+          ) : (
+            <React.Fragment>
+              {activeStep === steps.length ? (
+                <React.Fragment>
+                  <Typography variant="h5" gutterBottom>
+                    Prescription taken. Thank you for your service.
+                  </Typography>
+                </React.Fragment>
+              ) : (
+                <React.Fragment>
+                  {getStepContent(activeStep)}
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    {activeStep !== 0 && (
+                      <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
+                        Back
+                      </Button>
+                    )}
 
-                  <Button
-                    variant="contained"
-                    onClick={handleNext}
-                    sx={{ mt: 3, ml: 1 }}
-                  >
-                    {activeStep === steps.length - 1 ? "Confirm take" : "Next"}
-                  </Button>
-                </Box>
-              </React.Fragment>
-            )}
-          </React.Fragment>
+                    <Button
+                      variant="contained"
+                      onClick={handleNext}
+                      sx={{ mt: 3, ml: 1 }}
+                    >
+                      {activeStep === steps.length - 1
+                        ? "Confirm take"
+                        : "Next"}
+                    </Button>
+                  </Box>
+                </React.Fragment>
+              )}
+            </React.Fragment>
+          )}
         </Paper>
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={(e) => setOpen(false)}
+          severity={severity}
+        >
+          <Alert onClose={(e) => setOpen(false)} severity={severity}>
+            {message}
+          </Alert>
+        </Snackbar>
         <Copyright />
       </Container>
     </ThemeProvider>

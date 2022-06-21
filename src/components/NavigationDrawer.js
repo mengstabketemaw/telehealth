@@ -91,7 +91,6 @@ function DrawerTools() {
           spacing={1}
         >
           <Avatar
-            alt="Travis Howard"
             src={telehealthImg}
             sx={{ margin: "15px", width: 130, height: 130 }}
             variant="rounded"

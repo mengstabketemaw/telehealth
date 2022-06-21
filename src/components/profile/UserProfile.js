@@ -158,7 +158,7 @@ const UserProfile = () => {
             }}
             value={profile.sex || ""}
             onChange={handleChange("sex")}
-            label={"Sex"}
+            label={"Gender"}
           />
           <TextField
             value={profile.phoneNumber || ""}
