@@ -1,19 +1,17 @@
 import * as React from "react"
-import Button from "@mui/material/Button"
-import Dialog from "@mui/material/Dialog"
-import Divider from "@mui/material/Divider"
-import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
-import IconButton from "@mui/material/IconButton"
-import Typography from "@mui/material/Typography"
-import TextField from "@mui/material/TextField"
-import Stack from "@mui/material/Stack"
-import CloseIcon from "@mui/icons-material/Close"
-import Slide from "@mui/material/Slide"
+import { Close } from "@mui/icons-material"
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
+  Box,
+  TextField,
+  Typography,
+  Button,
+  Dialog,
+  Divider,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Stack,
+  Slide,
   Avatar,
 } from "@mui/material"
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon"
@@ -29,7 +27,6 @@ import { DateTime } from "luxon"
 import mick from "../../api/Scheduler"
 import useToken from "../../hooks/useToken"
 import { DataGrid } from "@mui/x-data-grid"
-import { ManRounded } from "@mui/icons-material"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
@@ -144,7 +141,7 @@ export default function DoctorProfile({ open, handleClose, apply, ...row }) {
               onClick={handleClose}
               aria-label="close"
             >
-              <CloseIcon />
+              <Close />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Schedule Appointment
@@ -161,8 +158,15 @@ export default function DoctorProfile({ open, handleClose, apply, ...row }) {
         {user.loading ? (
           <p>loading</p>
         ) : (
-          <>
-            <Stack alignItems={"center"} spacing={3}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <Stack alignItems={"center"} spacing={3} sx={{ margin: 4 }}>
               <hr />
               <Avatar
                 src={`${Config.USER_URL}/avatar/${user.data.user.email}`}
@@ -176,6 +180,7 @@ export default function DoctorProfile({ open, handleClose, apply, ...row }) {
               <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <DatePicker
                   label="Date"
+                  disablePast
                   value={dateValue.date}
                   onChange={(value) =>
                     setDateValue({ ...dateValue, date: value })
@@ -186,6 +191,7 @@ export default function DoctorProfile({ open, handleClose, apply, ...row }) {
               <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <TimePicker
                   label="Start Time"
+                  minTime={DateTime.now()}
                   value={dateValue.start}
                   onChange={(value) =>
                     setDateValue({ ...dateValue, start: value })
@@ -197,6 +203,7 @@ export default function DoctorProfile({ open, handleClose, apply, ...row }) {
                 <TimePicker
                   label="End Time"
                   value={dateValue.end}
+                  minTime={dateValue.start}
                   onChange={(value) =>
                     setDateValue({ ...dateValue, end: value })
                   }
@@ -205,24 +212,24 @@ export default function DoctorProfile({ open, handleClose, apply, ...row }) {
               </LocalizationProvider>
               <br />
             </Stack>
-            <Divider variant="middle" />
-            <Accordion width={"100%"}>
-              <AccordionSummary expandIcon={<ManRounded />}>
-                <Typography>Working Houre</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <div style={{ height: "500px", width: "80%" }}>
-                  <DataGrid
-                    rowHeight={100}
-                    hideFooter
-                    rows={schedules.data}
-                    columns={column}
-                    loading={schedules.loading}
-                  />
-                </div>
-              </AccordionDetails>
-            </Accordion>
-          </>
+            <div style={{ height: "500px", width: "40%", ml: 3 }}>
+              <Typography>Working Houre</Typography>
+              <DataGrid
+                rowHeight={100}
+                hideFooter
+                rows={schedules.data}
+                columns={column}
+                loading={schedules.loading}
+                initialState={{
+                  columns: {
+                    columnVisibilityModel: {
+                      id: false,
+                    },
+                  },
+                }}
+              />
+            </div>
+          </Box>
         )}
       </Dialog>
     </div>

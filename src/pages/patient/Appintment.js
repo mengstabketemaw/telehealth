@@ -21,6 +21,7 @@ import useToken from "../../hooks/useToken"
 import { DateTime } from "luxon"
 import axios from "axios"
 import Config from "../../api/Config"
+import { DoctorName } from "./HomeAppointment"
 
 const distractAppt = (data) => {
   if (Array.isArray(data)) {
@@ -152,6 +153,7 @@ const Appointment = () => {
       field: "doctor",
       headerName: "Doctor",
       flex: 1,
+      renderCell: ({ value }) => <DoctorName id={value} />,
     },
     {
       field: "date",

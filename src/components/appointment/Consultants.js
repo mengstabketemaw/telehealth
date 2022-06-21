@@ -6,9 +6,10 @@ import mick from "../../api/Scheduler"
 import { useSnackbar } from "../../pages/patient/Patient"
 import useToken from "../../hooks/useToken"
 import { DateTime } from "luxon"
+import { DoctorName } from "../../pages/patient/Prescription"
 
 const Consultants = () => {
-  const [data, setData] = useState({ loading: false, row: [] })
+  const [data, setData] = useState({ loading: true, row: [] })
   const [profile, setProfile] = useState({ open: false })
   const { setSnackbar } = useSnackbar()
   const { token } = useToken()
@@ -49,6 +50,7 @@ const Consultants = () => {
       field: "id",
       flex: 1,
       headerName: "Doctor",
+      renderCell: ({ value }) => <DoctorName id={value} />,
     },
     {
       field: "actions",

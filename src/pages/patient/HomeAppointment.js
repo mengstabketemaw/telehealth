@@ -152,7 +152,7 @@ const HomeAppointment = () => {
   )
 }
 
-function DoctorName({ id }) {
+export function DoctorName({ id }) {
   const [name, setName] = useState({ loading: true, data: "" })
   useEffect(() => {
     axios

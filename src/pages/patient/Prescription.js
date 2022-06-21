@@ -177,7 +177,7 @@ const downloadQR = () => {
   document.body.removeChild(downloadLink)
 }
 
-function DoctorName({ id }) {
+export function DoctorName({ id }) {
   const [doctor, setDoctor] = useState({ loading: true })
   useEffect(() => {
     axios
