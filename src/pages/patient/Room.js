@@ -66,7 +66,7 @@ const Room = () => {
             <Typography>
               Sorry doctor {username} has't started the session yet yet
             </Typography>
-            <Button onClick={() => getRoom()}>Try againe</Button>
+            <Button onClick={() => getRoom()}>Try again</Button>
           </Stack>
         )}
       </Box>
