@@ -1,13 +1,5 @@
 import { LoadingButton } from "@mui/lab"
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Stack,
-  Typography,
-  Tab,
-} from "@mui/material"
+import { Box, Container, Grid, Typography, Tab } from "@mui/material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import axios from "axios"
 import { useEffect, useState } from "react"
@@ -19,6 +11,8 @@ import {
 } from "react-stomp-hooks"
 import useToken from "../../hooks/useToken"
 import { useNavigate } from "react-router-dom"
+import Chat from "react-simple-chat"
+import "react-simple-chat/src/components/index.css"
 
 const Vdt = () => {
   const [data, setData] = useState({ status: false, data: {} })
@@ -68,9 +62,9 @@ const Vdt = () => {
 function HandlePatient() {
   const [value, setValue] = useState("1")
   const [current, setCurrent] = useState({ loading: true, data: {} })
-  const [chats, setChats] = useState([])
-
   const { token } = useToken()
+  const [chats, setChats] = useState([])
+  const stompClient = useStompClient()
 
   const nav = useNavigate()
 
@@ -81,13 +75,6 @@ function HandlePatient() {
     nav("/user/patient/room/" + message.username)
   })
 
-  //public chat subscription
-  useSubscription("/topic/chat/patient", ({ body }) => {
-    const message = JSON.parse(body)
-    setChats((prev) => setChats([...prev, message]))
-    console.log(message)
-  })
-
   //status subscription
   useSubscription("/topic/status", ({ body }) => {
     const message = JSON.parse(body)
@@ -95,36 +82,89 @@ function HandlePatient() {
     console.log(message)
   })
 
+  //public chat subscription
+  useSubscription("/topic/chat/patient", ({ body }) => {
+    //{from:"email",message:"the message body"}
+    console.log(body)
+    console.log(chats)
+    const message = JSON.parse(body)
+
+    //my message the one i just sent it.
+    if (message.from === token.username) {
+      let newmessage = {
+        ...message.message,
+        id: chats.length + 1,
+        user: {
+          id: 1,
+          avatar: `${Config.USER_URL}/avatar/${token.username}`,
+        },
+      }
+      setChats((chats) => [...chats, newmessage])
+      return
+    }
+
+    let history = chats.filter((e) => e.username === message.from)
+
+    //this user has sent one or more message prev. so we want to make sure it is not a new user.
+    if (history.length > 0) {
+      let chechat = {
+        ...history[0],
+        id: chats.length + 1,
+        text: message.message.text,
+      }
+      setChats((chats) => [...chats, chechat])
+      return
+    }
+
+    //new message from new user
+    let newnewmessage = {
+      ...message.message,
+      id: chats.length + 1,
+      user: {
+        id: Date.now(),
+        avatar: `${Config.USER_URL}/avatar/${message.from}`,
+      },
+      username: message.from,
+    }
+    setChats((prev) => setChats([...prev, newnewmessage]))
+    console.log(chats)
+  })
+
+  const sendMessage = (message) => {
+    stompClient.publish({
+      destination: "/topic/chat/patient",
+      body: JSON.stringify({ from: token.username, message }),
+    })
+  }
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={(e, v) => setValue(v)}>
             <Tab label="Current Status" value="1" />
-            <Tab label="Chat room" value="2" />
-            <Tab label="Blog" value="3" />
+            <Tab label="Blog" value="2" />
           </TabList>
         </Box>
         <TabPanel value="1">
           <CurrentStatus current={current} />
         </TabPanel>
-        <TabPanel value="2">
-          <ChatRoom chats={chats} />
-        </TabPanel>
         <TabPanel value="3">
           <VdtBlog />
         </TabPanel>
       </TabContext>
+      <Chat
+        title="Group chat"
+        minimized={true}
+        user={{ id: 1 }}
+        messages={chats}
+        onSend={(message) => sendMessage(message)}
+      />
     </Box>
   )
 }
 
 function VdtBlog() {
   return <p>This is vdt blog</p>
-}
-
-function ChatRoom({ chats }) {
-  return chats.map((e, k) => <p key={k}>{e?.message}</p>)
 }
 
 function CurrentStatus({ current }) {
