@@ -1,5 +1,14 @@
 import { LoadingButton } from "@mui/lab"
-import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material"
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Stack,
+  Typography,
+  Tab,
+} from "@mui/material"
+import { TabContext, TabList, TabPanel } from "@mui/lab"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import Config from "../../api/Config"
@@ -12,9 +21,8 @@ import useToken from "../../hooks/useToken"
 import { useNavigate } from "react-router-dom"
 
 const Vdt = () => {
-  const { token } = useToken()
   const [data, setData] = useState({ status: false, data: {} })
-
+  const { token } = useToken()
   const handleWaite = () => {
     setData({ ...data, status: true })
   }
@@ -33,14 +41,14 @@ const Vdt = () => {
       <br />
 
       {!data.status && (
-        <CommonComponent data={data}>
+        <CommonComponent data={{ ...data }}>
           <LoadingButton
             loading={data.status}
             fullWidth
             variant="contained"
             onClick={handleWaite}
           >
-            WAIT
+            Enter Room
           </LoadingButton>
         </CommonComponent>
       )}
@@ -50,48 +58,81 @@ const Vdt = () => {
           connectHeaders={{ username: token.username, type: "patient" }}
           url={Config.VIDEOSERVER + "/communication-server"}
         >
-          <HandlePatient token={token} />
+          <HandlePatient />
         </StompSessionProvider>
       )}
     </>
   )
 }
 
-function HandlePatient({ token }) {
-  const [data, setData] = useState({})
+function HandlePatient() {
+  const [value, setValue] = useState("1")
+  const [current, setCurrent] = useState({ loading: true, data: {} })
+  const [chats, setChats] = useState([])
+
+  const { token } = useToken()
+
   const nav = useNavigate()
-  useSubscription("/topic/status", ({ body }) => {
-    const message = JSON.parse(body)
-    setData(message)
-    console.log(message)
-  })
+
+  //private message subscription
   useSubscription("/user/" + token.username + "/msg", ({ body }) => {
     const message = JSON.parse(body)
     console.log(message)
     nav("/user/patient/room/" + message.username)
   })
 
+  //public chat subscription
+  useSubscription("/topic/chat/patient", ({ body }) => {
+    const message = JSON.parse(body)
+    setChats((prev) => setChats([...prev, message]))
+    console.log(message)
+  })
+
+  //status subscription
+  useSubscription("/topic/status", ({ body }) => {
+    const message = JSON.parse(body)
+    setCurrent({ loading: false, data: message })
+    console.log(message)
+  })
+
   return (
-    <CommonComponent data={{ data: data }}>
-      <Button>read blog while wating</Button>
-    </CommonComponent>
+    <Box sx={{ width: "100%", typography: "body1" }}>
+      <TabContext value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <TabList onChange={(e, v) => setValue(v)}>
+            <Tab label="Current Status" value="1" />
+            <Tab label="Chat room" value="2" />
+            <Tab label="Blog" value="3" />
+          </TabList>
+        </Box>
+        <TabPanel value="1">
+          <CurrentStatus current={current} />
+        </TabPanel>
+        <TabPanel value="2">
+          <ChatRoom chats={chats} />
+        </TabPanel>
+        <TabPanel value="3">
+          <VdtBlog />
+        </TabPanel>
+      </TabContext>
+    </Box>
   )
 }
 
-export function CommonComponent({ data, doctor = false, children }) {
-  let waiting
-  if (data.data?.doctors > 1) {
-    waiting = 0
-  } else if (data.data?.patients) {
-    if (data.data?.current) {
-      waiting = (data.data?.patients / data.data?.current) * 30
-    } else {
-      waiting = data.data?.patients * 30
-    }
-  } else {
-    waiting = "UNKNOWN"
-  }
+function VdtBlog() {
+  return <p>This is vdt blog</p>
+}
 
+function ChatRoom({ chats }) {
+  return chats.map((e, k) => <p key={k}>{e?.message}</p>)
+}
+
+function CurrentStatus({ current }) {
+  if (current.loading) return <p>loading. . .</p>
+  return <CommonComponent data={{ ...current }} />
+}
+
+export function CommonComponent({ data, doctor = false, children }) {
   return (
     <Grid
       height={"50vh"}
@@ -118,31 +159,21 @@ export function CommonComponent({ data, doctor = false, children }) {
               <Typography>Number of Patient in Queue</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography>{data.data?.patients}</Typography>
-            </Grid>
-            {!doctor && (
-              <>
-                <Grid item xs={6}>
-                  <Typography>
-                    Approximate Time wating time in minute
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography>{waiting}</Typography>
-                </Grid>
-              </>
-            )}
-            <Grid item xs={6}>
-              <Typography>Current Patient who are diagnosing</Typography>
+              <Typography>{data.data.patients}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography>{data.data?.current}</Typography>
+              <Typography>
+                Current Doctors who are diagnosing patients
+              </Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography>Available Doctor</Typography>
+              <Typography>{data.data.current}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography>{data.data?.doctors}</Typography>
+              <Typography>Free doctors</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography>{data.data.doctors}</Typography>
             </Grid>
             <Grid item xs={12}>
               {children}
