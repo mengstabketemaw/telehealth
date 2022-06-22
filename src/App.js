@@ -22,7 +22,6 @@ import AdminDashboard from "./pages/admin/AdminDashboard"
 import Doctors from "./pages/admin/Doctors"
 import HelpApplications from "./pages/admin/HelpApplications"
 import Setting from "./pages/admin/Setting"
-import Feedback from "./pages/admin/Feedback"
 import Schedule from "./pages/doctor/Schedule"
 import PrivateElement from "./components/route/PrivateElement"
 import DocIndex from "./pages/doctor/DocIndex"
@@ -30,6 +29,7 @@ import useToken from "./hooks/useToken"
 import DocTherapyGroup from "./pages/doctor/DocTherapyGroup"
 import DocVideoRoom from "./pages/doctor/DocVideoRoom"
 import Checkout from "./pages/pharmacy/Checkout"
+import NotFound from "./pages/guest/NotFound"
 import Prescription from "./pages/patient/Prescription"
 import BlogDetaile from "./components/blog/BlogDetaile"
 import HelpDetail from "./components/help/HelpDetail"
@@ -93,23 +93,12 @@ function App() {
           <Route path="helpapplications" element={<HelpApplications />} />
           <Route path="profile" element={<Profile />} />
           <Route path="setting" element={<Setting />} />
-          <Route path="feedback" element={<Feedback />} />
         </Route>
       </Route>
       <Route path="pharmacy/:prescriptionId" element={<Checkout />} />
-      <Route
-        path="*"
-        element={
-          <>
-            <h1>{noItem}</h1>
-          </>
-        }
-      />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
-const noItem = `
-Sorry the item you are looking is not here, why don't you first find it in your HEAD! then we can try agine ;)
-`
 
 export default App

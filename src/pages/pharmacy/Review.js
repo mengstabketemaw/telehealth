@@ -4,6 +4,8 @@ import Typography from "@mui/material/Typography"
 import TextField from "@mui/material/TextField"
 import Grid from "@mui/material/Grid"
 import requests from "../../api/repository"
+import Config from "../../api/Config"
+import axios from "axios"
 import { useParams } from "react-router-dom"
 import { useEffect } from "react"
 import { DateTime } from "luxon"
@@ -16,7 +18,13 @@ export default function Review() {
   const [strength, setStrength] = useState("")
   const [remark, setRemark] = useState("")
   const [prescribeDate, setPrescribeDate] = useState("")
+  const [prescribedById, setPrescribedById] = useState(0)
+  const [prescribedToId, setPrescribedToId] = useState(0)
+  const [prescribor, setPrescribor] = useState()
+  const [patient, setPatient] = useState()
   const [loading, setLoading] = useState(true)
+  const [ploading, setPLoading] = useState(true)
+  const [aloading, setALoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [severity, setSeverity] = useState("info")
   const [message, setMessage] = useState("")
@@ -30,7 +38,21 @@ export default function Review() {
           setMedication(data["medication"])
           setRemark(data["remark"])
           setPrescribeDate(data["presribeDate"])
+          setPrescribedById(data["prescribedById"])
+          setPrescribedToId(data["prescribedToId"])
           setLoading(false)
+          axios
+            .get(Config.USER_URL + "/id/" + data["prescribedById"])
+            .then(({ data }) => {
+              setPrescribor(data.user)
+              setPLoading(false)
+            })
+          axios
+            .get(Config.USER_URL + "/id/" + data["prescribedToId"])
+            .then(({ data }) => {
+              setPatient(data.user)
+              setALoading(false)
+            })
         })
         .catch(() => {
           setOpen(true)
@@ -39,12 +61,11 @@ export default function Review() {
         })
     }
     fetchData()
-    console.log(prescribeDate)
   }, [])
 
   return (
     <>
-      {loading ? (
+      {loading || ploading || aloading ? (
         <Box
           sx={{
             width: "100%",
@@ -67,6 +88,45 @@ export default function Review() {
           </Typography>
           <br />
           <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-read-only-input"
+                name="patient"
+                label="Prescribed To"
+                fullWidth
+                variant="standard"
+                value={
+                  patient?.firstname +
+                  " " +
+                  patient?.middlename +
+                  " " +
+                  patient?.lastname
+                }
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-read-only-input"
+                name="doctor"
+                label="Prescribed By"
+                fullWidth
+                variant="standard"
+                value={
+                  "Dr. " +
+                  prescribor?.firstname +
+                  " " +
+                  prescribor?.middlename +
+                  " " +
+                  prescribor?.lastname
+                }
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 id="outlined-read-only-input"
