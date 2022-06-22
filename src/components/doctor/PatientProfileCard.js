@@ -4,9 +4,8 @@ import { useState } from "react"
 import Config from "../../api/Config"
 import PatientProfile from "./PatientProfile"
 
-const PatientProfileCard = ({ username, onView, open, handleClose }) => {
-  //we can fetch more about the user from the auth server, like it full name instade of there username,
-  //but we have to configure the autht server
+const PatientProfileCard = ({ username }) => {
+  const [open, setOpen] = useState(false)
   return (
     <>
       <Stack direction="row" spacing={3} padding={2}>
@@ -18,7 +17,7 @@ const PatientProfileCard = ({ username, onView, open, handleClose }) => {
         <FiberManualRecord sx={{ fontSize: "small" }} color={"error"} />
       </Stack>
       <Stack direction="row" spacing={3} paddingRight={3}>
-        <Button onClick={onView}>View</Button>
+        <Button onClick={() => setOpen(true)}>View</Button>
         {/* <Button>REMOVE</Button> */}
         <Box sx={{ flexGrow: 1 }}></Box>
         <Typography>2:30</Typography>
@@ -27,7 +26,7 @@ const PatientProfileCard = ({ username, onView, open, handleClose }) => {
       {open && (
         <PatientProfile
           open={open}
-          handleClose={handleClose}
+          handleClose={() => setOpen(false)}
           username={username}
         />
       )}

@@ -11,11 +11,14 @@ import {
   CardContent,
   Avatar,
   CardActions,
+  CircularProgress,
+  Stack,
 } from "@mui/material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import Config from "../../api/Config"
+import VideoClient from "../../api/VideoComAPi"
 import {
   StompSessionProvider,
   useStompClient,
@@ -26,6 +29,9 @@ import { useNavigate } from "react-router-dom"
 import mati from "../../api/repository"
 import Chat from "react-simple-chat"
 import "react-simple-chat/src/components/index.css"
+import { MeetingConsumer, MeetingProvider } from "@videosdk.live/react-sdk"
+import VideoContainer from "../../components/videos/VideoContainer"
+import { useSnackbar } from "./Patient"
 
 const Vdt = () => {
   const [data, setData] = useState({ status: false, data: {} })
@@ -75,8 +81,10 @@ const Vdt = () => {
 function HandlePatient() {
   const [value, setValue] = useState("1")
   const [current, setCurrent] = useState({ loading: true, data: {} })
-  const { token } = useToken()
   const [chats, setChats] = useState([])
+  const [doctor, setDoctor] = useState({ active: false, username: "" })
+  const { token } = useToken()
+  const { setSnackbar } = useSnackbar()
   const stompClient = useStompClient()
 
   const nav = useNavigate()
@@ -84,20 +92,36 @@ function HandlePatient() {
   //private message subscription
   useSubscription("/user/" + token.username + "/msg", ({ body }) => {
     const message = JSON.parse(body)
-    console.log(message)
-    nav("/user/patient/room/" + message.username)
+    setSnackbar({
+      open: true,
+      children: "doctor is available, we will redirecte you in 5 second.",
+      severity: "info",
+    })
+    setTimeout(() => {
+      setDoctor({ active: true, username: message.username })
+    }, 5000)
   })
 
   //status subscription
   useSubscription("/topic/status", ({ body }) => {
     const message = JSON.parse(body)
     setCurrent({ loading: false, data: message })
+    setSnackbar({
+      open: true,
+      children: "VDT status has changed.",
+      severity: "info",
+    })
     console.log(message)
   })
 
   //public chat subscription
   useSubscription("/topic/chat/patient", ({ body }) => {
     //{from:"email",message:"the message body"}
+    setSnackbar({
+      open: true,
+      children: "new incoming message",
+      severity: "info",
+    })
     console.log(body)
     console.log(chats)
     const message = JSON.parse(body)
@@ -149,6 +173,12 @@ function HandlePatient() {
       body: JSON.stringify({ from: token.username, message }),
     })
   }
+  if (doctor.active)
+    return (
+      <>
+        <VdtRoom username={doctor.username} />
+      </>
+    )
 
   return (
     <Box
@@ -183,6 +213,68 @@ function HandlePatient() {
   )
 }
 
+function VdtRoom({ username }) {
+  const { setSnackbar } = useSnackbar()
+  const [room, setRoom] = useState({ status: "loading", data: {} })
+
+  const getRoom = () => {
+    setRoom({ status: "loading", data: {} })
+    const success = (data) => setRoom({ status: "success", data })
+    const error = (message) => {
+      setSnackbar({
+        open: true,
+        children: "Could't find any room: " + message,
+        severity: "error",
+      })
+      setRoom({ status: "error", data: {} })
+    }
+    VideoClient.get(VideoClient.GET_ROOM + username, success, error)
+  }
+
+  useEffect(() => {
+    getRoom()
+  }, [username])
+  return (
+    <>
+      <Box
+        width="100%"
+        height="70vh"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        {room.status === "loading" ? (
+          <CircularProgress />
+        ) : room.status === "success" ? (
+          <MeetingProvider
+            config={{
+              meetingId: room.data.roomId,
+              micEnabled: "true",
+              webcamEnabled: "true",
+              name: room.data.username,
+            }}
+            token={room.data.token}
+          >
+            <MeetingConsumer>
+              {() => <VideoContainer user={room.data} />}
+            </MeetingConsumer>
+          </MeetingProvider>
+        ) : (
+          <Stack spacing={3}>
+            <Typography>
+              Sorry doctor {username} has't started the session yet yet
+            </Typography>
+            <Button onClick={() => getRoom()}>Try again</Button>
+          </Stack>
+        )}
+      </Box>
+    </>
+  )
+}
+
 function VdtBlog() {
   return <VdtBlogLists />
 }
@@ -192,7 +284,7 @@ function CurrentStatus({ current }) {
   return <CommonComponent data={{ ...current }} />
 }
 
-export function CommonComponent({ data, doctor = false, children }) {
+export function CommonComponent({ data, children }) {
   return (
     <Grid
       height={"50vh"}
