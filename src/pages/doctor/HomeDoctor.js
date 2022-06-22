@@ -256,7 +256,7 @@ export function ShowPatientInfo({ info, setInfo }) {
   if (info?.location)
     return (
       <Dialog
-        open={info}
+        open={info.open}
         fullWidth
         maxWidth={"100%"}
         onClose={() => setInfo({ open: false })}

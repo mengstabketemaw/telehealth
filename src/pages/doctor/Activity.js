@@ -7,6 +7,7 @@ import { ShowPatientInfo } from "./HomeDoctor"
 import useToken from "../../hooks/useToken"
 import { Person, VideoCall } from "@mui/icons-material"
 import { useNavigate } from "react-router-dom"
+import { DateTime } from "luxon"
 const Activity = () => {
   const [data, setData] = useState({ row: [], loading: true })
   const [info, setInfo] = useState({ open: false })
@@ -23,23 +24,28 @@ const Activity = () => {
   }
   const column = [
     {
-      field: "id",
-      headerName: "Id",
-    },
-    {
       field: "date",
       headerName: "Date Time",
       flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.DATE_MED)
+      },
     },
     {
       field: "start_time",
       headerName: "Date Time",
       flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.TIME_SIMPLE)
+      },
     },
     {
       field: "end_time",
       headerName: "Date Time",
       flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.TIME_SIMPLE)
+      },
     },
     {
       field: "temp",
@@ -73,7 +79,8 @@ const Activity = () => {
     mick
       .get(`/doctor/${token.userId}/appt/`)
       .then(({ data }) => {
-        setData({ loading: false, row: data })
+        let row = data.map((e) => ({ ...e, ...e.appt_date }))
+        setData({ loading: false, row })
       })
       .catch(({ message }) => {
         setData({ loading: false, row: [] })

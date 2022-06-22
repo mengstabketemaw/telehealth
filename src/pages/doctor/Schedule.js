@@ -129,7 +129,7 @@ const Schedule = () => {
     setAddSchedule({ ...addSchedule, open: false })
     mick
       .post(`/doctor/${token.userId}/availablity/`, {
-        days: addSchedule.day,
+        days: addSchedule.day || 1,
         start_time: addSchedule.start_time.toFormat("TT"),
         end_time: addSchedule.end_time.toFormat("TT"),
         doctor: token.userId,

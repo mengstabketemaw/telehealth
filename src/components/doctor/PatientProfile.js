@@ -24,6 +24,7 @@ import {
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import useToken from "../../hooks/useToken"
 import PrescriptionForm from "./PerscriptionForm"
+import ReactPlayer from "react-player"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
@@ -279,6 +280,7 @@ export default function PatientProfile(props) {
 }
 
 function ShowDetaileMedicalRecord({ detailedView, setDetailedView }) {
+  console.log(detailedView)
   if (detailedView.fileName)
     return (
       <Dialog
@@ -289,7 +291,7 @@ function ShowDetaileMedicalRecord({ detailedView, setDetailedView }) {
         <DialogTitle>Medical Record</DialogTitle>
         <DialogContent dividers>
           <Box sx={{ width: "80vw", flexGrow: 1 }}>
-            {detailedView?.type?.includes("image") && (
+            {detailedView?.type?.includes("IMAGE") && (
               <img
                 height={"100%"}
                 width={"100%"}
@@ -299,7 +301,7 @@ function ShowDetaileMedicalRecord({ detailedView, setDetailedView }) {
                 }
               />
             )}
-            {detailedView?.type?.includes("pdf") && (
+            {detailedView?.type?.includes("PDF") && (
               <iframe
                 height={"100%"}
                 width={"100%"}
@@ -309,16 +311,16 @@ function ShowDetaileMedicalRecord({ detailedView, setDetailedView }) {
                 }
               />
             )}
-            {detailedView?.type?.includes("video") && (
-              <video controls width={"auto"}>
-                <source
-                  src={
-                    "http://matiows-001-site1.btempurl.com/api/File/" +
-                    detailedView.fileName
-                  }
-                  type={detailedView.type}
-                />
-              </video>
+            {detailedView?.type?.includes("VIDEO") && (
+              <ReactPlayer
+                playing={true}
+                controls={true}
+                light={true}
+                url={
+                  "http://matiows-001-site1.btempurl.com/api/File/" +
+                  detailedView.fileName
+                }
+              />
             )}
           </Box>
         </DialogContent>

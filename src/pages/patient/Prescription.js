@@ -19,6 +19,7 @@ import useToken from "../../hooks/useToken"
 import axios from "axios"
 import Config from "../../api/Config"
 import { QRCodeCanvas } from "qrcode.react"
+import { DateTime } from "luxon"
 
 function Prescription() {
   const [medicalPrescription, setMedicalPrescription] = useState({
@@ -58,6 +59,10 @@ function Prescription() {
     {
       field: "presribeDate",
       headerName: "Date",
+      flex: 1,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_MED)
+      },
     },
     {
       field: "medication",
@@ -77,6 +82,10 @@ function Prescription() {
     {
       field: "status",
       headerName: "Status",
+      valueGetter: ({ value }) => {
+        if (Number(value) === 0) return "Prescribed"
+        else return "Taken"
+      },
     },
     {
       field: "actions",

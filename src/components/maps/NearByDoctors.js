@@ -153,7 +153,6 @@ function DoctorInfo({ doc, apply }) {
               <Typography variant="h6" color={"green"}>
                 Doctor: {doctor.data.user.firstname}{" "}
                 {doctor.data.user.middlename}
-                {doc.geometry.coordinates[1]},{doc.geometry.coordinates[0]}
               </Typography>
               <Typography variant="h6" color={"GrayText"}>
                 {doctor.data.specialization}
@@ -162,6 +161,7 @@ function DoctorInfo({ doc, apply }) {
             <LocalizationProvider dateAdapter={AdapterLuxon}>
               <DateTimePicker
                 label="Enter Date"
+                disablePast
                 value={dateValue}
                 onChange={(value) => setDateValue(value)}
                 renderInput={(parms) => <TextField {...parms} />}
