@@ -32,6 +32,7 @@ import DocVideoRoom from "./pages/doctor/DocVideoRoom"
 import Checkout from "./pages/pharmacy/Checkout"
 import Prescription from "./pages/patient/Prescription"
 import BlogDetaile from "./components/blog/BlogDetaile"
+import HelpDetail from "./components/help/HelpDetail"
 import HomeAppointment from "./pages/patient/HomeAppointment"
 function App() {
   const { token } = useToken()
@@ -60,6 +61,7 @@ function App() {
             <Route path="medicalrecord" element={<MedicalRecord />} />
           </Route>
           <Route path="blogdetaile" element={<BlogDetaile />} />
+          <Route path="helpdetail" element={<HelpDetail />} />
           <Route path="appointment" element={<Appointment />} />
           <Route path="homedoctor" element={<HomeAppointment />} />
           <Route path="therapygroup" element={<TherapyGroup />} />
@@ -80,6 +82,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="blog" element={<DocBlog />} />
           <Route path="blogdetaile" element={<BlogDetaile />} />
+          <Route path="helpdetail" element={<HelpDetail />} />
           <Route path="therapygroup" element={<DocTherapyGroup />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="room" element={<DocVideoRoom />} />

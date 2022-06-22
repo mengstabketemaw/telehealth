@@ -6,6 +6,7 @@ import {
   CardActions,
   CardContent,
   Divider,
+  Grid,
   Stack,
   TextField,
   Typography,
@@ -33,7 +34,7 @@ export default function BlogDetaile() {
   }, [])
 
   return (
-    <>
+    <Grid item mr={20}>
       <BlogCard data={state} />
       <br />
       <Divider />
@@ -50,7 +51,7 @@ export default function BlogDetaile() {
       </Stack>
       <br />
       <WriteComment setCommentState={setCom} blogId={state.blogId} />
-    </>
+    </Grid>
   )
 }
 
@@ -69,11 +70,13 @@ function Comment({ comment }) {
   if (author)
     return (
       <Card>
-        <Box>
-          {author?.email && (
-            <Avatar src={`${Config.USER_URL}/avatar/${author?.email}`} />
-          )}
-          <Box ml={2}>
+        <CardActions>
+          <Box ml={1} mt={1} mr={1}>
+            {author?.email && (
+              <Avatar src={`${Config.USER_URL}/avatar/${author?.email}`} />
+            )}
+          </Box>
+          <Box ml={1} mt={1} mr={1}>
             <Typography variant="subtitle2" component="p">
               {author?.firstname} {author?.middlename}
             </Typography>
@@ -81,13 +84,12 @@ function Comment({ comment }) {
               {new Date(comment.commentDate).toDateString()}
             </Typography>
           </Box>
-        </Box>
+        </CardActions>
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
             {comment.body}
           </Typography>
         </CardContent>
-        <CardActions></CardActions>
       </Card>
     )
 }

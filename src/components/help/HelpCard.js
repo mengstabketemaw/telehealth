@@ -1,4 +1,3 @@
-import { Comment } from "@mui/icons-material"
 import {
   Avatar,
   Box,
@@ -15,34 +14,41 @@ import axios from "axios"
 import { useLocation, useNavigate } from "react-router-dom"
 import useToken from "../../hooks/useToken"
 
-const BlogCard = ({ data }) => {
+const HelpCard = ({ data }) => {
   const { token } = useToken()
   const { pathname } = useLocation()
-  const [author, setAuthor] = useState()
+  const [requestor, setRequestor] = useState()
   const nav = useNavigate()
+
   useEffect(() => {
-    axios.get(Config.USER_URL + "/id/" + data.authorId).then(({ data }) => {
-      setAuthor(data.user)
+    axios.get(Config.USER_URL + "/id/" + data.requestorId).then(({ data }) => {
+      setRequestor(data.user)
     })
   }, [])
+
   return (
-    <Grid item xs={12} md={6}>
+    <Grid item xs={12} md={10} ml={10}>
       <Card>
         <CardActionArea
           onClick={() => {
             if (token.role === "DOCTOR")
-              nav("/user/doctor/blogdetaile", { state: { ...data } })
+              nav("/user/doctor/helpdetail", { state: { ...data } })
             else if (token.role === "PATIENT")
-              nav("/user/patient/blogdetaile", { state: { ...data } })
-            else nav("/user/admin/blogdetaile", { state: { ...data } })
+              nav("/user/patient/helpdetail", { state: { ...data } })
+            else nav("/user/admin/helpdetail", { state: { ...data } })
           }}
         >
           <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              {data.title}
+            <Typography
+              gutterBottom
+              variant="h4"
+              component="h2"
+              color="common.blue"
+            >
+              Help request
             </Typography>
             <Typography variant="subtitle2" component="p">
-              By {author?.firstname} {author?.middlename}
+              By {requestor?.firstname} {requestor?.middlename}
             </Typography>
             <br />
             <Typography
@@ -51,7 +57,7 @@ const BlogCard = ({ data }) => {
               color="textSecondary"
               component="p"
             >
-              {pathname.includes("blogdetaile")
+              {pathname.includes("helpdetail")
                 ? data.body
                 : data.body.substr(0, 200) + "  . . . "}
             </Typography>
@@ -59,25 +65,37 @@ const BlogCard = ({ data }) => {
         </CardActionArea>
         <CardActions>
           <Box ml={2}>
-            {author?.email && (
-              <Avatar src={`${Config.USER_URL}/avatar/${author?.email}`} />
+            {requestor?.email && (
+              <Avatar src={`${Config.USER_URL}/avatar/${requestor?.email}`} />
             )}
           </Box>
           <Box ml={3}>
             <Typography variant="subtitle2" component="p">
-              {author?.firstname} {author?.middlename}
+              {requestor?.firstname} {requestor?.middlename}
             </Typography>
             <Typography variant="subtitle2" color="textSecondary" component="p">
               {new Date(data.postDate).toDateString()}
             </Typography>
           </Box>
-          <Box pl={5}>
-            <Comment />
-            {data.comments?.length || 0}
-          </Box>
         </CardActions>
+        {pathname.includes("helpdetail") ? (
+          <Box m={3}>
+            <Typography variant="subtitle2">Contact information</Typography>
+            <Typography variant="subtitle2" color="textSecondary">
+              Email: {requestor?.email}
+            </Typography>
+            <Typography variant="subtitle2" color="textSecondary">
+              Phone: {requestor?.phoneNumber}
+            </Typography>
+            <Typography variant="subtitle2" color="textSecondary">
+              Home: {requestor?.homePhoneNumber}
+            </Typography>
+          </Box>
+        ) : (
+          <></>
+        )}
       </Card>
     </Grid>
   )
 }
-export default BlogCard
+export default HelpCard

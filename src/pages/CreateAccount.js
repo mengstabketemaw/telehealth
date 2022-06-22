@@ -46,7 +46,7 @@ function CreateAccount() {
   const renderBasedOnUser = () => {
     if (userInfo.basic.user === "PATIENT") {
       return (
-        <Grid item xs={8}>
+        <Grid item xs={5}>
           <FormControl sx={{ m: 1, minWidth: "100%" }}>
             <InputLabel>Martial Status</InputLabel>
             <Select
@@ -64,11 +64,26 @@ function CreateAccount() {
     return (
       <>
         <Grid item xs={3}>
-          <TextField
-            fullWidth
-            label="Specialization"
-            onChange={handleChange("doctor", "specialization")}
-          />
+          <FormControl sx={{ m: 1, minWidth: "100%" }}>
+            <InputLabel>Specialization</InputLabel>
+
+            <Select
+              label="Specialization"
+              value={userInfo.doctor.specialization}
+              onChange={handleChange("doctor", "specialization")}
+            >
+              <MenuItem value={"familyMedicine"}>Family Medicine</MenuItem>
+              <MenuItem value={"internalMedicine"}>Internal Medicine</MenuItem>
+              <MenuItem value={"pediatrics"}>Pediatrics</MenuItem>
+              <MenuItem value={"gynecology"}>Gynecology</MenuItem>
+              <MenuItem value={"surgery"}>Surgery</MenuItem>
+              <MenuItem value={"psychiatry"}>Psychiatry</MenuItem>
+              <MenuItem value={"cardiology"}>Cardiology</MenuItem>
+              <MenuItem value={"dermatology"}>Dermatology</MenuItem>
+              <MenuItem value={"otolaryngology"}>Otolaryngology</MenuItem>
+              <MenuItem value={"oncology"}>Oncology</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
 
         <Grid item xs={2}>
@@ -307,7 +322,7 @@ function CreateAccount() {
           </FormControl>
         </Grid>
         {renderBasedOnUser()}
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Stack spacing={3}>
             <Stack direction={"row"} spacing={3}>
               <Typography>Profile Picture</Typography>
