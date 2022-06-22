@@ -151,7 +151,7 @@ const Schedule = () => {
     <>
       <br />
       <Typography color="primary" variant="h4">
-        Set Your Working houre
+        Set Your Working hour
       </Typography>
       <br />
       <Stack alignItems="flex-end">
@@ -165,12 +165,12 @@ const Schedule = () => {
           />
         </div>
         <Button onClick={() => setAddSchedule({ open: true })}>
-          Add Working houre
+          Add Working hour
         </Button>
       </Stack>
       {addSchedule.open && (
         <Dialog fullWidth open>
-          <DialogTitle>Add Working houre</DialogTitle>
+          <DialogTitle>Add Working hour</DialogTitle>
           <DialogContent dividers>
             <Stack spacing={3}>
               <FormControl fullWidth>

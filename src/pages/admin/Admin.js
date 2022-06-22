@@ -16,7 +16,6 @@ import {
 import {
   AccountBox,
   DocumentScanner,
-  Feedback,
   Help,
   PieChart,
   Settings,
@@ -145,44 +144,40 @@ function DrawerTools() {
         style={{ background: "white", margin: "20px" }}
         variant="middle"
       />
-      {["Dashboard", "Doctors", "Help Applications", "Feedback"].map(
-        (name, index) => {
-          let urlname = name
-            .toLocaleLowerCase()
-            .replace(" ", "")
-            .replaceAll(".", "")
-          let color = pathname.includes(urlname) ? "#3490ec" : "#ffffff"
+      {["Dashboard", "Doctors", "Help Applications"].map((name, index) => {
+        let urlname = name
+          .toLocaleLowerCase()
+          .replace(" ", "")
+          .replaceAll(".", "")
+        let color = pathname.includes(urlname) ? "#3490ec" : "#ffffff"
 
-          return (
-            <NavLink
-              key={index}
-              to={urlname}
-              style={{
-                color: "#ffffff",
-                textDecoration: "none",
-                display: "flex",
-              }}
-            >
-              <ListItem button>
-                <ListItemIcon>
-                  {name === "Dashboard" ? (
-                    <PieChart sx={{ color }} />
-                  ) : name === "Doctors" ? (
-                    <DocumentScanner sx={{ color }} />
-                  ) : name === "Feedback" ? (
-                    <Feedback sx={{ color }} />
-                  ) : (
-                    <Help sx={{ color }} />
-                  )}
-                </ListItemIcon>
-                <ListItemText>
-                  <Typography color={color}>{name}</Typography>
-                </ListItemText>
-              </ListItem>
-            </NavLink>
-          )
-        }
-      )}
+        return (
+          <NavLink
+            key={index}
+            to={urlname}
+            style={{
+              color: "#ffffff",
+              textDecoration: "none",
+              display: "flex",
+            }}
+          >
+            <ListItem button>
+              <ListItemIcon>
+                {name === "Dashboard" ? (
+                  <PieChart sx={{ color }} />
+                ) : name === "Doctors" ? (
+                  <DocumentScanner sx={{ color }} />
+                ) : (
+                  <Help sx={{ color }} />
+                )}
+              </ListItemIcon>
+              <ListItemText>
+                <Typography color={color}>{name}</Typography>
+              </ListItemText>
+            </ListItem>
+          </NavLink>
+        )
+      })}
 
       <Divider
         style={{ background: "white", margin: "20px" }}

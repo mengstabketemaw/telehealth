@@ -213,7 +213,7 @@ export default function DoctorProfile({ open, handleClose, apply, ...row }) {
               <br />
             </Stack>
             <div style={{ height: "500px", width: "40%", ml: 3 }}>
-              <Typography>Working Houre</Typography>
+              <Typography>Working Hour</Typography>
               <DataGrid
                 rowHeight={100}
                 hideFooter
