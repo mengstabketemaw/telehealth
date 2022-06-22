@@ -12,7 +12,7 @@ import { useSnackbar } from "../patient/Patient"
 
 const HomeAppointment = () => {
   const [data, setData] = useState({ loading: true, row: [] })
-  const [locateNearbyDoctor, setLocateNearbyDoctor] = useState({ open: true })
+  const [locateNearbyDoctor, setLocateNearbyDoctor] = useState({ open: false })
   const { token } = useToken()
   const { setSnackbar } = useSnackbar()
   useEffect(() => {

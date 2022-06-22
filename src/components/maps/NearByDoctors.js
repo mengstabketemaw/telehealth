@@ -29,7 +29,7 @@ const NearByDoctors = ({ handleClose, apply }) => {
 
   const getDoctors = (km, data) => {
     let dis = Number(km) / 1000
-    setDoctors({ ...doctors, loading: true })
+    setDoctors({ row: [], loading: true })
     mick
       .get(
         `/doctors/?long=${data.user.latitude}&lat=${data.user.longitude}&km=${dis}`
@@ -112,9 +112,12 @@ const NearByDoctors = ({ handleClose, apply }) => {
             >
               <Popup>You are Here</Popup>
             </Marker>
-            {doctors.row.map((doc, k) => (
-              <DoctorInfo doc={doc} key={k} apply={apply} />
-            ))}
+            {!doctors.loading &&
+              doctors.row
+                .filter((e) => e.properties.is_home_doctor)
+                .map((doc, k) => (
+                  <DoctorInfo doc={doc} key={k} apply={apply} />
+                ))}
             <Circle
               center={[user.data.user.latitude, user.data.user.longitude]}
               pathOptions={{ fillColor: "blue", weight: 1 }}
@@ -137,7 +140,6 @@ function DoctorInfo({ doc, apply }) {
       })
       .catch(({ message }) => {})
   }, [])
-  console.log(doctor)
   if (doctor.loading) return null
   if (doctor.data)
     return (
@@ -151,6 +153,7 @@ function DoctorInfo({ doc, apply }) {
               <Typography variant="h4" color={"green"}>
                 Doctor: {doctor.data.user.firstname}{" "}
                 {doctor.data.user.middlename}
+                {doc.geometry.coordinates[1]},{doc.geometry.coordinates[0]}
               </Typography>
               <Typography variant="h6" color={"GrayText"}>
                 {doctor.data.specialization}

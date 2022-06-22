@@ -3,9 +3,9 @@ import { useMeeting, useParticipant } from "@videosdk.live/react-sdk"
 import { useEffect, useMemo, useRef } from "react"
 import ReactPlayer from "react-player"
 
-export default function VideoComponent({ participantId, key }) {
+export default function VideoComponent({ participantId }) {
   const micRef = useRef()
-  const { participants } = useMeeting()
+  const meeting = useMeeting()
   const { webcamStream, micStream, webcamOn, micOn, isLocal } =
     useParticipant(participantId)
   const videoStream = useMemo(() => {
@@ -34,26 +34,26 @@ export default function VideoComponent({ participantId, key }) {
     }
   }, [micStream, micOn])
 
-  let x = isLocal
-    ? { position: "fixed", height: "200px", width: "200px" }
-    : {
-        height: 100 / participantId + "%",
-        width: "fit-content",
-        margin: 1,
-        padding: "20px",
-      }
+  let x =
+    isLocal || meeting.meeting.localParticipant.id === participantId
+      ? { position: "fixed", height: "200px", width: "200px" }
+      : {
+          height: 100 / participantId + "%",
+          width: "fit-content",
+          margin: 1,
+          padding: "20px",
+        }
 
   return (
     <Paper key={participantId} elevation={3} sx={x}>
       {micOn && micRef && <audio ref={micRef} autoPlay />}
       {webcamOn && (
         <ReactPlayer
-          //
           playsinline // very very imp prop
           pip={false}
           light={false}
           controls={false}
-          muted={false}
+          muted={true}
           playing={true}
           //
           url={videoStream}
