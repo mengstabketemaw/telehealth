@@ -27,6 +27,7 @@
     "react-redux": "^8.0.1",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-simple-chat": "^1.1.4",
     "react-stomp-hooks": "^2.1.0"
   },
   "scripts": {

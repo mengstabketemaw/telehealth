@@ -1,12 +1,16 @@
 import { LoadingButton } from "@mui/lab"
 import {
   Box,
-  Button,
   Container,
   Grid,
-  Stack,
   Typography,
   Tab,
+  Button,
+  CardActionArea,
+  Card,
+  CardContent,
+  Avatar,
+  CardActions,
 } from "@mui/material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import axios from "axios"
@@ -19,6 +23,9 @@ import {
 } from "react-stomp-hooks"
 import useToken from "../../hooks/useToken"
 import { useNavigate } from "react-router-dom"
+import mati from "../../api/repository"
+import Chat from "react-simple-chat"
+import "react-simple-chat/src/components/index.css"
 
 const Vdt = () => {
   const [data, setData] = useState({ status: false, data: {} })
@@ -68,9 +75,9 @@ const Vdt = () => {
 function HandlePatient() {
   const [value, setValue] = useState("1")
   const [current, setCurrent] = useState({ loading: true, data: {} })
-  const [chats, setChats] = useState([])
-
   const { token } = useToken()
+  const [chats, setChats] = useState([])
+  const stompClient = useStompClient()
 
   const nav = useNavigate()
 
@@ -81,13 +88,6 @@ function HandlePatient() {
     nav("/user/patient/room/" + message.username)
   })
 
-  //public chat subscription
-  useSubscription("/topic/chat/patient", ({ body }) => {
-    const message = JSON.parse(body)
-    setChats((prev) => setChats([...prev, message]))
-    console.log(message)
-  })
-
   //status subscription
   useSubscription("/topic/status", ({ body }) => {
     const message = JSON.parse(body)
@@ -95,36 +95,96 @@ function HandlePatient() {
     console.log(message)
   })
 
+  //public chat subscription
+  useSubscription("/topic/chat/patient", ({ body }) => {
+    //{from:"email",message:"the message body"}
+    console.log(body)
+    console.log(chats)
+    const message = JSON.parse(body)
+
+    //my message the one i just sent it.
+    if (message.from === token.username) {
+      let newmessage = {
+        ...message.message,
+        id: chats.length + 1,
+        user: {
+          id: 1,
+          avatar: `${Config.USER_URL}/avatar/${token.username}`,
+        },
+      }
+      setChats((chats) => [...chats, newmessage])
+      return
+    }
+
+    let history = chats.filter((e) => e.username === message.from)
+
+    //this user has sent one or more message prev. so we want to make sure it is not a new user.
+    if (history.length > 0) {
+      let chechat = {
+        ...history[0],
+        id: chats.length + 1,
+        text: message.message.text,
+      }
+      setChats((chats) => [...chats, chechat])
+      return
+    }
+
+    //new message from new user
+    let newnewmessage = {
+      ...message.message,
+      id: chats.length + 1,
+      user: {
+        id: Date.now(),
+        avatar: `${Config.USER_URL}/avatar/${message.from}`,
+      },
+      username: message.from,
+    }
+    setChats((prev) => setChats([...prev, newnewmessage]))
+    console.log(chats)
+  })
+
+  const sendMessage = (message) => {
+    stompClient.publish({
+      destination: "/topic/chat/patient",
+      body: JSON.stringify({ from: token.username, message }),
+    })
+  }
+
   return (
-    <Box sx={{ width: "100%", typography: "body1" }}>
+    <Box
+      sx={{
+        height: "75vh",
+        typography: "body1",
+        overflow: "scroll",
+      }}
+    >
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={(e, v) => setValue(v)}>
             <Tab label="Current Status" value="1" />
-            <Tab label="Chat room" value="2" />
-            <Tab label="Blog" value="3" />
+            <Tab label="Blog" value="2" />
           </TabList>
         </Box>
         <TabPanel value="1">
           <CurrentStatus current={current} />
         </TabPanel>
         <TabPanel value="2">
-          <ChatRoom chats={chats} />
-        </TabPanel>
-        <TabPanel value="3">
           <VdtBlog />
         </TabPanel>
       </TabContext>
+      <Chat
+        title="Group chat"
+        minimized={true}
+        user={{ id: 1 }}
+        messages={chats}
+        onSend={(message) => sendMessage(message)}
+      />
     </Box>
   )
 }
 
 function VdtBlog() {
-  return <p>This is vdt blog</p>
-}
-
-function ChatRoom({ chats }) {
-  return chats.map((e, k) => <p key={k}>{e?.message}</p>)
+  return <VdtBlogLists />
 }
 
 function CurrentStatus({ current }) {
@@ -181,6 +241,96 @@ export function CommonComponent({ data, doctor = false, children }) {
           </Grid>
         </Container>
       </Grid>
+    </Grid>
+  )
+}
+
+function VdtBlogLists() {
+  const [blogs, setBlogs] = useState({ loading: true, data: [] })
+  const [detaile, setDetaile] = useState({ value: false, index: -1 })
+  useEffect(() => {
+    mati
+      .get("api/Blog")
+      .then((data) => {
+        setBlogs({ loading: false, data })
+      })
+      .catch(({ message }) => {
+        console.log("Could't load ", message)
+      })
+  }, [])
+
+  if (blogs.loading) return <Typography>loading . . .</Typography>
+
+  if (detaile.value)
+    return (
+      <>
+        <Button onClick={() => setDetaile({ value: false, index: -1 })}>
+          back
+        </Button>
+        <VdtBlogCard data={blogs.data[detaile.index]} detaile={true} />
+      </>
+    )
+
+  if (blogs.data?.length)
+    return (
+      <Grid container spacing={3}>
+        {blogs.data.map((e, i) => (
+          <VdtBlogCard key={i} index={i} data={e} setDetaile={setDetaile} />
+        ))}
+      </Grid>
+    )
+  else return <Typography>No blog</Typography>
+}
+
+function VdtBlogCard({
+  data,
+  detaile = false,
+  setDetaile = (f) => f,
+  index = 0,
+}) {
+  const [author, setAuthor] = useState()
+  useEffect(() => {
+    axios.get(Config.USER_URL + "/id/" + data.authorId).then(({ data }) => {
+      setAuthor(data.user)
+    })
+  }, [])
+  return (
+    <Grid item xs={12}>
+      <Card>
+        <CardActionArea
+          onClick={() => {
+            setDetaile({ value: true, index })
+          }}
+        >
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {data.title}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              {detaile ? data.body + "  . . . " : data.body.substr(0, 100)}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Box>
+            {author?.email && (
+              <Avatar src={`${Config.USER_URL}/avatar/${author?.email}`} />
+            )}
+            <Box ml={2}>
+              <Typography variant="subtitle2" component="p">
+                {author?.firstname} {author?.middlename}
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                color="textSecondary"
+                component="p"
+              >
+                {new Date(data.postDate).toDateString()}
+              </Typography>
+            </Box>
+          </Box>
+        </CardActions>
+      </Card>
     </Grid>
   )
 }
