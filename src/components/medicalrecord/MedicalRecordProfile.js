@@ -22,7 +22,7 @@ const fileViewerFor = (type, fileName) => {
     view = <iframe src={url} width={"100%"} height={"1000px"} />
   } else if (typ?.includes("video")) {
     view = (
-      <video controls width={"auto"}>
+      <video width="800" height="600" controls>
         <source src={url} />
       </video>
     )
