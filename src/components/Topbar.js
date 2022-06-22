@@ -96,7 +96,7 @@ const Topbar = ({ handleDrawerToggle }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Search>
+          {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -104,7 +104,7 @@ const Topbar = ({ handleDrawerToggle }) => {
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
             />
-          </Search>
+          </Search> */}
           <Box sx={{ flexGrow: 1 }} />
           <Tooltip title={"Open Setting"}>
             <IconButton onClick={handleMenu}>

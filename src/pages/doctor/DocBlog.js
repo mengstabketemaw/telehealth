@@ -14,6 +14,8 @@ import BlogCard from "../../components/blog/BlogCard"
 import { useSnackbar } from "../doctor/Doctor"
 import useToken from "../../hooks/useToken"
 import mati from "../../api/repository"
+import HelpCard from "../../components/help/HelpCard"
+
 const DocBlog = () => {
   const [modal, setModal] = useState({ open: false })
   return (
@@ -32,28 +34,45 @@ const DocBlog = () => {
 
 export function BlogLists() {
   const [blogs, setBlogs] = useState({ loading: true, data: [] })
+  const [help, setHelp] = useState({ loading: true, data: {} })
   useEffect(() => {
-    mati
-      .get("api/Blog")
-      .then((data) => {
-        setBlogs({ loading: false, data })
-      })
-      .catch(({ message }) => {
-        console.log("Could't load ", message)
-      })
+    async function fetchData() {
+      await mati
+        .get("api/Blog")
+        .then((data) => {
+          setBlogs({ loading: false, data })
+        })
+        .catch(({ message }) => {
+          console.log("Could't load ", message)
+        })
+
+      await mati
+        .get("api/Help/random")
+        .then((data) => {
+          setHelp({ loading: false, data })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+    fetchData()
   }, [])
 
-  if (blogs.loading) return <Typography>loading . . .</Typography>
+  if (blogs.loading || help.loading)
+    return <Typography>loading . . .</Typography>
 
   if (blogs.data?.length)
     return (
       <Grid container spacing={3}>
+        <HelpCard data={help.data} />
+        <br />
+        <br />
         {blogs.data.map((e, i) => (
           <BlogCard key={i} data={e} />
         ))}
       </Grid>
     )
-  else return <Typography>No blog</Typography>
+  else return <Typography>No blogs found</Typography>
 }
 
 function WriteBlog({ modal, setModal }) {
