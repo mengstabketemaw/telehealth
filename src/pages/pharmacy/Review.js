@@ -18,8 +18,6 @@ export default function Review() {
   const [strength, setStrength] = useState("")
   const [remark, setRemark] = useState("")
   const [prescribeDate, setPrescribeDate] = useState("")
-  const [prescribedById, setPrescribedById] = useState(0)
-  const [prescribedToId, setPrescribedToId] = useState(0)
   const [prescribor, setPrescribor] = useState()
   const [patient, setPatient] = useState()
   const [loading, setLoading] = useState(true)
@@ -28,6 +26,7 @@ export default function Review() {
   const [open, setOpen] = useState(false)
   const [severity, setSeverity] = useState("info")
   const [message, setMessage] = useState("")
+  var age = 0
 
   useEffect(() => {
     async function fetchData() {
@@ -38,8 +37,6 @@ export default function Review() {
           setMedication(data["medication"])
           setRemark(data["remark"])
           setPrescribeDate(data["presribeDate"])
-          setPrescribedById(data["prescribedById"])
-          setPrescribedToId(data["prescribedToId"])
           setLoading(false)
           axios
             .get(Config.USER_URL + "/id/" + data["prescribedById"])
@@ -50,6 +47,7 @@ export default function Review() {
           axios
             .get(Config.USER_URL + "/id/" + data["prescribedToId"])
             .then(({ data }) => {
+              console.log(data)
               setPatient(data.user)
               setALoading(false)
             })
@@ -91,6 +89,26 @@ export default function Review() {
             <Grid item xs={12}>
               <TextField
                 id="outlined-read-only-input"
+                name="doctor"
+                label="Prescribed By"
+                fullWidth
+                variant="standard"
+                value={
+                  "Dr. " +
+                  prescribor?.firstname +
+                  " " +
+                  prescribor?.middlename +
+                  " " +
+                  prescribor?.lastname
+                }
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-read-only-input"
                 name="patient"
                 label="Prescribed To"
                 fullWidth
@@ -107,21 +125,28 @@ export default function Review() {
                 }}
               />
             </Grid>
+
             <Grid item xs={12}>
               <TextField
                 id="outlined-read-only-input"
-                name="doctor"
-                label="Prescribed By"
+                name="gender"
+                label="Gender"
                 fullWidth
                 variant="standard"
-                value={
-                  "Dr. " +
-                  prescribor?.firstname +
-                  " " +
-                  prescribor?.middlename +
-                  " " +
-                  prescribor?.lastname
-                }
+                value={patient?.sex}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="outlined-read-only-input"
+                name="age"
+                label="Age"
+                fullWidth
+                variant="standard"
+                value={2022 - Number(patient?.birthDate.substring(0, 4))}
                 InputProps={{
                   readOnly: true,
                 }}
