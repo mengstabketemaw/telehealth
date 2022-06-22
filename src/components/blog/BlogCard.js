@@ -42,7 +42,7 @@ const BlogCard = ({ data }) => {
               {data.title}
             </Typography>
             <Typography variant="subtitle2" component="p">
-              By {author?.firstname} {author?.middlename}
+              By Dr. {author?.firstname} {author?.middlename}
             </Typography>
             <br />
             <Typography
@@ -65,7 +65,7 @@ const BlogCard = ({ data }) => {
           </Box>
           <Box ml={3}>
             <Typography variant="subtitle2" component="p">
-              {author?.firstname} {author?.middlename}
+              Dr. {author?.firstname} {author?.middlename}
             </Typography>
             <Typography variant="subtitle2" color="textSecondary" component="p">
               {new Date(data.postDate).toDateString()}

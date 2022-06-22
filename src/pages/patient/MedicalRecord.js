@@ -95,6 +95,16 @@ const MedicalRecord = () => {
     setMedicalRecord({ ...medicalrecord, loading: true })
     let req = new FormData()
     req.append("file", record.file)
+    var type = ""
+    if (record.file.type.includes("image")) {
+      type = "IMAGE"
+    } else if (record.file.type.includes("video")) {
+      type = "VIDEO"
+    } else if (record.file.type.includes("pdf")) {
+      type = "PDF"
+    } else {
+      type = "UNKNOWN"
+    }
     mati
       .post("api/file/upload", req)
       .then((filename) => {
@@ -103,6 +113,7 @@ const MedicalRecord = () => {
             patientId: token.userId,
             fileName: filename,
             desc: record.desc,
+            type,
           })
           .then((data) => {
             setMedicalRecord((state) => ({

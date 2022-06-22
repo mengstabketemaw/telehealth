@@ -148,7 +148,7 @@ function DoctorInfo({ doc, apply }) {
         <Popup>
           <Stack spacing={5}>
             <Box>
-              <Typography variant="h4" color={"green"}>
+              <Typography variant="h6" color={"green"}>
                 Doctor: {doctor.data.user.firstname}{" "}
                 {doctor.data.user.middlename}
               </Typography>
