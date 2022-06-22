@@ -17,6 +17,7 @@ import MedicalRecordProfile from "../../components/medicalrecord/MedicalRecordPr
 import { useSnackbar } from "./Patient"
 import mati from "../../api/repository"
 import useToken from "../../hooks/useToken"
+import { DateTime } from "luxon"
 
 const MedicalRecord = () => {
   const { token } = useToken()
@@ -62,6 +63,9 @@ const MedicalRecord = () => {
       headerName: "Date",
       type: "date",
       flex: 0.5,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_MED)
+      },
     },
     {
       field: "desc",

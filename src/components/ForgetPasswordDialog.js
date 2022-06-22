@@ -30,7 +30,6 @@ const ForgetPasswordDialog = ({ open, handleClose }) => {
         setData((data) => ({ ...data, status: "success", openback: false }))
       })
       .catch((error) => {
-        console.log(error)
         setData((data) => ({
           ...data,
           status: "error",

@@ -25,6 +25,7 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid"
 import useToken from "../../hooks/useToken"
 import PrescriptionForm from "./PerscriptionForm"
 import ReactPlayer from "react-player"
+import { DateTime } from "luxon"
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
@@ -100,6 +101,9 @@ export default function PatientProfile(props) {
       headerName: "Date",
       type: "date",
       flex: 0.5,
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_MED)
+      },
     },
     {
       field: "desc",
@@ -140,6 +144,9 @@ export default function PatientProfile(props) {
     {
       field: "presribeDate",
       headerName: "Date",
+      valueGetter: ({ value }) => {
+        return DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_MED)
+      },
     },
     {
       field: "medication",
@@ -159,6 +166,10 @@ export default function PatientProfile(props) {
     {
       field: "status",
       headerName: "Status",
+      valueGetter: ({ value }) => {
+        if (Number(value) === 0) return "Prescribed"
+        else return "Taken"
+      },
     },
   ]
 
@@ -172,10 +183,6 @@ export default function PatientProfile(props) {
     }
 
     mati.post("api/Prescription", data)
-  }
-
-  const handleAddReport = () => {
-    console.log(report)
   }
 
   const handleChangePrescribtion = (type) => (event) => {

@@ -75,7 +75,6 @@ const UserProfile = () => {
   const handleSave = async () => {
     //updating the user information, sending the data to the server
     try {
-      console.log(profile)
       await axios.put(Config.USER_URL + "/", profile, Config.getAuthHeaders())
       setSnackbar({
         open: true,

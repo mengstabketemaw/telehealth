@@ -7,7 +7,7 @@ const DoctorList = () => {
       <Stack>
         <br />
         <Typography color="primary" variant="h4">
-          Schedule Appointment NOW
+          Schedule Appointment
         </Typography>
         <br />
         <Consultants />
