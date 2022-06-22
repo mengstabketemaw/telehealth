@@ -371,7 +371,7 @@ function VdtBlogLists() {
         ))}
       </Grid>
     )
-  else return <Typography>No blog</Typography>
+  else return <Typography>No blogs found</Typography>
 }
 
 function VdtBlogCard({
@@ -387,7 +387,7 @@ function VdtBlogCard({
     })
   }, [])
   return (
-    <Grid item xs={12}>
+    <Grid item xs={12} mr={10}>
       <Card>
         <CardActionArea
           onClick={() => {
@@ -398,28 +398,33 @@ function VdtBlogCard({
             <Typography gutterBottom variant="h5" component="h2">
               {data.title}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              {detaile ? data.body + "  . . . " : data.body.substr(0, 100)}
+            <Typography variant="subtitle2" component="p">
+              By Dr. {author?.firstname} {author?.middlename}
+            </Typography>
+            <br />
+            <Typography
+              sx={{ lineHeight: 2, fontSize: 15, textAlign: "justify" }}
+              variant="body2"
+              color="textSecondary"
+              component="p"
+            >
+              {detaile ? data.body : data.body.substr(0, 200) + "  . . . "}
             </Typography>
           </CardContent>
         </CardActionArea>
         <CardActions>
-          <Box>
+          <Box ml={2}>
             {author?.email && (
               <Avatar src={`${Config.USER_URL}/avatar/${author?.email}`} />
             )}
-            <Box ml={2}>
-              <Typography variant="subtitle2" component="p">
-                {author?.firstname} {author?.middlename}
-              </Typography>
-              <Typography
-                variant="subtitle2"
-                color="textSecondary"
-                component="p"
-              >
-                {new Date(data.postDate).toDateString()}
-              </Typography>
-            </Box>
+          </Box>
+          <Box ml={2}>
+            <Typography variant="subtitle2" component="p">
+              Dr. {author?.firstname} {author?.middlename}
+            </Typography>
+            <Typography variant="subtitle2" color="textSecondary" component="p">
+              {new Date(data.postDate).toDateString()}
+            </Typography>
           </Box>
         </CardActions>
       </Card>
