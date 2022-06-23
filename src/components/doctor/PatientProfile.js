@@ -136,14 +136,17 @@ export default function PatientProfile(props) {
     {
       field: "prescriptionId",
       headerName: "Id",
+      status: false,
     },
     {
       field: "prescribedById",
       headerName: "Doctor",
+      status: false,
     },
     {
       field: "presribeDate",
       headerName: "Date",
+      flex: 1,
       valueGetter: ({ value }) => {
         return DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_MED)
       },
@@ -156,7 +159,7 @@ export default function PatientProfile(props) {
     {
       field: "strength",
       headerName: "Strength",
-      flex: 1,
+      flex: 0.5,
     },
     {
       field: "remark",
@@ -236,10 +239,12 @@ export default function PatientProfile(props) {
             <Typography variant="h5" color="green">
               {profile.user.firstname} {profile.user.middlename}
             </Typography>
-            <Typography>Sex: {profile.user.sex}</Typography>
-            <Typography>birthDate: {profile.user.birthDate}</Typography>
-            <Typography>phoneNo: {profile.user.phoneNumber}</Typography>
-            <Typography>homePhoneNo: {profile.user.homePhoneNumber}</Typography>
+            <Typography>Gender: {profile.user.sex}</Typography>
+            <Typography>Birth Date: {profile.user.birthDate}</Typography>
+            <Typography>Phone No: {profile.user.phoneNumber}</Typography>
+            <Typography>
+              Home Phone No: {profile.user.homePhoneNumber}
+            </Typography>
           </>
         )}
         <Divider variant="middle" width={"50%"} />
@@ -257,7 +262,7 @@ export default function PatientProfile(props) {
         </div>
         <Divider variant="middle" width={"50%"} />
         <Typography variant="h5" color="primary">
-          E-Prescribtions
+          E-Prescriptions
         </Typography>
         <div style={{ width: "90%", height: "500px" }}>
           <DataGrid
