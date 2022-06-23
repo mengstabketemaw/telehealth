@@ -8,6 +8,7 @@ export default function VideoComponent({ participantId }) {
   const meeting = useMeeting()
   const { webcamStream, micStream, webcamOn, micOn, isLocal } =
     useParticipant(participantId)
+
   const videoStream = useMemo(() => {
     if (webcamOn) {
       const mediaStream = new MediaStream()
@@ -46,18 +47,17 @@ export default function VideoComponent({ participantId }) {
 
   return (
     <Paper key={participantId} elevation={3} sx={x}>
-      {micOn && micRef && <audio ref={micRef} autoPlay />}
+      {micOn && micRef && <audio ref={micRef} autoPlay muted={isLocal} />}
       {webcamOn && (
         <ReactPlayer
+          id={"localVideo"}
           playsinline // very very imp prop
           pip={false}
           light={false}
-          controls={false}
-          muted={true}
+          controls={true}
           playing={true}
-          //
+          muted={true}
           url={videoStream}
-          //
           height={"100%"}
           width={"100%"}
           onError={(err) => {
