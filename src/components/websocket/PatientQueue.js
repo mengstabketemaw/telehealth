@@ -44,7 +44,7 @@ const PatientQueue = () => {
     //{from:"email",message:"the message body"}
     setSnackbar({
       open: true,
-      children: "new incoming message",
+      children: "New Message",
       severity: "info",
     })
     console.log(body)

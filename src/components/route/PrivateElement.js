@@ -40,7 +40,6 @@ const PrivateElement = ({ children }) => {
           user: { disabled },
         },
       } = await axios.get(Config.USER_URL + "/id/" + token.userId)
-      console.log(disabled)
       sessionStorage.setItem("disabled", disabled)
       setData({ loading: false, disabled })
     })()

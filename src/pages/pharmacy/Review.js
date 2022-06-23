@@ -26,7 +26,6 @@ export default function Review() {
   const [open, setOpen] = useState(false)
   const [severity, setSeverity] = useState("info")
   const [message, setMessage] = useState("")
-  var age = 0
 
   useEffect(() => {
     async function fetchData() {

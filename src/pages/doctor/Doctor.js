@@ -194,7 +194,7 @@ function DrawerTools() {
         variant="middle"
       />
 
-      {["Profile", "Blog"].map((name, index) => {
+      {["Blog", "Profile"].map((name, index) => {
         let urlname = name
           .toLocaleLowerCase()
           .replaceAll(" ", "")
