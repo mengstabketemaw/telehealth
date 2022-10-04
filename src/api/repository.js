@@ -2,7 +2,7 @@ import axios from "axios"
 const responseBody = (res) => res.data
 
 const instance = axios.create({
-  baseURL: "http://matiows-001-site1.btempurl.com/",
+  baseURL: "http://mikiass0-001-site1.itempurl.com/",
   config: {
     headers: {
       Accept: "application/json",
