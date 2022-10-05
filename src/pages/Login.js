@@ -79,6 +79,18 @@ const Login = () => {
                 <Typography variant="h4" color="primary">
                   Wellcome
                 </Typography>
+                <Typography variant="p" color="primary">
+                  This project is for demonstration only,you can use the following credentials for testing purpose
+                </Typography>
+                <Typography variant="p" color="primary">
+                  Doctors Account: matiwos@gmail.com, girma@gmail.com, eyob@gmail.com or biruk@gmail.com
+                </Typography>
+                <Typography variant="p" color="primary">
+                  Patient Account: mengstab@gmail.com, mike@gmail.com, mamaru@gmail.com
+                </Typography>
+                <Typography variant="p" color="primary">
+                  Password: 12345
+                </Typography>
               </Grid>
               <Grid item xs>
                 <Typography variant="h3" color="primary">
